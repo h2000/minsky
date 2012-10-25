@@ -1,0 +1,1 @@
+#define MINSKY_VERSION "1.0.1.D008"
