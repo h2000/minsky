@@ -64,7 +64,7 @@ $(MODELS:=.o): %.o: %.cc
 
 # how to build a model executable
 $(MODELS): %: %.o $(MODLINK) 
-	$(LINK) $(FLAGS) $(MODLINK) $*.o -L. $(LIBS) -o $@
+	$(LINK) $(FLAGS) $(MODLINK) $*.o -L/opt/local/lib/db48 -L. $(LIBS) -o $@
 
 include $(MODELS:=.d) $(OTHER_OBJS:.o=.d)
 

@@ -19,10 +19,16 @@
 # Godley table
 
 
+set globals(godley_tables) {}
+
 proc createGodleyWindow {id} {
+    global globals
     toplevel .godley$id 
     wm title .godley$id "Godley Table"
     wm withdraw .godley$id
+
+    lappend globals(godley_tables) $id
+    set globals(updateGodleyLaunched$id) 0
 
     set t .godley$id.table
     table $t \
@@ -116,7 +122,13 @@ proc setGetCell {id r c i s} {
         } else {
             set s [minsky.godleyItem.table.getCell $row $col]
             if [string length $s] {
-                return $s
+                 if {[t]>0 && $row>0 && $col>0} {
+                    set val ""
+                    catch { value.get [string trimleft $s " -"]; set val "= [value.value]" }
+             	    return "$s $val"
+ 		 } else {
+                    return $s
+ 		 }
             } else {
                 return " "
             }
@@ -133,7 +145,6 @@ proc openGodley {id} {
 }
 
 proc addRow {id r} {
-    global currGodley
     godleyItem.get $id
     godleyItem.table.insertRow $r
     godleyItem.set $id
@@ -166,18 +177,25 @@ proc delCol {id c} {
     updateGodley $id
 }
     
-set updateGodleyLaunched 0
+proc updateGodleys {} {
+  global globals
+  foreach id $globals(godley_tables) {
+    updateGodley $id
+  }
+  
+}
+
 # sets a when-idle job to update the godley table, to prevent the table being updated too often during rapid fire requests
 proc updateGodley {id} {
-    global updateGodleyLaunched
-    if {!$updateGodleyLaunched} {
-        set updateGodleyLaunched 1
+    global globals
+    if {$id < 0 || ![winfo exists .godley$id]} {return}
+    if {!$globals(updateGodleyLaunched$id)} {
+        set $globals(updateGodleyLaunched$id) 1
         after idle whenIdleUpdateGodley $id
     }
 }
 
 proc whenIdleUpdateGodley {id} {
-
     godleyItem.get $id
     set nrows [expr [godleyItem.table.rows]+1]
     set ncols [expr [godleyItem.table.cols]+1]

@@ -99,7 +99,7 @@ source $minskyHome/library/Xecolab/obj-browser.tcl
 
 # Macs have a weird numbering of mouse buttons, so lets virtualise B2 & B3
 # see http://wiki.tcl.tk/14728
-if {$tcl_platform(os)=="Darwin"} {
+if {[tk windowingsystem] == "aqua"} {
     event add <<contextMenu>> <Button-2> <Control-Button-1>
     event add <<middleMouse>> <Button-3>
     event add <<middleMouse-Motion>> <B3-Motion>
@@ -223,6 +223,7 @@ proc step {} {
     set lastt [t]
     minsky.step
     .menubar.statusbar configure -text "t: [t] dt: [expr [t]-$lastt]"
+    updateGodleys
 }
 
 proc simulate {} {
@@ -244,6 +245,7 @@ proc reset {} {
     global oplist lastOp
     set oplist [opOrder]
     updateCanvas
+    updateGodleys
     set lastOp -1
 }
 
@@ -263,6 +265,7 @@ proc openFile {} {
         updateCanvas
     }
 }
+
 proc save {} {
     global fname
     if {![string length $fname]} {
