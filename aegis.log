@@ -1,157 +1,689 @@
-aegis: project "Minsky.1.2.1": change 10: merging files from all baselines into
+aegis: project "Minsky.1.2.1": change 11: historical version 1.51 of the
+	"Makefile" file being recreated
+aegis: cd /home/aegis/Minsky/history
+/home/aegis/Minsky/history/7e.uui/3c.uui/92753d57.476/5adf40e9.d79/7e655e,v  -->  standard output
+revision 1.51
+aegis: cd /home/rks/Minsky.1.2.1.C011
+aegis: set +e; merge -p -L baseline -L C11 /home/aegis/Minsky/branch.1/branch.
+	2/baseline/Makefile /tmp/aegis-52276ae9-57a0-428f-aeca-ec788ec87f93
+	/home/rks/Minsky.1.2.1.C011/Makefile,B >
+	/home/rks/Minsky.1.2.1.C011/Makefile; test $? -le 1
+aegis: project "Minsky.1.2.1": change 11: historical version 1.33 of the
+	"godley.tcl" file being recreated
+aegis: cd /home/aegis/Minsky/history
+/home/aegis/Minsky/history/74.uui/4e.uui/11a58a84.425/3bdd1a58.976/b001c7,v  -->  standard output
+revision 1.33
+aegis: cd /home/rks/Minsky.1.2.1.C011
+aegis: set +e; merge -p -L baseline -L C11 /home/aegis/Minsky/branch.1/
+	baseline/godley.tcl /tmp/aegis-d8852778-e18d-4528-914b-dcb488dce794
+	/home/rks/Minsky.1.2.1.C011/godley.tcl,B >
+	/home/rks/Minsky.1.2.1.C011/godley.tcl; test $? -le 1
+aegis: project "Minsky.1.2.1": change 11: historical version 1.65 of the
+	"minsky.tcl" file being recreated
+aegis: cd /home/aegis/Minsky/history
+/home/aegis/Minsky/history/9f.uui/22.uui/b2560110.430/da7280f8.147/b0e2a1,v  -->  standard output
+revision 1.65
+aegis: cd /home/rks/Minsky.1.2.1.C011
+aegis: set +e; merge -p -L baseline -L C11 /home/aegis/Minsky/branch.1/
+	baseline/minsky.tcl /tmp/aegis-2391cf67-9f40-47be-b8d3-002e0fdcfda3
+	/home/rks/Minsky.1.2.1.C011/minsky.tcl,B >
+	/home/rks/Minsky.1.2.1.C011/minsky.tcl; test $? -le 1
+aegis: project "Minsky.1.2.1": change 11: file "Makefile" was out of date and
+	has been merged with the up to date version, see "Makefile,B" for the
+	original source
+aegis: project "Minsky.1.2.1": change 11: file "godley.tcl" was out of date and
+	has been merged with the up to date version, see "godley.tcl,B" for the
+	original source
+aegis: project "Minsky.1.2.1": change 11: file "minsky.tcl" was out of date and
+	has been merged with the up to date version, see "minsky.tcl,B" for the
+	original source
+aegis: project "Minsky.1.2.1": change 11: merged 3 files, new 'aegis -Build'
+	required
+aegis: project "Minsky.1.2.1": change 11: historical version 1.51 of the
+	"Makefile" file being recreated
+aegis: cd /home/aegis/Minsky/history
+/home/aegis/Minsky/history/7e.uui/3c.uui/92753d57.476/5adf40e9.d79/7e655e,v  -->  standard output
+revision 1.51
+aegis: cd /home/rks/Minsky.1.2.1.C011
+aegis: set +e; merge -p -L baseline -L C11 /home/aegis/Minsky/branch.1/branch.
+	2/baseline/Makefile /tmp/aegis-165acf01-6fb8-4bda-940b-64a3043f155d
+	/home/rks/Minsky.1.2.1.C011/Makefile,B >
+	/home/rks/Minsky.1.2.1.C011/Makefile; test $? -le 1
+aegis: project "Minsky.1.2.1": change 11: historical version 1.33 of the
+	"godley.tcl" file being recreated
+aegis: cd /home/aegis/Minsky/history
+/home/aegis/Minsky/history/74.uui/4e.uui/11a58a84.425/3bdd1a58.976/b001c7,v  -->  standard output
+revision 1.33
+aegis: cd /home/rks/Minsky.1.2.1.C011
+aegis: set +e; merge -p -L baseline -L C11 /home/aegis/Minsky/branch.1/
+	baseline/godley.tcl /tmp/aegis-098c9b48-6dce-4b6d-ba2a-db62d492bf38
+	/home/rks/Minsky.1.2.1.C011/godley.tcl,B >
+	/home/rks/Minsky.1.2.1.C011/godley.tcl; test $? -le 1
+aegis: project "Minsky.1.2.1": change 11: historical version 1.65 of the
+	"minsky.tcl" file being recreated
+aegis: cd /home/aegis/Minsky/history
+/home/aegis/Minsky/history/9f.uui/22.uui/b2560110.430/da7280f8.147/b0e2a1,v  -->  standard output
+revision 1.65
+aegis: cd /home/rks/Minsky.1.2.1.C011
+aegis: set +e; merge -p -L baseline -L C11 /home/aegis/Minsky/branch.1/
+	baseline/minsky.tcl /tmp/aegis-b70c707a-a686-4ad3-99c7-43cfbd3151f9
+	/home/rks/Minsky.1.2.1.C011/minsky.tcl,B >
+	/home/rks/Minsky.1.2.1.C011/minsky.tcl; test $? -le 1
+aegis: project "Minsky.1.2.1": change 11: file "Makefile" was out of date and
+	has been merged with the up to date version, see "Makefile,B" for the
+	original source
+aegis: project "Minsky.1.2.1": change 11: file "godley.tcl" was out of date and
+	has been merged with the up to date version, see "godley.tcl,B" for the
+	original source
+aegis: project "Minsky.1.2.1": change 11: file "minsky.tcl" was out of date and
+	has been merged with the up to date version, see "minsky.tcl,B" for the
+	original source
+aegis: project "Minsky.1.2.1": change 11: merged 3 files, new 'aegis -Build'
+	required
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/branch.1/baseline/Makefile
+	/home/rks/Minsky.1.2.1.C011/Makefile -o
+	/home/rks/Minsky.1.2.1.C011/Makefile,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/Minsky.xmi
+	/home/rks/Minsky.1.2.1.C011/Minsky.xmi -o
+	/home/rks/Minsky.1.2.1.C011/Minsky.xmi,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/XGLItem.cc
+	/home/rks/Minsky.1.2.1.C011/XGLItem.cc -o
+	/home/rks/Minsky.1.2.1.C011/XGLItem.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/XGLItem.h
+	/home/rks/Minsky.1.2.1.C011/XGLItem.h -o
+	/home/rks/Minsky.1.2.1.C011/XGLItem.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/aegis.conf
+	/home/rks/Minsky.1.2.1.C011/aegis.conf -o
+	/home/rks/Minsky.1.2.1.C011/aegis.conf,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/cairoItems.cc
+	/home/rks/Minsky.1.2.1.C011/cairoItems.cc -o
+	/home/rks/Minsky.1.2.1.C011/cairoItems.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/cairoItems.h
+	/home/rks/Minsky.1.2.1.C011/cairoItems.h -o
+	/home/rks/Minsky.1.2.1.C011/cairoItems.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/classdesc_access.h
+	/home/rks/Minsky.1.2.1.C011/classdesc_access.h -o
+	/home/rks/Minsky.1.2.1.C011/classdesc_access.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/equations.cc
+	/home/rks/Minsky.1.2.1.C011/equations.cc -o
+	/home/rks/Minsky.1.2.1.C011/equations.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/equations.h
+	/home/rks/Minsky.1.2.1.C011/equations.h -o
+	/home/rks/Minsky.1.2.1.C011/equations.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/examples/1Free.
+	mky /home/rks/Minsky.1.2.1.C011/examples/1Free.mky -o
+	/home/rks/Minsky.1.2.1.C011/examples/1Free.mky,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/examples/
+	4MonetaryMinskyModelLessUnstableStart.mky
+	/home/rks/Minsky.1.2.1.C011/examples/
+	4MonetaryMinskyModelLessUnstableStart.mky -o
+	/home/rks/Minsky.1.2.1.C011/examples/
+	4MonetaryMinskyModelLessUnstableStart.mky,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/examples/
+	4MonetaryMinskyModelLessUnstableStart.xml
+	/home/rks/Minsky.1.2.1.C011/examples/
+	4MonetaryMinskyModelLessUnstableStart.xml -o
+	/home/rks/Minsky.1.2.1.C011/examples/
+	4MonetaryMinskyModelLessUnstableStart.xml,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/examples/
+	GoodwinLinear.mky /home/rks/Minsky.1.2.1.C011/examples/GoodwinLinear.
+	mky -o /home/rks/Minsky.1.2.1.C011/examples/GoodwinLinear.mky,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/examples/GoodwinLinear.xml
+	/home/rks/Minsky.1.2.1.C011/examples/GoodwinLinear.xml -o
+	/home/rks/Minsky.1.2.1.C011/examples/GoodwinLinear.xml,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/examples/
+	GoodwinLinear02.mky /home/rks/Minsky.1.2.1.C011/examples/
+	GoodwinLinear02.mky -o /home/rks/Minsky.1.2.1.C011/examples/
+	GoodwinLinear02.mky,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/examples/Steve.
+	mky /home/rks/Minsky.1.2.1.C011/examples/Steve.mky -o
+	/home/rks/Minsky.1.2.1.C011/examples/Steve.mky,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/examples/
+	SteveTest028.mky /home/rks/Minsky.1.2.1.C011/examples/SteveTest028.mky
+	-o /home/rks/Minsky.1.2.1.C011/examples/SteveTest028.mky,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/examples/UWS05.
+	mky /home/rks/Minsky.1.2.1.C011/examples/UWS05.mky -o
+	/home/rks/Minsky.1.2.1.C011/examples/UWS05.mky,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/examples/
+	exponentialGrowth.mky /home/rks/Minsky.1.2.1.C011/examples/
+	exponentialGrowth.mky -o /home/rks/Minsky.1.2.1.C011/examples/
+	exponentialGrowth.mky,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/examples/
+	exponentialGrowthWithExtraLabel.mky
+	/home/rks/Minsky.1.2.1.C011/examples/exponentialGrowthWithExtraLabel.
+	mky -o /home/rks/Minsky.1.2.1.C011/examples/
+	exponentialGrowthWithExtraLabel.mky,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/godley.cc
+	/home/rks/Minsky.1.2.1.C011/godley.cc -o
+	/home/rks/Minsky.1.2.1.C011/godley.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/godley.h
+	/home/rks/Minsky.1.2.1.C011/godley.h -o
+	/home/rks/Minsky.1.2.1.C011/godley.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/branch.1/baseline/godley.
+	tcl /home/rks/Minsky.1.2.1.C011/godley.tcl -o
+	/home/rks/Minsky.1.2.1.C011/godley.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/godleyIcon.cc
+	/home/rks/Minsky.1.2.1.C011/godleyIcon.cc -o
+	/home/rks/Minsky.1.2.1.C011/godleyIcon.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/godleyIcon.h
+	/home/rks/Minsky.1.2.1.C011/godleyIcon.h -o
+	/home/rks/Minsky.1.2.1.C011/godleyIcon.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/godleyIconItem.cc
+	/home/rks/Minsky.1.2.1.C011/godleyIconItem.cc -o
+	/home/rks/Minsky.1.2.1.C011/godleyIconItem.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/group.tcl
+	/home/rks/Minsky.1.2.1.C011/group.tcl -o
+	/home/rks/Minsky.1.2.1.C011/group.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/groupIcon.cc
+	/home/rks/Minsky.1.2.1.C011/groupIcon.cc -o
+	/home/rks/Minsky.1.2.1.C011/groupIcon.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/groupIcon.h
+	/home/rks/Minsky.1.2.1.C011/groupIcon.h -o
+	/home/rks/Minsky.1.2.1.C011/groupIcon.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/help
+	/home/rks/Minsky.1.2.1.C011/help -o /home/rks/Minsky.1.2.1.C011/help,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/Last.gif
+	/home/rks/Minsky.1.2.1.C011/icons/Last.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/Last.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/Last.gif: warning: no newline
+	at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/Last.gif" file
+	contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/Last.gif: warning: no newline at end
+	of file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/Last.gif" file contains
+	binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/Pause.fig
+	/home/rks/Minsky.1.2.1.C011/icons/Pause.fig -o
+	/home/rks/Minsky.1.2.1.C011/icons/Pause.fig,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/Pause.gif
+	/home/rks/Minsky.1.2.1.C011/icons/Pause.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/Pause.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/Pause.gif: warning: no
+	newline at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/Pause.gif" file
+	contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/Pause.gif: warning: no newline at end
+	of file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/Pause.gif" file contains
+	binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/Play.fig
+	/home/rks/Minsky.1.2.1.C011/icons/Play.fig -o
+	/home/rks/Minsky.1.2.1.C011/icons/Play.fig,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/Play.gif
+	/home/rks/Minsky.1.2.1.C011/icons/Play.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/Play.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/Play.gif: warning: no newline
+	at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/Play.gif" file
+	contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/Play.gif: warning: no newline at end
+	of file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/Play.gif" file contains
+	binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/Rewind.gif
+	/home/rks/Minsky.1.2.1.C011/icons/Rewind.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/Rewind.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/Rewind.gif: warning: no
+	newline at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/Rewind.gif"
+	file contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/Rewind.gif: warning: no newline at end
+	of file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/Rewind.gif" file
+	contains binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/Step.fig
+	/home/rks/Minsky.1.2.1.C011/icons/Step.fig -o
+	/home/rks/Minsky.1.2.1.C011/icons/Step.fig,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/add.gif
+	/home/rks/Minsky.1.2.1.C011/icons/add.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/add.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/add.gif: warning: no newline
+	at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/add.gif" file
+	contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/add.gif: warning: no newline at end of
+	file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/add.gif" file contains
+	binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/bank.fig
+	/home/rks/Minsky.1.2.1.C011/icons/bank.fig -o
+	/home/rks/Minsky.1.2.1.C011/icons/bank.fig,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/bank.gif
+	/home/rks/Minsky.1.2.1.C011/icons/bank.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/bank.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/bank.gif: warning: no newline
+	at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/bank.gif" file
+	contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/bank.gif: warning: no newline at end
+	of file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/bank.gif" file contains
+	binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/bank.xgl
+	/home/rks/Minsky.1.2.1.C011/icons/bank.xgl -o
+	/home/rks/Minsky.1.2.1.C011/icons/bank.xgl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/bar.fig
+	/home/rks/Minsky.1.2.1.C011/icons/bar.fig -o
+	/home/rks/Minsky.1.2.1.C011/icons/bar.fig,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/const.gif
+	/home/rks/Minsky.1.2.1.C011/icons/const.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/const.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/const.gif: warning: no
+	newline at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/const.gif" file
+	contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/const.gif: warning: no newline at end
+	of file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/const.gif" file contains
+	binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/divide.gif
+	/home/rks/Minsky.1.2.1.C011/icons/divide.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/divide.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/divide.gif: warning: no
+	newline at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/divide.gif"
+	file contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/divide.gif: warning: no newline at end
+	of file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/divide.gif" file
+	contains binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/exp.gif
+	/home/rks/Minsky.1.2.1.C011/icons/exp.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/exp.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/exp.gif: warning: no newline
+	at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/exp.gif" file
+	contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/exp.gif: warning: no newline at end of
+	file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/exp.gif" file contains
+	binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/group.odg
+	/home/rks/Minsky.1.2.1.C011/icons/group.odg -o
+	/home/rks/Minsky.1.2.1.C011/icons/group.odg,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/group.odg: warning: no
+	newline at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/group.odg" file
+	contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/group.odg: warning: no newline at end
+	of file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/group.odg" file contains
+	binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/group.svg
+	/home/rks/Minsky.1.2.1.C011/icons/group.svg -o
+	/home/rks/Minsky.1.2.1.C011/icons/group.svg,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/group.svg: warning: no
+	newline at end of file, one has been automatically appended
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/group.svg: warning: no newline at end
+	of file, one has been automatically appended
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/group.xgl
+	/home/rks/Minsky.1.2.1.C011/icons/group.xgl -o
+	/home/rks/Minsky.1.2.1.C011/icons/group.xgl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/icons.fig
+	/home/rks/Minsky.1.2.1.C011/icons/icons.fig -o
+	/home/rks/Minsky.1.2.1.C011/icons/icons.fig,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/integrate.gif
+	/home/rks/Minsky.1.2.1.C011/icons/integrate.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/integrate.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/integrate.gif: warning: no
+	newline at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/integrate.gif"
+	file contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/integrate.gif: warning: no newline at
+	end of file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/integrate.gif" file
+	contains binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/multiply.gif
+	/home/rks/Minsky.1.2.1.C011/icons/multiply.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/multiply.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/multiply.gif: warning: no
+	newline at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/multiply.gif"
+	file contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/multiply.gif: warning: no newline at
+	end of file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/multiply.gif" file
+	contains binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/plot.fig
+	/home/rks/Minsky.1.2.1.C011/icons/plot.fig -o
+	/home/rks/Minsky.1.2.1.C011/icons/plot.fig,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/plot.gif
+	/home/rks/Minsky.1.2.1.C011/icons/plot.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/plot.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/plot.gif: warning: no newline
+	at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/plot.gif" file
+	contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/plot.gif: warning: no newline at end
+	of file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/plot.gif" file contains
+	binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/stop.fig
+	/home/rks/Minsky.1.2.1.C011/icons/stop.fig -o
+	/home/rks/Minsky.1.2.1.C011/icons/stop.fig,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/subtract.gif
+	/home/rks/Minsky.1.2.1.C011/icons/subtract.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/subtract.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/subtract.gif: warning: no
+	newline at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/subtract.gif"
+	file contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/subtract.gif: warning: no newline at
+	end of file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/subtract.gif" file
+	contains binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/time.gif
+	/home/rks/Minsky.1.2.1.C011/icons/time.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/time.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/time.gif: warning: no newline
+	at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/time.gif" file
+	contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/time.gif: warning: no newline at end
+	of file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/time.gif" file contains
+	binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/icons/var.gif
+	/home/rks/Minsky.1.2.1.C011/icons/var.gif -o
+	/home/rks/Minsky.1.2.1.C011/icons/var.gif,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/icons/var.gif: warning: no newline
+	at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/icons/var.gif" file
+	contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/icons/var.gif: warning: no newline at end of
+	file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/icons/var.gif" file contains
+	binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/init.h
+	/home/rks/Minsky.1.2.1.C011/init.h -o
+	/home/rks/Minsky.1.2.1.C011/init.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/install.bat
+	/home/rks/Minsky.1.2.1.C011/install.bat -o
+	/home/rks/Minsky.1.2.1.C011/install.bat,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/install.bat: warning: no newline at
+	end of file, one has been automatically appended
+fcomp: /home/rks/Minsky.1.2.1.C011/install.bat: warning: no newline at end of
+	file, one has been automatically appended
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/Xecolab.tcl
+	/home/rks/Minsky.1.2.1.C011/library/Xecolab.tcl -o
+	/home/rks/Minsky.1.2.1.C011/library/Xecolab.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/Xecolab/connect.
+	tcl /home/rks/Minsky.1.2.1.C011/library/Xecolab/connect.tcl -o
+	/home/rks/Minsky.1.2.1.C011/library/Xecolab/connect.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/Xecolab/display.
+	tcl /home/rks/Minsky.1.2.1.C011/library/Xecolab/display.tcl -o
+	/home/rks/Minsky.1.2.1.C011/library/Xecolab/display.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/Xecolab/
+	filebrowser.tcl /home/rks/Minsky.1.2.1.C011/library/Xecolab/
+	filebrowser.tcl -o /home/rks/Minsky.1.2.1.C011/library/Xecolab/
+	filebrowser.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/Xecolab/histogram.
+	tcl /home/rks/Minsky.1.2.1.C011/library/Xecolab/histogram.tcl -o
+	/home/rks/Minsky.1.2.1.C011/library/Xecolab/histogram.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/Xecolab/netgraph.
+	tcl /home/rks/Minsky.1.2.1.C011/library/Xecolab/netgraph.tcl -o
+	/home/rks/Minsky.1.2.1.C011/library/Xecolab/netgraph.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/Xecolab/obj-
+	browser.tcl /home/rks/Minsky.1.2.1.C011/library/Xecolab/obj-browser.tcl
+	-o /home/rks/Minsky.1.2.1.C011/library/Xecolab/obj-browser.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/Xecolab/plot.tcl
+	/home/rks/Minsky.1.2.1.C011/library/Xecolab/plot.tcl -o
+	/home/rks/Minsky.1.2.1.C011/library/Xecolab/plot.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/init.tcl
+	/home/rks/Minsky.1.2.1.C011/library/init.tcl -o
+	/home/rks/Minsky.1.2.1.C011/library/init.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/tcl8/8.4/http-2.7.
+	7.tm /home/rks/Minsky.1.2.1.C011/library/tcl8/8.4/http-2.7.7.tm -o
+	/home/rks/Minsky.1.2.1.C011/library/tcl8/8.4/http-2.7.7.tm,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/tcl8/8.4/http-2.7.
+	tm /home/rks/Minsky.1.2.1.C011/library/tcl8/8.4/http-2.7.tm -o
+	/home/rks/Minsky.1.2.1.C011/library/tcl8/8.4/http-2.7.tm,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/tcl8/8.4/platform-
+	1.0.10.tm /home/rks/Minsky.1.2.1.C011/library/tcl8/8.4/platform-1.0.10.
+	tm -o /home/rks/Minsky.1.2.1.C011/library/tcl8/8.4/platform-1.0.10.tm,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/tcl8/8.4/platform-
+	1.0.3.tm /home/rks/Minsky.1.2.1.C011/library/tcl8/8.4/platform-1.0.3.tm
+	-o /home/rks/Minsky.1.2.1.C011/library/tcl8/8.4/platform-1.0.3.tm,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/tcl8/8.4/platform/
+	shell-1.1.3.tm /home/rks/Minsky.1.2.1.C011/library/tcl8/8.4/platform/
+	shell-1.1.3.tm -o /home/rks/Minsky.1.2.1.C011/library/tcl8/8.4/
+	platform/shell-1.1.3.tm,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/tcl8/8.4/platform/
+	shell-1.1.4.tm /home/rks/Minsky.1.2.1.C011/library/tcl8/8.4/platform/
+	shell-1.1.4.tm -o /home/rks/Minsky.1.2.1.C011/library/tcl8/8.4/
+	platform/shell-1.1.4.tm,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/tcl8/8.5/msgcat-1.
+	4.2.tm /home/rks/Minsky.1.2.1.C011/library/tcl8/8.5/msgcat-1.4.2.tm -o
+	/home/rks/Minsky.1.2.1.C011/library/tcl8/8.5/msgcat-1.4.2.tm,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/tcl8/8.5/msgcat-1.
+	4.4.tm /home/rks/Minsky.1.2.1.C011/library/tcl8/8.5/msgcat-1.4.4.tm -o
+	/home/rks/Minsky.1.2.1.C011/library/tcl8/8.5/msgcat-1.4.4.tm,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/tcl8/8.5/tcltest-
+	2.3.0.tm /home/rks/Minsky.1.2.1.C011/library/tcl8/8.5/tcltest-2.3.0.tm
+	-o /home/rks/Minsky.1.2.1.C011/library/tcl8/8.5/tcltest-2.3.0.tm,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/tcl8/8.5/tcltest-
+	2.3.3.tm /home/rks/Minsky.1.2.1.C011/library/tcl8/8.5/tcltest-2.3.3.tm
+	-o /home/rks/Minsky.1.2.1.C011/library/tcl8/8.5/tcltest-2.3.3.tm,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/library/tooltip.tcl
+	/home/rks/Minsky.1.2.1.C011/library/tooltip.tcl -o
+	/home/rks/Minsky.1.2.1.C011/library/tooltip.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/minsky.app/Contents/Info.
+	plist /home/rks/Minsky.1.2.1.C011/minsky.app/Contents/Info.plist -o
+	/home/rks/Minsky.1.2.1.C011/minsky.app/Contents/Info.plist,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/minsky.cc
+	/home/rks/Minsky.1.2.1.C011/minsky.cc -o
+	/home/rks/Minsky.1.2.1.C011/minsky.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/minsky.h
+	/home/rks/Minsky.1.2.1.C011/minsky.h -o
+	/home/rks/Minsky.1.2.1.C011/minsky.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/branch.1/baseline/minsky.
+	tcl /home/rks/Minsky.1.2.1.C011/minsky.tcl -o
+	/home/rks/Minsky.1.2.1.C011/minsky.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/operation.cc
+	/home/rks/Minsky.1.2.1.C011/operation.cc -o
+	/home/rks/Minsky.1.2.1.C011/operation.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/operation.h
+	/home/rks/Minsky.1.2.1.C011/operation.h -o
+	/home/rks/Minsky.1.2.1.C011/operation.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/plotWidget.cc
+	/home/rks/Minsky.1.2.1.C011/plotWidget.cc -o
+	/home/rks/Minsky.1.2.1.C011/plotWidget.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/plotWidget.h
+	/home/rks/Minsky.1.2.1.C011/plotWidget.h -o
+	/home/rks/Minsky.1.2.1.C011/plotWidget.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/plots.tcl
+	/home/rks/Minsky.1.2.1.C011/plots.tcl -o
+	/home/rks/Minsky.1.2.1.C011/plots.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/polyBase.h
+	/home/rks/Minsky.1.2.1.C011/polyBase.h -o
+	/home/rks/Minsky.1.2.1.C011/polyBase.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/port.cc
+	/home/rks/Minsky.1.2.1.C011/port.cc -o
+	/home/rks/Minsky.1.2.1.C011/port.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/port.h
+	/home/rks/Minsky.1.2.1.C011/port.h -o
+	/home/rks/Minsky.1.2.1.C011/port.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/portManager.cc
+	/home/rks/Minsky.1.2.1.C011/portManager.cc -o
+	/home/rks/Minsky.1.2.1.C011/portManager.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/portManager.h
+	/home/rks/Minsky.1.2.1.C011/portManager.h -o
+	/home/rks/Minsky.1.2.1.C011/portManager.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/schema/schema0.cc
+	/home/rks/Minsky.1.2.1.C011/schema/schema0.cc -o
+	/home/rks/Minsky.1.2.1.C011/schema/schema0.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/schema/schema0.h
+	/home/rks/Minsky.1.2.1.C011/schema/schema0.h -o
+	/home/rks/Minsky.1.2.1.C011/schema/schema0.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/schema/schema1.cc
+	/home/rks/Minsky.1.2.1.C011/schema/schema1.cc -o
+	/home/rks/Minsky.1.2.1.C011/schema/schema1.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/schema/schema1.h
+	/home/rks/Minsky.1.2.1.C011/schema/schema1.h -o
+	/home/rks/Minsky.1.2.1.C011/schema/schema1.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/schema/
+	schemaHelper.h /home/rks/Minsky.1.2.1.C011/schema/schemaHelper.h -o
+	/home/rks/Minsky.1.2.1.C011/schema/schemaHelper.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/tclmain.cc
+	/home/rks/Minsky.1.2.1.C011/tclmain.cc -o
+	/home/rks/Minsky.1.2.1.C011/tclmain.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/00/t0001a.sh
+	/home/rks/Minsky.1.2.1.C011/test/00/t0001a.sh -o
+	/home/rks/Minsky.1.2.1.C011/test/00/t0001a.sh,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/00/t0002a.sh
+	/home/rks/Minsky.1.2.1.C011/test/00/t0002a.sh -o
+	/home/rks/Minsky.1.2.1.C011/test/00/t0002a.sh,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/00/t0003a.sh
+	/home/rks/Minsky.1.2.1.C011/test/00/t0003a.sh -o
+	/home/rks/Minsky.1.2.1.C011/test/00/t0003a.sh,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/00/t0004a.sh
+	/home/rks/Minsky.1.2.1.C011/test/00/t0004a.sh -o
+	/home/rks/Minsky.1.2.1.C011/test/00/t0004a.sh,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/00/t0005a.sh
+	/home/rks/Minsky.1.2.1.C011/test/00/t0005a.sh -o
+	/home/rks/Minsky.1.2.1.C011/test/00/t0005a.sh,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/00/t0006a.sh
+	/home/rks/Minsky.1.2.1.C011/test/00/t0006a.sh -o
+	/home/rks/Minsky.1.2.1.C011/test/00/t0006a.sh,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/Makefile
+	/home/rks/Minsky.1.2.1.C011/test/Makefile -o
+	/home/rks/Minsky.1.2.1.C011/test/Makefile,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/assert.tcl
+	/home/rks/Minsky.1.2.1.C011/test/assert.tcl -o
+	/home/rks/Minsky.1.2.1.C011/test/assert.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/checkMissing.sh
+	/home/rks/Minsky.1.2.1.C011/test/checkMissing.sh -o
+	/home/rks/Minsky.1.2.1.C011/test/checkMissing.sh,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/main.cc
+	/home/rks/Minsky.1.2.1.C011/test/main.cc -o
+	/home/rks/Minsky.1.2.1.C011/test/main.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/rewriteMky.tcl
+	/home/rks/Minsky.1.2.1.C011/test/rewriteMky.tcl -o
+	/home/rks/Minsky.1.2.1.C011/test/rewriteMky.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/testEq.mky
+	/home/rks/Minsky.1.2.1.C011/test/testEq.mky -o
+	/home/rks/Minsky.1.2.1.C011/test/testEq.mky,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/testEq.tcl
+	/home/rks/Minsky.1.2.1.C011/test/testEq.tcl -o
+	/home/rks/Minsky.1.2.1.C011/test/testEq.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/testEqPrototype.tex
+	/home/rks/Minsky.1.2.1.C011/test/testEqPrototype.tex -o
+	/home/rks/Minsky.1.2.1.C011/test/testEqPrototype.tex,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/test/testMinsky.
+	cc /home/rks/Minsky.1.2.1.C011/test/testMinsky.cc -o
+	/home/rks/Minsky.1.2.1.C011/test/testMinsky.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/test/testtestEq.tex
+	/home/rks/Minsky.1.2.1.C011/test/testtestEq.tex -o
+	/home/rks/Minsky.1.2.1.C011/test/testtestEq.tex,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/uninstall.bat
+	/home/rks/Minsky.1.2.1.C011/uninstall.bat -o
+	/home/rks/Minsky.1.2.1.C011/uninstall.bat,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/variable.cc
+	/home/rks/Minsky.1.2.1.C011/variable.cc -o
+	/home/rks/Minsky.1.2.1.C011/variable.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/variable.h
+	/home/rks/Minsky.1.2.1.C011/variable.h -o
+	/home/rks/Minsky.1.2.1.C011/variable.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/variableManager.
+	cc /home/rks/Minsky.1.2.1.C011/variableManager.cc -o
+	/home/rks/Minsky.1.2.1.C011/variableManager.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/variableManager.h
+	/home/rks/Minsky.1.2.1.C011/variableManager.h -o
+	/home/rks/Minsky.1.2.1.C011/variableManager.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/variableValue.cc
+	/home/rks/Minsky.1.2.1.C011/variableValue.cc -o
+	/home/rks/Minsky.1.2.1.C011/variableValue.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/variableValue.h
+	/home/rks/Minsky.1.2.1.C011/variableValue.h -o
+	/home/rks/Minsky.1.2.1.C011/variableValue.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/baseline/windows/Shortcut.exe
+	/home/rks/Minsky.1.2.1.C011/windows/Shortcut.exe -o
+	/home/rks/Minsky.1.2.1.C011/windows/Shortcut.exe,D
+fcomp: /home/aegis/Minsky/branch.1/baseline/windows/Shortcut.exe: warning: no
+	newline at end of file, one has been automatically appended
+fcomp: warning: the "/home/aegis/Minsky/branch.1/baseline/windows/Shortcut.exe"
+	file contains binary characters
+fcomp: /home/rks/Minsky.1.2.1.C011/windows/Shortcut.exe: warning: no newline at
+	end of file, one has been automatically appended
+fcomp: warning: the "/home/rks/Minsky.1.2.1.C011/windows/Shortcut.exe" file
+	contains binary characters
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/wire.h
+	/home/rks/Minsky.1.2.1.C011/wire.h -o
+	/home/rks/Minsky.1.2.1.C011/wire.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/wiring.tcl
+	/home/rks/Minsky.1.2.1.C011/wiring.tcl -o
+	/home/rks/Minsky.1.2.1.C011/wiring.tcl,D
+aegis: project "Minsky.1.2.1": change 11: difference complete
+aegis: project "Minsky.1.2.1": change 11: historical version 1.51 of the
+	"Makefile" file being recreated
+aegis: cd /home/aegis/Minsky/history
+/home/aegis/Minsky/history/7e.uui/3c.uui/92753d57.476/5adf40e9.d79/7e655e,v  -->  standard output
+revision 1.51
+aegis: cd /home/rks/Minsky.1.2.1.C011
+aegis: set +e; merge -p -L baseline -L C11 /home/aegis/Minsky/branch.1/branch.
+	2/baseline/Makefile /tmp/aegis-7e876441-958e-43de-8001-769310b4c9b7
+	/home/rks/Minsky.1.2.1.C011/Makefile,B >
+	/home/rks/Minsky.1.2.1.C011/Makefile; test $? -le 1
+aegis: project "Minsky.1.2.1": change 11: historical version 1.33 of the
+	"godley.tcl" file being recreated
+aegis: cd /home/aegis/Minsky/history
+/home/aegis/Minsky/history/74.uui/4e.uui/11a58a84.425/3bdd1a58.976/b001c7,v  -->  standard output
+revision 1.33
+aegis: cd /home/rks/Minsky.1.2.1.C011
+aegis: set +e; merge -p -L baseline -L C11 /home/aegis/Minsky/branch.1/
+	baseline/godley.tcl /tmp/aegis-31530525-ac6f-4eee-97fe-2640a5573cb7
+	/home/rks/Minsky.1.2.1.C011/godley.tcl,B >
+	/home/rks/Minsky.1.2.1.C011/godley.tcl; test $? -le 1
+aegis: project "Minsky.1.2.1": change 11: historical version 1.65 of the
+	"minsky.tcl" file being recreated
+aegis: cd /home/aegis/Minsky/history
+/home/aegis/Minsky/history/9f.uui/22.uui/b2560110.430/da7280f8.147/b0e2a1,v  -->  standard output
+revision 1.65
+aegis: cd /home/rks/Minsky.1.2.1.C011
+aegis: set +e; merge -p -L baseline -L C11 /home/aegis/Minsky/branch.1/
+	baseline/minsky.tcl /tmp/aegis-f741436d-055b-4a86-8ec6-0315a2676af7
+	/home/rks/Minsky.1.2.1.C011/minsky.tcl,B >
+	/home/rks/Minsky.1.2.1.C011/minsky.tcl; test $? -le 1
+aegis: project "Minsky.1.2.1": change 11: file "Makefile" was out of date and
+	has been merged with the up to date version, see "Makefile,B" for the
+	original source
+aegis: project "Minsky.1.2.1": change 11: file "godley.tcl" was out of date and
+	has been merged with the up to date version, see "godley.tcl,B" for the
+	original source
+aegis: project "Minsky.1.2.1": change 11: file "minsky.tcl" was out of date and
+	has been merged with the up to date version, see "minsky.tcl,B" for the
+	original source
+aegis: project "Minsky.1.2.1": change 11: merged 3 files, new 'aegis -Build'
+	required
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/branch.1/baseline/Makefile
+	/home/rks/Minsky.1.2.1.C011/Makefile -o
+	/home/rks/Minsky.1.2.1.C011/Makefile,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/branch.1/baseline/godley.
+	tcl /home/rks/Minsky.1.2.1.C011/godley.tcl -o
+	/home/rks/Minsky.1.2.1.C011/godley.tcl,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/branch.1/baseline/minsky.
+	tcl /home/rks/Minsky.1.2.1.C011/minsky.tcl -o
+	/home/rks/Minsky.1.2.1.C011/minsky.tcl,D
+aegis: project "Minsky.1.2.1": change 11: difference complete
+aegis: project "Minsky.1.2.1": change 11: merging files from all baselines into
 	working directory according to directory style
-aegis: project "Minsky.1.2.1": change 10: user "rks" has begun development
-aegis: project "Minsky.1.2.1": change 10: file "Makefile" copied
-aegis: project "Minsky.1.2.1": change 10: file "Minsky.xmi" copied
-aegis: project "Minsky.1.2.1": change 10: file "XGLItem.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "XGLItem.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "aegis.conf" copied
-aegis: project "Minsky.1.2.1": change 10: file "cairoItems.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "cairoItems.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "classdesc_access.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "equations.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "equations.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "examples/1Free.mky" copied
-aegis: project "Minsky.1.2.1": change 10: file
-	"examples/4MonetaryMinskyModelLessUnstableStart.mky" copied
-aegis: project "Minsky.1.2.1": change 10: file
-	"examples/4MonetaryMinskyModelLessUnstableStart.xml" copied
-aegis: project "Minsky.1.2.1": change 10: file "examples/GoodwinLinear.mky"
-	copied
-aegis: project "Minsky.1.2.1": change 10: file "examples/GoodwinLinear.xml"
-	copied
-aegis: project "Minsky.1.2.1": change 10: file "examples/GoodwinLinear02.mky"
-	copied
-aegis: project "Minsky.1.2.1": change 10: file "examples/Steve.mky" copied
-aegis: project "Minsky.1.2.1": change 10: file "examples/SteveTest028.mky"
-	copied
-aegis: project "Minsky.1.2.1": change 10: file "examples/UWS05.mky" copied
-aegis: project "Minsky.1.2.1": change 10: file "examples/exponentialGrowth.mky"
-	copied
-aegis: project "Minsky.1.2.1": change 10: file
-	"examples/exponentialGrowthWithExtraLabel.mky" copied
-aegis: project "Minsky.1.2.1": change 10: file "godley.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "godley.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "godley.tcl" copied
-aegis: project "Minsky.1.2.1": change 10: file "godleyIcon.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "godleyIcon.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "godleyIconItem.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "group.tcl" copied
-aegis: project "Minsky.1.2.1": change 10: file "groupIcon.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "groupIcon.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "help" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/Last.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/Pause.fig" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/Pause.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/Play.fig" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/Play.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/Rewind.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/Step.fig" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/add.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/bank.fig" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/bank.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/bank.xgl" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/bar.fig" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/const.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/divide.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/exp.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/group.odg" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/group.svg" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/group.xgl" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/icons.fig" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/integrate.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/multiply.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/plot.fig" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/plot.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/stop.fig" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/subtract.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/time.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "icons/var.gif" copied
-aegis: project "Minsky.1.2.1": change 10: file "init.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "install.bat" copied
-aegis: project "Minsky.1.2.1": change 10: file "library/Xecolab.tcl" copied
-aegis: project "Minsky.1.2.1": change 10: file "library/Xecolab/connect.tcl"
-	copied
-aegis: project "Minsky.1.2.1": change 10: file "library/Xecolab/display.tcl"
-	copied
-aegis: project "Minsky.1.2.1": change 10: file
-	"library/Xecolab/filebrowser.tcl" copied
-aegis: project "Minsky.1.2.1": change 10: file "library/Xecolab/histogram.tcl"
-	copied
-aegis: project "Minsky.1.2.1": change 10: file "library/Xecolab/netgraph.tcl"
-	copied
-aegis: project "Minsky.1.2.1": change 10: file
-	"library/Xecolab/obj-browser.tcl" copied
-aegis: project "Minsky.1.2.1": change 10: file "library/Xecolab/plot.tcl"
-	copied
-aegis: project "Minsky.1.2.1": change 10: file "library/init.tcl" copied
-aegis: project "Minsky.1.2.1": change 10: file "library/tcl8/8.4/http-2.7.7.tm"
-	copied
-aegis: project "Minsky.1.2.1": change 10: file "library/tcl8/8.4/http-2.7.tm"
-	copied
-aegis: project "Minsky.1.2.1": change 10: file
-	"library/tcl8/8.4/platform-1.0.10.tm" copied
-aegis: project "Minsky.1.2.1": change 10: file
-	"library/tcl8/8.4/platform-1.0.3.tm" copied
-aegis: project "Minsky.1.2.1": change 10: file
-	"library/tcl8/8.4/platform/shell-1.1.3.tm" copied
-aegis: project "Minsky.1.2.1": change 10: file
-	"library/tcl8/8.4/platform/shell-1.1.4.tm" copied
-aegis: project "Minsky.1.2.1": change 10: file
-	"library/tcl8/8.5/msgcat-1.4.2.tm" copied
-aegis: project "Minsky.1.2.1": change 10: file
-	"library/tcl8/8.5/msgcat-1.4.4.tm" copied
-aegis: project "Minsky.1.2.1": change 10: file
-	"library/tcl8/8.5/tcltest-2.3.0.tm" copied
-aegis: project "Minsky.1.2.1": change 10: file
-	"library/tcl8/8.5/tcltest-2.3.3.tm" copied
-aegis: project "Minsky.1.2.1": change 10: file "library/tooltip.tcl" copied
-aegis: project "Minsky.1.2.1": change 10: file "minsky.app/Contents/Info.plist"
-	copied
-aegis: project "Minsky.1.2.1": change 10: file "minsky.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "minsky.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "minsky.tcl" copied
-aegis: project "Minsky.1.2.1": change 10: file "operation.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "operation.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "plotWidget.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "plotWidget.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "plots.tcl" copied
-aegis: project "Minsky.1.2.1": change 10: file "polyBase.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "port.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "port.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "portManager.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "portManager.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "schema/schema0.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "schema/schema0.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "schema/schema1.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "schema/schema1.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "schema/schemaHelper.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "tclmain.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/00/t0001a.sh" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/00/t0002a.sh" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/00/t0003a.sh" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/00/t0004a.sh" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/00/t0005a.sh" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/00/t0006a.sh" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/Makefile" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/assert.tcl" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/checkMissing.sh" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/main.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/rewriteMky.tcl" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/testEq.mky" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/testEq.tcl" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/testEqPrototype.tex"
-	copied
-aegis: project "Minsky.1.2.1": change 10: file "test/testMinsky.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "test/testtestEq.tex" copied
-aegis: project "Minsky.1.2.1": change 10: file "uninstall.bat" copied
-aegis: project "Minsky.1.2.1": change 10: file "variable.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "variable.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "variableManager.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "variableManager.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "variableValue.cc" copied
-aegis: project "Minsky.1.2.1": change 10: file "variableValue.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "windows/Shortcut.exe" copied
-aegis: project "Minsky.1.2.1": change 10: file "wire.h" copied
-aegis: project "Minsky.1.2.1": change 10: file "wiring.tcl" copied
-aegis: project "Minsky.1.2.1": change 10: copied 126 files
+aegis: project "Minsky.1.2.1": change 11: development build started 08:51
+aegis: make -j2 AEGIS=1 project=Minsky.1.2.1 change=11 version=1.2.1.C011
+Makefile:42: warning: overriding commands for target `.h.cd'
+/home/rks/usr/ecolab/include/Makefile:483: warning: ignoring old commands for target `.h.cd'
+rm -f minskyVersion.h
+echo '#define MINSKY_VERSION "'1.2.1.C011'"' >minskyVersion.h
+chmod a+x test/checkMissing.sh
+test/checkMissing.sh
+g++ -c -I. -I/home/rks/usr/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/home/rks/usr/ecolab/include -I/home/rks/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/home/rks/usr/ecolab/include\" -DNDEBUG -I/home/rks/usr/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\"  minsky.cc
+aels: stat *.sh: No such file or directory
+aels: stat *.pl: No such file or directory
+g++ -O3 -I. -I/home/rks/usr/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/home/rks/usr/ecolab/include -I/home/rks/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/home/rks/usr/ecolab/include\" -DNDEBUG -I/home/rks/usr/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\"  tclmain.o godley.o port.o portManager.o variable.o variableManager.o variableValue.o operation.o plotWidget.o cairoItems.o XGLItem.o godleyIcon.o groupIcon.o equations.o schema0.o schema1.o minsky.o -L/opt/local/lib/db48 -L. /home/rks/usr/ecolab/lib/libecolab.a /home/rks/usr/ecolab/lib/libgraphcode.a -ldl -L/home/rks/usr/ecolab/lib -L/home/rks/usr/lib -L/usr/local/lib -L/usr/X11R6/lib  -lunuran -lprng -lgsl -lgslcblas -lz -lreadline -lncurses -ldb -ligraph -lgmp -L/usr/local/lib -lcairo   -L/usr/X11/lib -L/usr/X11R6/lib64 -L/usr/X11R6/lib -ltkstub8.4 -ltclstub8.4${TCL_DBGX} -ltk8.4 -ltcl8.4${TCL_DBGX} -lX11  -lm -pthread -L/usr/local/lib -lpangocairo-1.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lglib-2.0   -lTktable2.11 -lgsl -lgslcblas -lxgl -lxlib -lcairo -lpng -lz -o minsky
+cd test; make
+make[1]: Entering directory `/home/rks/Minsky.1.2.1.C011/test'
+g++ -I. -I/home/rks/usr/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/home/rks/usr/ecolab/include -I/home/rks/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/home/rks/usr/ecolab/include\" -I/home/rks/usr/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -I..  -o unittests main.o testMinsky.o  ../cairoItems.o ../equations.o ../godleyIcon.o ../godley.o ../groupIcon.o ../minsky.o ../operation.o ../plotWidget.o ../portManager.o ../port.o ../schema0.o ../schema1.o ../variableManager.o ../variable.o ../variableValue.o ../XGLItem.o /home/rks/usr/ecolab/lib/libecolab.a /home/rks/usr/ecolab/lib/libgraphcode.a -ldl -L/home/rks/usr/ecolab/lib -L/home/rks/usr/lib -L/usr/local/lib -L/usr/X11R6/lib  -lunuran -lprng -lgsl -lgslcblas -lz -lreadline -lncurses -ldb -ligraph -lgmp -L/usr/local/lib -lcairo   -L/usr/X11/lib -L/usr/X11R6/lib64 -L/usr/X11R6/lib -ltk8.4 -ltcl8.4${TCL_DBGX} -lX11  -lm -pthread -L/usr/local/lib -lpangocairo-1.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lglib-2.0   -lUnitTest++ -lgsl -lgslcblas  -lxgl -lxlib
+make[1]: Leaving directory `/home/rks/Minsky.1.2.1.C011/test'
+chmod -f a+x *.tcl *.sh *.pl
+make: [all] Error 1 (ignored)
+aegis: project "Minsky.1.2.1": change 11: development build complete 08:52
