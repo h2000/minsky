@@ -19,6 +19,7 @@
 
 #include "equations.h"
 #include "minsky.h"
+using namespace minsky;
 
 namespace
 {

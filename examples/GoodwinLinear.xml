@@ -1,18 +1,67 @@
  <root>
   <stockVars>
-   <double>300</double>
-   <double>1</double>
   </stockVars>
   <flowVars>
    <double>0</double>
+   <double>300</double>
    <double>0</double>
    <double>110</double>
    <double>0</double>
    <double>0</double>
    <double>0</double>
    <double>0</double>
+   <double>0</double>
   </flowVars>
+  <edited>
+  1
+  </edited>
+  <godley>
+   <data>
+    <vector>
+     <string>Flows&#32;V&#32;/&#32;Stock&#32;Variables&#32;-&gt;</string>
+     <string></string>
+    </vector>
+    <vector>
+     <string></string>
+     <string></string>
+    </vector>
+   </data>
+  </godley>
   <ports>
+   <pair>
+    <first>0</first>
+    <second>
+     <input>
+     0
+     </input>
+     <x>
+     132
+     </x>
+     <y>
+     122
+     </y>
+     <refCnt>
+     1
+     </refCnt>
+    </second>
+   </pair>
+   <pair>
+    <first>1</first>
+    <second>
+     <input>
+     1
+     </input>
+     <x>
+     120
+     </x>
+     <y>
+     122
+     </y>
+     <refCnt>
+     1
+     </refCnt>
+    </second>
+   </pair>
    <pair>
     <first>2</first>
     <second>
@@ -37,7 +86,7 @@
      0
      </input>
      <x>
-     194
+     196
      </x>
      <y>
      133
@@ -54,7 +103,7 @@
      1
      </input>
      <x>
-     174
+     176
      </x>
      <y>
      124
@@ -71,7 +120,7 @@
      1
      </input>
      <x>
-     174
+     176
      </x>
      <y>
      142
@@ -190,7 +239,7 @@
      0
      </input>
      <x>
-     299
+     301
      </x>
      <y>
      149
@@ -207,7 +256,7 @@
      1
      </input>
      <x>
-     279
+     281
      </x>
      <y>
      140
@@ -224,7 +273,7 @@
      1
      </input>
      <x>
-     279
+     281
      </x>
      <y>
      158
@@ -292,7 +341,7 @@
      0
      </input>
      <x>
-     404
+     406
      </x>
      <y>
      165
@@ -309,7 +358,7 @@
      1
      </input>
      <x>
-     384
+     386
      </x>
      <y>
      156
@@ -326,7 +375,7 @@
      1
      </input>
      <x>
-     384
+     386
      </x>
      <y>
      174
@@ -343,7 +392,7 @@
      0
      </input>
      <x>
-     440
+     442
      </x>
      <y>
      185
@@ -360,7 +409,7 @@
      1
      </input>
      <x>
-     420
+     422
      </x>
      <y>
      176
@@ -377,7 +426,7 @@
      1
      </input>
      <x>
-     420
+     422
      </x>
      <y>
      194
@@ -405,16 +454,67 @@
     </second>
    </pair>
    <pair>
+    <first>25</first>
+    <second>
+     <input>
+     0
+     </input>
+     <x>
+     273
+     </x>
+     <y>
+     54
+     </y>
+     <refCnt>
+     1
+     </refCnt>
+    </second>
+   </pair>
+   <pair>
     <first>26</first>
     <second>
      <input>
      1
      </input>
      <x>
-     321
+     293
      </x>
      <y>
-     58
+     54
+     </y>
+     <refCnt>
+     1
+     </refCnt>
+    </second>
+   </pair>
+   <pair>
+    <first>31</first>
+    <second>
+     <input>
+     0
+     </input>
+     <x>
+     197
+     </x>
+     <y>
+     279
+     </y>
+     <refCnt>
+     1
+     </refCnt>
+    </second>
+   </pair>
+   <pair>
+    <first>32</first>
+    <second>
+     <input>
+     1
+     </input>
+     <x>
+     137
+     </x>
+     <y>
+     279
      </y>
      <refCnt>
      1
@@ -462,7 +562,7 @@
      0
      </input>
      <x>
-     228
+     230
      </x>
      <y>
      290
@@ -479,7 +579,7 @@
      1
      </input>
      <x>
-     208
+     210
      </x>
      <y>
      281
@@ -496,7 +596,7 @@
      1
      </input>
      <x>
-     208
+     210
      </x>
      <y>
      299
@@ -547,7 +647,7 @@
      0
      </input>
      <x>
-     332
+     334
      </x>
      <y>
      284
@@ -564,7 +664,7 @@
      1
      </input>
      <x>
-     312
+     314
      </x>
      <y>
      275
@@ -581,10 +681,27 @@
      1
      </input>
      <x>
-     312
+     314
      </x>
      <y>
      293
+     </y>
+     <refCnt>
+     1
+     </refCnt>
+    </second>
+   </pair>
+   <pair>
+    <first>43</first>
+    <second>
+     <input>
+     0
+     </input>
+     <x>
+     283
+     </x>
+     <y>
+     396
      </y>
      <refCnt>
      1
@@ -598,10 +715,10 @@
      1
      </input>
      <x>
-     326
+     303
      </x>
      <y>
-     397
+     396
      </y>
      <refCnt>
      1
@@ -744,42 +861,22 @@
      </refCnt>
     </second>
    </pair>
-   <pair>
-    <first>97</first>
-    <second>
-     <input>
-     0
-     </input>
-     <x>
-     284
-     </x>
-     <y>
-     397
-     </y>
-     <refCnt>
-     1
-     </refCnt>
-    </second>
-   </pair>
-   <pair>
-    <first>98</first>
-    <second>
-     <input>
-     0
-     </input>
-     <x>
-     229
-     </x>
-     <y>
-     58
-     </y>
-     <refCnt>
-     1
-     </refCnt>
-    </second>
-   </pair>
   </ports>
   <wires>
+   <pair>
+    <first>0</first>
+    <second>
+     <from>
+     0
+     </from>
+     <to>
+     4
+     </to>
+     <coords>
+     131 122 176 124
+     </coords>
+    </second>
+   </pair>
    <pair>
     <first>1</first>
     <second>
@@ -789,11 +886,8 @@
      <to>
      5
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     163 147 174 142
+     165.25 147 176 142
      </coords>
     </second>
    </pair>
@@ -806,11 +900,8 @@
      <to>
      7
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     194 133 218 128
+     196 133 220 128
      </coords>
     </second>
    </pair>
@@ -823,11 +914,8 @@
      <to>
      9
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     230 128 253 134
+     229 128 254 134
      </coords>
     </second>
    </pair>
@@ -840,11 +928,8 @@
      <to>
      13
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     263 134 279 140
+     262 134 281 140
      </coords>
     </second>
    </pair>
@@ -857,11 +942,8 @@
      <to>
      14
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     264.5 170 279 158
+     264 170 281 158
      </coords>
     </second>
    </pair>
@@ -874,11 +956,8 @@
      <to>
      16
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     299 149 316.5 150
+     301 149 318 150
      </coords>
     </second>
    </pair>
@@ -891,11 +970,8 @@
      <to>
      19
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     365.5 150 384 156
+     364 150 386 156
      </coords>
     </second>
    </pair>
@@ -908,11 +984,8 @@
      <to>
      20
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     365.5 189 384 174
+     366.25 189 386 174
      </coords>
     </second>
    </pair>
@@ -925,11 +998,8 @@
      <to>
      22
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     404 165 420 176
+     406 165 422 176
      </coords>
     </second>
    </pair>
@@ -942,11 +1012,8 @@
      <to>
      23
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     391.5 216 420 194
+     392.25 216 422 194
      </coords>
     </second>
    </pair>
@@ -959,11 +1026,22 @@
      <to>
      26
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     440 185 509 125 321 58
+     442 185 509 125 293 54
+     </coords>
+    </second>
+   </pair>
+   <pair>
+    <first>15</first>
+    <second>
+     <from>
+     31
+     </from>
+     <to>
+     36
+     </to>
+     <coords>
+     195 279 210 281
      </coords>
     </second>
    </pair>
@@ -976,11 +1054,8 @@
      <to>
      37
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     194 305 208 299
+     194 305 210 299
      </coords>
     </second>
    </pair>
@@ -993,11 +1068,8 @@
      <to>
      39
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     228 290 251 296
+     230 290 253 296
      </coords>
     </second>
    </pair>
@@ -1010,11 +1082,8 @@
      <to>
      41
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     230 128 208 242 312 275
+     229 128 208 242 314 275
      </coords>
     </second>
    </pair>
@@ -1027,11 +1096,8 @@
      <to>
      42
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     303 296 312 293
+     301 296 314 293
      </coords>
     </second>
    </pair>
@@ -1044,11 +1110,8 @@
      <to>
      46
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     332 284 347 287
+     334 284 348 287
      </coords>
     </second>
    </pair>
@@ -1061,11 +1124,8 @@
      <to>
      48
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     379 287 391.5 291
+     379 287 394 291
      </coords>
     </second>
    </pair>
@@ -1078,11 +1138,22 @@
      <to>
      44
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     456.5 291 537 349 326 397
+     455 291 537 349 303 396
+     </coords>
+    </second>
+   </pair>
+   <pair>
+    <first>24</first>
+    <second>
+     <from>
+     31
+     </from>
+     <to>
+     50
+     </to>
+     <coords>
+     195 279 322 233 587 251.25
      </coords>
     </second>
    </pair>
@@ -1095,89 +1166,44 @@
      <to>
      49
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     365.5 150 566 25 587 213.75
+     364 150 566 25 587 213.75
      </coords>
     </second>
    </pair>
    <pair>
-    <first>28</first>
+    <first>26</first>
     <second>
      <from>
-     97
+     43
      </from>
      <to>
-     4
-     </to>
-     <visible>
      1
-     </visible>
+     </to>
      <coords>
-     284 397 -77 239 174 124
+     283 396 12 344 120 122
      </coords>
     </second>
    </pair>
    <pair>
-    <first>29</first>
+    <first>27</first>
     <second>
      <from>
-     98
+     25
      </from>
      <to>
-     36
+     32
      </to>
-     <visible>
-     1
-     </visible>
      <coords>
-     229 58 -32 126 208 281
-     </coords>
-    </second>
-   </pair>
-   <pair>
-    <first>30</first>
-    <second>
-     <from>
-     98
-     </from>
-     <to>
-     50
-     </to>
-     <visible>
-     1
-     </visible>
-     <coords>
-     229 58 184 91 429 127 587 251.25
+     273 54 -57 74 137 279
      </coords>
     </second>
    </pair>
   </wires>
-  <edited>
-  1
-  </edited>
-  <godley>
-   <data>
-    <vector>
-     <string>Flows&#32;V&#32;/&#32;Stock&#32;Variables&#32;-&gt;</string>
-     <string></string>
-    </vector>
-    <vector>
-     <string></string>
-     <string></string>
-    </vector>
-   </data>
-  </godley>
-  <godleyItems>
-  </godleyItems>
   <operations>
    <pair>
     <first>0</first>
     <second>
-     <h>12</h>
-     <r>12</r>
      <x>
      156
      </x>
@@ -1187,29 +1213,21 @@
      <value>
      3
      </value>
+     <description>v</description>
      <rotation>
      0
      </rotation>
-     <visible>
-     1
-     </visible>
-     <m_type>
-      constant
-     </m_type>
-     <m_description>v</m_description>
      <m_ports>
       <int>2</int>
      </m_ports>
-     <intVar>
-     -1
-     </intVar>
+     <m_type>
+      constant
+     </m_type>
     </second>
    </pair>
    <pair>
     <first>1</first>
     <second>
-     <h>12</h>
-     <r>12</r>
      <x>
      184
      </x>
@@ -1219,31 +1237,23 @@
      <value>
      0
      </value>
+     <description></description>
      <rotation>
      0
      </rotation>
-     <visible>
-     1
-     </visible>
-     <m_type>
-      divide
-     </m_type>
-     <m_description></m_description>
      <m_ports>
       <int>3</int>
       <int>4</int>
       <int>5</int>
      </m_ports>
-     <intVar>
-     -1
-     </intVar>
+     <m_type>
+      divide
+     </m_type>
     </second>
    </pair>
    <pair>
     <first>2</first>
     <second>
-     <h>12</h>
-     <r>12</r>
      <x>
      289
      </x>
@@ -1253,31 +1263,23 @@
      <value>
      0
      </value>
+     <description></description>
      <rotation>
      0
      </rotation>
-     <visible>
-     1
-     </visible>
-     <m_type>
-      divide
-     </m_type>
-     <m_description></m_description>
      <m_ports>
       <int>12</int>
       <int>13</int>
       <int>14</int>
      </m_ports>
-     <intVar>
-     -1
-     </intVar>
+     <m_type>
+      divide
+     </m_type>
     </second>
    </pair>
    <pair>
     <first>3</first>
     <second>
-     <h>12</h>
-     <r>12</r>
      <x>
      342
      </x>
@@ -1287,29 +1289,21 @@
      <value>
      0.96
      </value>
+     <description>NAIRU</description>
      <rotation>
      0
      </rotation>
-     <visible>
-     1
-     </visible>
-     <m_type>
-      constant
-     </m_type>
-     <m_description>NAIRU</m_description>
      <m_ports>
       <int>17</int>
      </m_ports>
-     <intVar>
-     -1
-     </intVar>
+     <m_type>
+      constant
+     </m_type>
     </second>
    </pair>
    <pair>
     <first>4</first>
     <second>
-     <h>12</h>
-     <r>12</r>
      <x>
      394
      </x>
@@ -1319,31 +1313,23 @@
      <value>
      0
      </value>
+     <description></description>
      <rotation>
      0
      </rotation>
-     <visible>
-     1
-     </visible>
-     <m_type>
-      subtract
-     </m_type>
-     <m_description></m_description>
      <m_ports>
       <int>18</int>
       <int>19</int>
       <int>20</int>
      </m_ports>
-     <intVar>
-     -1
-     </intVar>
+     <m_type>
+      subtract
+     </m_type>
     </second>
    </pair>
    <pair>
     <first>5</first>
     <second>
-     <h>12</h>
-     <r>12</r>
      <x>
      430
      </x>
@@ -1353,31 +1339,23 @@
      <value>
      0
      </value>
+     <description></description>
      <rotation>
      0
      </rotation>
-     <visible>
-     1
-     </visible>
-     <m_type>
-      multiply
-     </m_type>
-     <m_description></m_description>
      <m_ports>
       <int>21</int>
       <int>22</int>
       <int>23</int>
      </m_ports>
-     <intVar>
-     -1
-     </intVar>
+     <m_type>
+      multiply
+     </m_type>
     </second>
    </pair>
    <pair>
     <first>6</first>
     <second>
-     <h>12</h>
-     <r>12</r>
      <x>
      352
      </x>
@@ -1387,62 +1365,46 @@
      <value>
      10
      </value>
+     <description>PhillipsSlope</description>
      <rotation>
      0
      </rotation>
-     <visible>
-     1
-     </visible>
-     <m_type>
-      constant
-     </m_type>
-     <m_description>PhillipsSlope</m_description>
      <m_ports>
       <int>24</int>
      </m_ports>
-     <intVar>
-     -1
-     </intVar>
+     <m_type>
+      constant
+     </m_type>
     </second>
    </pair>
    <pair>
     <first>7</first>
     <second>
-     <h>12</h>
-     <r>12</r>
      <x>
-     275
+     285
      </x>
      <y>
-     58
+     54
      </y>
      <value>
      1
      </value>
+     <description></description>
      <rotation>
      180
      </rotation>
-     <visible>
-     1
-     </visible>
+     <m_ports>
+      <int>25</int>
+      <int>26</int>
+     </m_ports>
      <m_type>
       integrate
      </m_type>
-     <m_description>Wage&#32;Rate</m_description>
-     <m_ports>
-      <int>98</int>
-      <int>26</int>
-     </m_ports>
-     <intVar>
-     12
-     </intVar>
     </second>
    </pair>
    <pair>
     <first>10</first>
     <second>
-     <h>12</h>
-     <r>12</r>
      <x>
      218
      </x>
@@ -1452,31 +1414,23 @@
      <value>
      0
      </value>
+     <description></description>
      <rotation>
      0
      </rotation>
-     <visible>
-     1
-     </visible>
-     <m_type>
-      multiply
-     </m_type>
-     <m_description></m_description>
      <m_ports>
       <int>35</int>
       <int>36</int>
       <int>37</int>
      </m_ports>
-     <intVar>
-     -1
-     </intVar>
+     <m_type>
+      multiply
+     </m_type>
     </second>
    </pair>
    <pair>
     <first>11</first>
     <second>
-     <h>12</h>
-     <r>12</r>
      <x>
      322
      </x>
@@ -1486,64 +1440,80 @@
      <value>
      0
      </value>
+     <description></description>
      <rotation>
      0
      </rotation>
-     <visible>
-     1
-     </visible>
-     <m_type>
-      subtract
-     </m_type>
-     <m_description></m_description>
      <m_ports>
       <int>40</int>
       <int>41</int>
       <int>42</int>
      </m_ports>
-     <intVar>
-     -1
-     </intVar>
+     <m_type>
+      subtract
+     </m_type>
     </second>
    </pair>
    <pair>
     <first>12</first>
     <second>
-     <h>12</h>
-     <r>12</r>
      <x>
-     305
+     295
      </x>
      <y>
-     397
+     396
      </y>
      <value>
      300
      </value>
+     <description></description>
      <rotation>
      180
      </rotation>
-     <visible>
-     1
-     </visible>
+     <m_ports>
+      <int>43</int>
+      <int>44</int>
+     </m_ports>
      <m_type>
       integrate
      </m_type>
-     <m_description>K</m_description>
-     <m_ports>
-      <int>97</int>
-      <int>44</int>
-     </m_ports>
-     <intVar>
-     11
-     </intVar>
     </second>
    </pair>
   </operations>
   <variables>
    <pair>
+    <first>0</first>
+    <second>
+     <m_outPort>
+     0
+     </m_outPort>
+     <m_inPort>
+     1
+     </m_inPort>
+     <m_type>
+      flow
+     </m_type>
+     <x>
+     124
+     </x>
+     <y>
+     122
+     </y>
+     <init>
+     0
+     </init>
+     <name>K</name>
+    </second>
+   </pair>
+   <pair>
     <first>1</first>
     <second>
+     <m_outPort>
+     6
+     </m_outPort>
+     <m_inPort>
+     7
+     </m_inPort>
      <m_type>
       flow
      </m_type>
@@ -1557,26 +1527,17 @@
      0
      </init>
      <name>Y</name>
-     <rotation>
-     0
-     </rotation>
-     <visible>
-     1
-     </visible>
-     <m_outPort>
-     6
-     </m_outPort>
-     <m_inPort>
-     7
-     </m_inPort>
-     <m_godley>
-     0
-     </m_godley>
     </second>
    </pair>
    <pair>
     <first>2</first>
     <second>
+     <m_outPort>
+     8
+     </m_outPort>
+     <m_inPort>
+     9
+     </m_inPort>
      <m_type>
       flow
      </m_type>
@@ -1590,26 +1551,17 @@
      0
      </init>
      <name>L</name>
-     <rotation>
-     0
-     </rotation>
-     <visible>
-     1
-     </visible>
-     <m_outPort>
-     8
-     </m_outPort>
-     <m_inPort>
-     9
-     </m_inPort>
-     <m_godley>
-     0
-     </m_godley>
     </second>
    </pair>
    <pair>
     <first>3</first>
     <second>
+     <m_outPort>
+     10
+     </m_outPort>
+     <m_inPort>
+     11
+     </m_inPort>
      <m_type>
       flow
      </m_type>
@@ -1623,26 +1575,17 @@
      0
      </init>
      <name>N</name>
-     <rotation>
-     0
-     </rotation>
-     <visible>
-     1
-     </visible>
-     <m_outPort>
-     10
-     </m_outPort>
-     <m_inPort>
-     11
-     </m_inPort>
-     <m_godley>
-     0
-     </m_godley>
     </second>
    </pair>
    <pair>
     <first>4</first>
     <second>
+     <m_outPort>
+     15
+     </m_outPort>
+     <m_inPort>
+     16
+     </m_inPort>
      <m_type>
       flow
      </m_type>
@@ -1656,26 +1599,41 @@
      0
      </init>
      <name>emprate</name>
-     <rotation>
-     0
-     </rotation>
-     <visible>
-     1
-     </visible>
+    </second>
+   </pair>
+   <pair>
+    <first>5</first>
+    <second>
      <m_outPort>
-     15
+     31
      </m_outPort>
      <m_inPort>
-     16
+     32
      </m_inPort>
-     <m_godley>
+     <m_type>
+      flow
+     </m_type>
+     <x>
+     165
+     </x>
+     <y>
+     279
+     </y>
+     <init>
      0
-     </m_godley>
+     </init>
+     <name>WageRate</name>
     </second>
    </pair>
    <pair>
     <first>6</first>
     <second>
+     <m_outPort>
+     33
+     </m_outPort>
+     <m_inPort>
+     34
+     </m_inPort>
      <m_type>
       flow
      </m_type>
@@ -1689,26 +1647,17 @@
      0
      </init>
      <name>L</name>
-     <rotation>
-     0
-     </rotation>
-     <visible>
-     1
-     </visible>
-     <m_outPort>
-     33
-     </m_outPort>
-     <m_inPort>
-     34
-     </m_inPort>
-     <m_godley>
-     0
-     </m_godley>
     </second>
    </pair>
    <pair>
     <first>7</first>
     <second>
+     <m_outPort>
+     38
+     </m_outPort>
+     <m_inPort>
+     39
+     </m_inPort>
      <m_type>
       flow
      </m_type>
@@ -1722,26 +1671,17 @@
      0
      </init>
      <name>WageBill</name>
-     <rotation>
-     0
-     </rotation>
-     <visible>
-     1
-     </visible>
-     <m_outPort>
-     38
-     </m_outPort>
-     <m_inPort>
-     39
-     </m_inPort>
-     <m_godley>
-     0
-     </m_godley>
     </second>
    </pair>
    <pair>
     <first>8</first>
     <second>
+     <m_outPort>
+     45
+     </m_outPort>
+     <m_inPort>
+     46
+     </m_inPort>
      <m_type>
       flow
      </m_type>
@@ -1755,26 +1695,17 @@
      0
      </init>
      <name>Profit</name>
-     <rotation>
-     0
-     </rotation>
-     <visible>
-     1
-     </visible>
-     <m_outPort>
-     45
-     </m_outPort>
-     <m_inPort>
-     46
-     </m_inPort>
-     <m_godley>
-     0
-     </m_godley>
     </second>
    </pair>
    <pair>
     <first>9</first>
     <second>
+     <m_outPort>
+     47
+     </m_outPort>
+     <m_inPort>
+     48
+     </m_inPort>
      <m_type>
       flow
      </m_type>
@@ -1788,98 +1719,27 @@
      0
      </init>
      <name>Investment</name>
-     <rotation>
-     0
-     </rotation>
-     <visible>
-     1
-     </visible>
-     <m_outPort>
-     47
-     </m_outPort>
-     <m_inPort>
-     48
-     </m_inPort>
-     <m_godley>
-     0
-     </m_godley>
-    </second>
-   </pair>
-   <pair>
-    <first>11</first>
-    <second>
-     <m_type>
-      integral
-     </m_type>
-     <x>
-     315
-     </x>
-     <y>
-     397
-     </y>
-     <init>
-     9.75024e+199
-     </init>
-     <name>K</name>
-     <rotation>
-     180
-     </rotation>
-     <visible>
-     0
-     </visible>
-     <m_outPort>
-     97
-     </m_outPort>
-     <m_inPort>
-     -1
-     </m_inPort>
-     <m_godley>
-     0
-     </m_godley>
-    </second>
-   </pair>
-   <pair>
-    <first>12</first>
-    <second>
-     <m_type>
-      integral
-     </m_type>
-     <x>
-     285
-     </x>
-     <y>
-     58
-     </y>
-     <init>
-     3.5757e+227
-     </init>
-     <name>Wage&#32;Rate</name>
-     <rotation>
-     180
-     </rotation>
-     <visible>
-     0
-     </visible>
-     <m_outPort>
-     98
-     </m_outPort>
-     <m_inPort>
-     -1
-     </m_inPort>
-     <m_godley>
-     0
-     </m_godley>
     </second>
    </pair>
    <wiredVariables>
     <string>Investment</string>
+    <string>K</string>
     <string>L</string>
     <string>Profit</string>
     <string>WageBill</string>
+    <string>WageRate</string>
     <string>Y</string>
     <string>emprate</string>
    </wiredVariables>
    <portToVariable>
+    <pair>
+     <first>0</first>
+     <second>0</second>
+    </pair>
+    <pair>
+     <first>1</first>
+     <second>0</second>
+    </pair>
     <pair>
      <first>6</first>
      <second>1</second>
@@ -1913,6 +1773,14 @@
      <second>4</second>
     </pair>
     <pair>
+     <first>31</first>
+     <second>5</second>
+    </pair>
+    <pair>
+     <first>32</first>
+     <second>5</second>
+    </pair>
+    <pair>
      <first>33</first>
      <second>6</second>
     </pair>
@@ -1944,14 +1812,6 @@
      <first>48</first>
      <second>9</second>
     </pair>
-    <pair>
-     <first>97</first>
-     <second>11</second>
-    </pair>
-    <pair>
-     <first>98</first>
-     <second>12</second>
-    </pair>
    </portToVariable>
    <undefined>
     <m_type>
@@ -1963,10 +1823,28 @@
     <init>
     0
     </init>
-    <godleyOverridden>
-    0
-    </godleyOverridden>
    </undefined>
+   <undefVar>
+    <m_outPort>
+    -1
+    </m_outPort>
+    <m_inPort>
+    -1
+    </m_inPort>
+    <m_type>
+     undefined
+    </m_type>
+    <x>
+    0
+    </x>
+    <y>
+    0
+    </y>
+    <init>
+    0
+    </init>
+    <name></name>
+   </undefVar>
    <values>
     <pair>
      <first>Investment</first>
@@ -1980,26 +1858,20 @@
       <init>
       0
       </init>
-      <godleyOverridden>
-      0
-      </godleyOverridden>
      </second>
     </pair>
     <pair>
      <first>K</first>
      <second>
       <m_type>
-       integral
+       flow
       </m_type>
       <m_idx>
-      0
+      1
       </m_idx>
       <init>
       300
       </init>
-      <godleyOverridden>
-      0
-      </godleyOverridden>
      </second>
     </pair>
     <pair>
@@ -2009,14 +1881,11 @@
        flow
       </m_type>
       <m_idx>
-      1
+      2
       </m_idx>
       <init>
       0
       </init>
-      <godleyOverridden>
-      0
-      </godleyOverridden>
      </second>
     </pair>
     <pair>
@@ -2026,52 +1895,15 @@
        flow
       </m_type>
       <m_idx>
-      2
+      3
       </m_idx>
       <init>
       110
       </init>
-      <godleyOverridden>
-      0
-      </godleyOverridden>
      </second>
     </pair>
     <pair>
      <first>Profit</first>
-     <second>
-      <m_type>
-       flow
-      </m_type>
-      <m_idx>
-      3
-      </m_idx>
-      <init>
-      0
-      </init>
-      <godleyOverridden>
-      0
-      </godleyOverridden>
-     </second>
-    </pair>
-    <pair>
-     <first>Wage&#32;Rate</first>
-     <second>
-      <m_type>
-       integral
-      </m_type>
-      <m_idx>
-      1
-      </m_idx>
-      <init>
-      1
-      </init>
-      <godleyOverridden>
-      0
-      </godleyOverridden>
-     </second>
-    </pair>
-    <pair>
-     <first>WageBill</first>
      <second>
       <m_type>
        flow
@@ -2082,13 +1914,10 @@
       <init>
       0
       </init>
-      <godleyOverridden>
-      0
-      </godleyOverridden>
      </second>
     </pair>
     <pair>
-     <first>Y</first>
+     <first>WageBill</first>
      <second>
       <m_type>
        flow
@@ -2099,13 +1928,10 @@
       <init>
       0
       </init>
-      <godleyOverridden>
-      0
-      </godleyOverridden>
      </second>
     </pair>
     <pair>
-     <first>emprate</first>
+     <first>WageRate</first>
      <second>
       <m_type>
        flow
@@ -2116,15 +1942,38 @@
       <init>
       0
       </init>
-      <godleyOverridden>
+     </second>
+    </pair>
+    <pair>
+     <first>Y</first>
+     <second>
+      <m_type>
+       flow
+      </m_type>
+      <m_idx>
+      7
+      </m_idx>
+      <init>
       0
-      </godleyOverridden>
+      </init>
+     </second>
+    </pair>
+    <pair>
+     <first>emprate</first>
+     <second>
+      <m_type>
+       flow
+      </m_type>
+      <m_idx>
+      8
+      </m_idx>
+      <init>
+      0
+      </init>
      </second>
     </pair>
    </values>
   </variables>
-  <groupItems>
-  </groupItems>
   <plots>
    <plots>
     <pair>
@@ -2139,28 +1988,22 @@
          flow
         </m_type>
         <m_idx>
+        8
+        </m_idx>
+        <init>
+        0
+        </init>
+       </VariableValue>
+       <VariableValue>
+        <m_type>
+         flow
+        </m_type>
+        <m_idx>
         6
         </m_idx>
         <init>
         0
         </init>
-        <godleyOverridden>
-        0
-        </godleyOverridden>
-       </VariableValue>
-       <VariableValue>
-        <m_type>
-         integral
-        </m_type>
-        <m_idx>
-        1
-        </m_idx>
-        <init>
-        1
-        </init>
-        <godleyOverridden>
-        0
-        </godleyOverridden>
        </VariableValue>
       </vars>
       <images>
@@ -2192,6 +2035,6 @@
   0.01
   </epsRel>
   <t>
-  0
+  9.18
   </t>
  </root>

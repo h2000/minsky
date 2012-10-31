@@ -20,21 +20,26 @@
 #define WIRE_H
 
 #include <arrays.h>
-using ecolab::array_ns::array;
+//using ecolab::array_ns::array;
 
-struct Wire
+namespace minsky
 {
-  /// ports this wire connects
-  int from, to;
-  // for use in sets, etc
-  bool operator<(const Wire& x) const {
-    return from < x.from || from==x.from && to<x.to;
-  }
-  bool visible; ///<whether wire is visible on Canvas 
-  /// display coordinates
-  array<float> coords;
-  Wire(int from=0, int to=0): from(from), to(to), visible(true) {}
-};
-
+  struct Wire
+  {
+    /// ports this wire connects
+    int from, to;
+    // for use in sets, etc
+    bool operator<(const Wire& x) const {
+      return from < x.from || from==x.from && to<x.to;
+    }
+    bool visible; ///<whether wire is visible on Canvas 
+    /// display coordinates
+    ecolab::array<float> coords;
+    Wire(int from=0, int to=0, 
+         const ecolab::array<float>& coords=ecolab::array<float>(), 
+         bool visible=true): 
+      from(from), to(to), coords(coords), visible(visible) {}
+  };
+}
 #include "wire.cd"
 #endif

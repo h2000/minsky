@@ -28,6 +28,7 @@ extern "C"
 using namespace std;
 using namespace ecolab;
 using namespace classdesc;
+using namespace minsky;
 
 #include "version.h"
 NEWCMD(minsky_version,0)

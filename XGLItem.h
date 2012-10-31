@@ -18,13 +18,16 @@
 */
 #include <cairo_base.h>
 
-struct XGLItem: public ecolab::cairo::CairoImage
+namespace minsky
 {
-  static Tk_ConfigSpec configSpecs[];
-  XGLItem(const std::string& image): CairoImage(image), id(-1) {}
-  std::string xglRes;
-  int id;
-  void draw();
-};
+  struct XGLItem: public ecolab::cairo::CairoImage
+  {
+    static Tk_ConfigSpec configSpecs[];
+    XGLItem(const std::string& image): CairoImage(image), id(-1) {}
+    std::string xglRes;
+    int id;
+    void draw();
+  };
 
-Tk_ItemType& xglItemType();
+  Tk_ItemType& xglItemType();
+}

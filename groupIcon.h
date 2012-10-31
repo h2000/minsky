@@ -26,47 +26,55 @@
 #include "classdesc_access.h"
 #include <TCL_obj_base.h>
 #include <arrays.h>
-using ecolab::array_ns::array;
-using namespace ecolab;
 
-class GroupIcon
+namespace minsky
 {
-public:
-private:
-  CLASSDESC_ACCESS(GroupIcon);
-  std::vector<int> operations;
-  std::vector<int> variables;
-  std::vector<int> wires;
-  array<int> m_ports;
+  using namespace ecolab;
 
-public:
-  std::string name;
-  float x,y; //icon position
-  float width, height; // size of icon
-  float rotation; // orientation of icon
-  const array<int>& ports() {return m_ports;}
-  int numPorts() {return m_ports.size();}
+  class GroupIcon
+  {
+  public:
+  private:
+    CLASSDESC_ACCESS(GroupIcon);
+    std::vector<int> m_operations;
+    std::vector<int> m_variables;
+    std::vector<int> m_wires;
+    array<int> m_ports;
 
-  GroupIcon(): width(100), height(100), rotation(0) {}
+    friend struct SchemaHelper;
+  public:
+    std::string name;
+    float x,y; //icon position
+    float width, height; // size of icon
+    float rotation; // orientation of icon
+    const array<int>& ports() const {return m_ports;}
+    int numPorts() const {return m_ports.size();}
 
-  /// group all icons in rectangle bounded by (x0,y0):(x1,y1)
-  void group(float x0, float y0, float x1, float y1);
-  /// ungroup all icons
-  void ungroup();
+    const std::vector<int>& operations() const {return m_operations;}
+    const std::vector<int>& variables() const {return m_variables;}
+    const std::vector<int>& wires() const {return m_wires;}
 
-  /// populates this with a copy of src (with all internal objects
-  /// registered with minsky)
-  void copy(const GroupIcon& src);
+    GroupIcon(): width(100), height(100), rotation(0) {}
 
-  /// update port locations to current geometry and rotation.  Return
-  /// the relative locations of the ports in unrotated coordinates as
-  /// a vector of (x,y) pairs
-  array<float> updatePortLocation();
+    /// group all icons in rectangle bounded by (x0,y0):(x1,y1)
+    void group(float x0, float y0, float x1, float y1);
+    /// ungroup all icons
+    void ungroup();
 
-  void MoveTo(float x1, float y1); ///< absolute move
-  void moveTo(TCL_args args) {MoveTo(args[0], args[1]);}
+    /// populates this with a copy of src (with all internal objects
+    /// registered with minsky)
+    void copy(const GroupIcon& src);
 
-};
+    /// update port locations to current geometry and rotation.  Return
+    /// the relative locations of the ports in unrotated coordinates as
+    /// a vector of (x,y) pairs
+    array<float> updatePortLocation();
+
+    void MoveTo(float x1, float y1); ///< absolute move
+    void moveTo(TCL_args args) {MoveTo(args[0], args[1]);}
+
+  };
+}
 
 #include "groupIcon.cd"
 #endif

@@ -34,12 +34,16 @@
 #include <vector>
 #include <map>
 
-class Minsky;
+namespace minsky
+{
+  class Minsky;
+}
 
 namespace MathDAG
 {
   using namespace std;
   using classdesc::shared_ptr;
+  using namespace minsky;
 
   struct Node;
   /// a manipulator to make iostream expressions easy 
@@ -119,4 +123,6 @@ namespace MathDAG
   };
 
 }
+
+
 #endif

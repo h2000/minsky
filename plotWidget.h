@@ -29,63 +29,66 @@ using namespace ecolab;
 
 #include "port.h"
 
-// a container item for a plot widget
-struct PlotWidget: public ecolab::Plot
+namespace minsky
 {
-  array<int> ports;
-  void deletePorts();
+  // a container item for a plot widget
+  struct PlotWidget: public ecolab::Plot
+  {
+    array<int> ports;
+    void deletePorts();
 
-  /// variable port attached to (if any)
-  std::vector<VariableValue> yvars;
-  std::vector<VariableValue> xvars;
+    /// variable port attached to (if any)
+    std::vector<VariableValue> yvars;
+    std::vector<VariableValue> xvars;
 
-  /// variable ports specifying plot size
-  VariableValue xminVar, xmaxVar, yminVar, ymaxVar;
+    /// variable ports specifying plot size
+    VariableValue xminVar, xmaxVar, yminVar, ymaxVar;
   
-  std::vector<string> images;
+    std::vector<string> images;
  
-  // we could put in an explicit pointer to the memory location here...
-  float x,y;
-  void moveTo(float x, float y);
-  void addPlotPt(double t); ///< add another plot point
-  /// connect variable \a var to port \a port. 
-  void connectVar(const VariableValue& var, unsigned port);
-  //  void disconnectPen(unsigned pen);
-  void redraw(); // redraw plot using current data
+    // we could put in an explicit pointer to the memory location here...
+    float x,y;
+    void moveTo(float x, float y);
+    void addPlotPt(double t); ///< add another plot point
+    /// connect variable \a var to port \a port. 
+    void connectVar(const VariableValue& var, unsigned port);
+    //  void disconnectPen(unsigned pen);
+    void redraw(); // redraw plot using current data
 
-  // set autoscaling
-  void autoScale() {xminVar=xmaxVar=yminVar=ymaxVar=VariableValue();}
-  void scalePlot();
-};
+    // set autoscaling
+    void autoScale() {xminVar=xmaxVar=yminVar=ymaxVar=VariableValue();}
+    void scalePlot();
+  };
 
-/// global register of plot widgets, indexed by the item image name
-struct Plots
-{
-  typedef std::map<string, PlotWidget> Map;
-  Map plots;
-  /// add an addition image surface to a PlotWidget
-  /// @param id - image name identifying the plotWidget
-  /// @param image - image name for new surface to be added
-  void addImage(TCL_args args);
-  /// move a plotwidget to x y on the canvas
-  /// @param id - image name identifying plotwidget to move
-  /// @param x - x coordinate
-  /// @paral y - y coordinate
-  void moveTo(TCL_args args);
-  float X(TCL_args args) {return plots[args].x;}
-  float Y(TCL_args args) {return plots[args].y;}
-  void ports(TCL_args args) {
-    PlotWidget& pw=plots[args];
-    tclreturn ret;
-    for (size_t p=0; p<pw.ports.size(); ++p)
-      ret<<pw.ports[p];
-  }
-  /// reset the plots. Needs to be called after a VariableManager has been reset
-  void reset(const VariableManager&);
-  /// returns a suitable image identifier for the next plot to be added
-  string nextPlotID();
-  void clear() {plots.clear();}
-};
+  /// global register of plot widgets, indexed by the item image name
+  struct Plots
+  {
+    typedef std::map<string, PlotWidget> Map;
+    Map plots;
+    /// add an addition image surface to a PlotWidget
+    /// @param id - image name identifying the plotWidget
+    /// @param image - image name for new surface to be added
+    void addImage(TCL_args args);
+    /// move a plotwidget to x y on the canvas
+    /// @param id - image name identifying plotwidget to move
+    /// @param x - x coordinate
+    /// @paral y - y coordinate
+    void moveTo(TCL_args args);
+    float X(TCL_args args) {return plots[args].x;}
+    float Y(TCL_args args) {return plots[args].y;}
+    void ports(TCL_args args) {
+      PlotWidget& pw=plots[args];
+      tclreturn ret;
+      for (size_t p=0; p<pw.ports.size(); ++p)
+        ret<<pw.ports[p];
+    }
+    /// reset the plots. Needs to be called after a VariableManager has been reset
+    void reset(const VariableManager&);
+    /// returns a suitable image identifier for the next plot to be added
+    string nextPlotID();
+    void clear() {plots.clear();}
+  };
+}
 
 #ifdef CLASSDESC
 #pragma omit pack PlotItem

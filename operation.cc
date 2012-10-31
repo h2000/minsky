@@ -24,6 +24,7 @@
 #include "cairoItems.h"
 
 #include <math.h>
+using namespace minsky;
 
 // necessary for Classdesc reflection!
 const float OpAttributes::intVarOffset;

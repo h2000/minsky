@@ -26,8 +26,8 @@
 #include <arrays.h>
 using namespace ecolab::cairo;
 using namespace ecolab;
-using namespace ecolab::array_ns;
 using namespace std;
+using namespace minsky;
 
 namespace 
 {
@@ -81,7 +81,7 @@ namespace
 //#undef Tk_Offset
 //#define Tk_Offset(type, field) ((int) ((char *) &((type *) 1)->field)-1)
 #endif
-Tk_ItemType& xglItemType()
+Tk_ItemType& minsky::xglItemType()
 {
   static Tk_ItemType xglItemType = cairoItemType;
   xglItemType.name="xgl";
@@ -94,7 +94,7 @@ Tk_ItemType& xglItemType()
 }
 
 static int registerItems()
-{xglItemType(); return 0;}
+{minsky::xglItemType(); return 0;}
 
 //static int dum=registerItems();
 static int dum=(initVec().push_back(registerItems), 0);

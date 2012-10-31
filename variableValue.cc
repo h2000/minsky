@@ -18,49 +18,51 @@
 */
 #include "variableValue.h"
 
-std::vector<double> ValueVector::stockVars(1);
-std::vector<double> ValueVector::flowVars(1);
-
-VariableValue& VariableValue::allocValue()
+namespace minsky
 {
-  switch (m_type)
-    {
-    case VariableBase::undefined:
-      m_idx=-1;
-      break;
-    case VariableBase::flow:
-    case VariableBase::tempFlow:
-      m_idx=ValueVector::flowVars.size();
-      ValueVector::flowVars.resize(ValueVector::flowVars.size()+1);
-      *this=init;
-      break;
-    case VariableBase::stock:
-    case VariableBase::integral:
-      m_idx=ValueVector::stockVars.size();
-      ValueVector::stockVars.resize(ValueVector::stockVars.size()+1);
-      *this=init;
-      break;
-    }
-  return *this;
-}
+  std::vector<double> ValueVector::stockVars(1);
+  std::vector<double> ValueVector::flowVars(1);
 
-double& VariableValue::valRef()
-{
-  if (m_type==VariableBase::undefined || m_idx==-1)
+  VariableValue& VariableValue::allocValue()
+  {
+    switch (m_type)
+      {
+      case VariableBase::undefined:
+        m_idx=-1;
+        break;
+      case VariableBase::flow:
+      case VariableBase::tempFlow:
+        m_idx=ValueVector::flowVars.size();
+        ValueVector::flowVars.resize(ValueVector::flowVars.size()+1);
+        *this=init;
+        break;
+      case VariableBase::stock:
+      case VariableBase::integral:
+        m_idx=ValueVector::stockVars.size();
+        ValueVector::stockVars.resize(ValueVector::stockVars.size()+1);
+        *this=init;
+        break;
+      }
+    return *this;
+  }
+
+  double& VariableValue::valRef()
+  {
+    if (m_type==VariableBase::undefined || m_idx==-1)
       return init;
-  switch (m_type)
-    {
-    case VariableBase::flow:
-    case VariableBase::tempFlow:
-       assert(m_idx<ValueVector::flowVars.size());
-      return ValueVector::flowVars[m_idx];
-    case VariableBase::stock:
-    case VariableBase::integral:
-      assert(m_idx<ValueVector::stockVars.size());
-      return ValueVector::stockVars[m_idx];
-    }
-  assert(false); //shouldn't be here...
-  return init;
+    switch (m_type)
+      {
+      case VariableBase::flow:
+      case VariableBase::tempFlow:
+        assert(m_idx<ValueVector::flowVars.size());
+        return ValueVector::flowVars[m_idx];
+      case VariableBase::stock:
+      case VariableBase::integral:
+        assert(m_idx<ValueVector::stockVars.size());
+        return ValueVector::stockVars[m_idx];
+      }
+    return init;
+  }
+
+
 }
-
-

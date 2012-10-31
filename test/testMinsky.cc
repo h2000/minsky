@@ -18,6 +18,7 @@
 */
 #include "../minsky.h"
 #include <UnitTest++/UnitTest++.h>
+using namespace minsky;
 
 struct TestFixture: public Minsky
 {

@@ -26,66 +26,69 @@
 #include <TCL_obj_base.h>
 #include <assert.h>
 
-class PortManager
+namespace minsky
 {
-public:
+  class PortManager
+  {
+  public:
 
-  typedef std::map<int, Port> Ports;
-  typedef std::map<int, Wire> Wires;
-  Ports ports;
-  Wires wires;
+    typedef std::map<int, Port> Ports;
+    typedef std::map<int, Wire> Wires;
+    Ports ports;
+    Wires wires;
 
-  // add a port to the port map
-  int addPort(const Port& p) {
-    int nextId=ports.empty()? 0: ports.rbegin()->first+1;
-    ports.insert(Ports::value_type(nextId, p));
-    return nextId;
-  }
+    // add a port to the port map
+    int addPort(const Port& p) {
+      int nextId=ports.empty()? 0: ports.rbegin()->first+1;
+      ports.insert(Ports::value_type(nextId, p));
+      return nextId;
+    }
 
-  int addWire(Wire w); 
+    int addWire(Wire w); 
   
-  void delPort(int port);
-  /// move port to an absolute location
-  void movePortTo(int port, float x, float y);
-  /// move port by an increment
-  void movePort(int port, float dx, float dy) {
-    if (ports.count(port)) movePortTo(port, ports[port].x+dx, ports[port].y+dy);
-  } 
+    void delPort(int port);
+    /// move port to an absolute location
+    void movePortTo(int port, float x, float y);
+    /// move port by an increment
+    void movePort(int port, float dx, float dy) {
+      if (ports.count(port)) movePortTo(port, ports[port].x+dx, ports[port].y+dy);
+    } 
 
-  int ClosestPort(float x, float y);
-  int ClosestOutPort(float x, float y);
-  int ClosestInPort(float x, float y);
+    int ClosestPort(float x, float y);
+    int ClosestOutPort(float x, float y);
+    int ClosestInPort(float x, float y);
 
-  /// return ID of the closest port
-  int closestPort(ecolab::TCL_args args) 
-  {return ClosestPort(args[0], args[1]);}
-  /// return ID of the closest output port
-  int closestOutPort(ecolab::TCL_args args) 
-  {return ClosestOutPort(args[0], args[1]);}
-  /// return ID of the closest output port
-  int closestInPort(ecolab::TCL_args args) 
-  {return ClosestInPort(args[0], args[1]);}
+    /// return ID of the closest port
+    int closestPort(ecolab::TCL_args args) 
+    {return ClosestPort(args[0], args[1]);}
+    /// return ID of the closest output port
+    int closestOutPort(ecolab::TCL_args args) 
+    {return ClosestOutPort(args[0], args[1]);}
+    /// return ID of the closest output port
+    int closestInPort(ecolab::TCL_args args) 
+    {return ClosestInPort(args[0], args[1]);}
 
-  void deleteWire(int id) {wires.erase(id);}
-  array<int> WiresAttachedToPort(int) const;
+    void deleteWire(int id) {wires.erase(id);}
+    ecolab::array<int> WiresAttachedToPort(int) const;
 
-  /// return a list of wires attached to a \a port
-  array<int> wiresAttachedToPort(ecolab::TCL_args args) const
-  {return WiresAttachedToPort(args);}
+    /// return a list of wires attached to a \a port
+    ecolab::array<int> wiresAttachedToPort(ecolab::TCL_args args) const
+    {return WiresAttachedToPort(args);}
 
-  array<int> visibleWires() const;
+    ecolab::array<int> visibleWires() const;
 
-private:
-  // the common closestPort implementation code
-  template <class C> int closestPortImpl(float, float);
+  private:
+    // the common closestPort implementation code
+    template <class C> int closestPortImpl(float, float);
 
-};
+  };
 
 
-/// global portmanager
-PortManager& portManager();
-/// overrride default portManager
-void setPortManager(PortManager&);
+  /// global portmanager
+  PortManager& portManager();
+  /// overrride default portManager
+  void setPortManager(PortManager&);
+}
 
 #include "portManager.cd"
 #endif

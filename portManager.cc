@@ -21,14 +21,15 @@
 #include <tcl++.h>
 
 using namespace std;
+using namespace minsky;
 
 namespace 
 {
-  PortManager* thePortManager=&minsky;
+  PortManager* thePortManager=&minsky::minsky;
 }
 
-PortManager& portManager() {return *thePortManager;}
-void setPortManager(PortManager& pm) {thePortManager=&pm;}
+PortManager& minsky::portManager() {return *thePortManager;}
+void minsky::setPortManager(PortManager& pm) {thePortManager=&pm;}
 
 int PortManager::addWire(Wire w) 
 {

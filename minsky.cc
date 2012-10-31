@@ -19,21 +19,16 @@
 #include "classdesc_access.h"
 #include <ecolab.h>
 #include "TCL_obj_stl.h"
-#include "minsky.h"
-#include "minsky.cd"
-#include "minskyVersion.h"
-
-#include <ecolab_epilogue.h>
-
-
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_odeiv2.h>
 
-#include <algorithm>
-using namespace std;
+#include "minsky.h"
 
-Minsky minsky;
-make_model(minsky);
+#include <schema/schema0.h>
+#include <schema/schema1.h>
+
+using namespace minsky;
+using namespace classdesc;
 
 namespace
 {
@@ -57,23 +52,41 @@ namespace
   }
 }
 
-struct RKdata
+namespace minsky
 {
-  gsl_odeiv2_system sys;
-  gsl_odeiv2_driver* driver;
-  RKdata(Minsky* minsky) {
-    sys.function=function;
-    sys.jacobian=jacobian;
-    sys.dimension=ValueVector::stockVars.size();
-    sys.params=minsky;
-    driver = gsl_odeiv2_driver_alloc_y_new
-      (&sys, gsl_odeiv2_step_rkf45, minsky->stepMax, minsky->epsAbs, 
-       minsky->epsRel);
-    gsl_odeiv2_driver_set_hmax(driver, minsky->stepMax);
-    gsl_odeiv2_driver_set_hmin(driver, minsky->stepMin);
-  }
-  ~RKdata() {gsl_odeiv2_driver_free(driver);}
-};
+  struct RKdata
+  {
+    gsl_odeiv2_system sys;
+    gsl_odeiv2_driver* driver;
+    RKdata(Minsky* minsky) {
+      sys.function=function;
+      sys.jacobian=jacobian;
+      sys.dimension=ValueVector::stockVars.size();
+      sys.params=minsky;
+      driver = gsl_odeiv2_driver_alloc_y_new
+        (&sys, gsl_odeiv2_step_rkf45, minsky->stepMax, minsky->epsAbs, 
+         minsky->epsRel);
+      gsl_odeiv2_driver_set_hmax(driver, minsky->stepMax);
+      gsl_odeiv2_driver_set_hmin(driver, minsky->stepMin);
+    }
+    ~RKdata() {gsl_odeiv2_driver_free(driver);}
+  };
+}
+
+#include "minsky.cd"
+#include "minskyVersion.h"
+
+#include <ecolab_epilogue.h>
+
+
+#include <algorithm>
+using namespace std;
+
+namespace minsky
+{
+  Minsky minsky;
+  make_model(minsky);
+}
 
 Minsky::Minsky(): edited(true), 
                   port(ports), wire(wires), op(operations), var(variables),
@@ -82,8 +95,6 @@ Minsky::Minsky(): edited(true),
                   t(0), stepMin(0), stepMax(1), nSteps(1),
                   epsAbs(1e-3), epsRel(1e-2) 
 {
-//  ports.clear();
-//  wires.clear();
 }
 
 void Minsky::clearAll()
@@ -709,10 +720,7 @@ void Minsky::constructEquations()
 
 void Minsky::reset()
 {
-  //  variables.reset();
   constructEquations();
-//  for (vector<EvalOp>::iterator o=equations.begin(); o!=equations.end(); ++o)
-//    o->reset();
   plots.reset(variables);
   t=0;
 
@@ -738,9 +746,6 @@ void Minsky::step()
       gsl_odeiv2_driver_apply(ode->driver, &t, numeric_limits<double>::max(), 
                               &stockVars[0]);
     }
-
-  // update flow variables
-  //  evalEquations(&flowVars[0], &stockVars[0]);
 
   for (Plots::Map::iterator i=plots.plots.begin(); i!=plots.plots.end(); ++i)
     i->second.addPlotPt(t);
@@ -799,82 +804,34 @@ void Minsky::Save(const char* filename)
 {
   ofstream of(filename);
   xml_pack_t saveFile(of);
+  saveFile.prettyPrint=true;
   garbageCollect();
-  saveFile << *this;
+  xml_pack(saveFile, "Minsky", schema1::Minsky(*this));
 }
 
 void Minsky::Load(const char* filename) 
 {
+  
   clearAll();
+
+  // current schema
+  schema1::Minsky currentSchema;
   ifstream inf(filename);
   xml_unpack_t saveFile(inf);
-  saveFile >> *this;
-  variables.makeConsistent();
-  // delete any wires with incorrect coordinates
-  for (PortManager::Wires::iterator w=wires.begin(); w!=wires.end();)
-    if (w->second.coords.size()<4 || !ports.count(w->second.from) ||
-        !ports.count(w->second.to))
-      wires.erase(w++);
-    else
-      ++w;
+  xml_unpack(saveFile, "Minsky", currentSchema);
 
-  // if a godley table is present, and no godley icon present, copy
-  // into godleyItems, to support XML migration
-  if (godleyItems.empty() && godley.rows()>2)
-    {
-      godleyItems[0].table=godley;
-      godleyItems[0].x=godleyItems[0].y=10;
-      godleyItems[0].update();
-      godley.clear();
+  if (currentSchema.version == currentSchema.schemaVersion)
+    *this = currentSchema;
+  else
+    { // fall back to the ill-defined schema '0'
+      schema0::Minsky m;
+      m.load(filename);
+      *this=m;
     }
 
-  // again, to support old XML formats, call update on all GodleyItems
+  variables.makeConsistent();
   for (GodleyItems::iterator g=godleyItems.begin(); g!=godleyItems.end(); ++g)
     g->second.update();
-
-  map<int, xml_conversions::GodleyIcon> gItems;
-  xml_unpack(saveFile,"root.godleyItems", gItems);
- 
-  for (GodleyItems::iterator g=godleyItems.begin(); g!=godleyItems.end(); ++g)
-    if (g->second.flowVars.empty() && g->second.stockVars.empty())
-      {
-        xml_conversions::GodleyIcon& gicon=gItems[g->first];
-        GodleyIcon& gi=g->second;
-//        gi.flowVars.insert(gi.flowVars.end(), 
-//                           gicon.flowVars.begin(), gicon.flowVars.end());
-//        gi.stockVars.insert(g->second.stockVars.end(), 
-//           gicon.stockVars.begin(), gicon.stockVars.end());
-        set<xml_conversions::Variable>::const_iterator v;
-        for (v=gicon.flowVars.begin(); v!=gicon.flowVars.end(); ++v)
-          {
-            gi.flowVars.push_back(*v);
-            assert(gi.flowVars.back());
-          }
-        for (v=gicon.stockVars.begin(); v!=gicon.stockVars.end(); ++v)
-          {
-            gi.stockVars.push_back(*v);
-            assert(gi.stockVars.back());
-          }
-#ifndef NDEBUG
-        for (int i=0; i<gi.flowVars.size(); i++)
-          assert(gi.flowVars[i]);
-         for (int i=0; i<gi.stockVars.size(); i++)
-          assert(gi.stockVars[i]);
-#endif
-     }
-        
-  map <int, xml_conversions::Operation> oldOps;
-  xml_unpack(saveFile,"root.operations", oldOps);
-
-  // add integration variables to all integrals, and names for constants
-  for (Operations::iterator o=operations.begin(); o!=operations.end(); ++o)
-    {
-      string nm=oldOps[o->first].description;
-      if (!nm.empty()) 
-        o->second.setDescription(nm);
-      else
-        o->second.setDescription();
-    }
 
   edited=true;
 }

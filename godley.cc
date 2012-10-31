@@ -19,6 +19,7 @@
 #include "godley.h"
 #include "port.h"
 #include "variableManager.h"
+using namespace minsky;
 
 const char* GodleyTable::initialConditions="Initial Conditions";
 

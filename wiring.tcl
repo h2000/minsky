@@ -1099,7 +1099,7 @@ proc tout {args} {
 }
 
 # example debugging trace statements
-#trace add execution placeNewOp enterstep tout
+#trace add execution updateCanvas enterstep tout
 #trace add execution setOpVal enter tout
 #trace add execution setOpVal leave tout
 #trace add execution drawOperation enter tout

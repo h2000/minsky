@@ -21,6 +21,8 @@
 #include "ecolab_epilogue.h"
 using namespace classdesc;
 
+using namespace minsky;
+
 void VariableBase::addPorts()
 {
   if (numPorts()>0)
@@ -63,6 +65,8 @@ VariableBase* VariableBase::create(VariableType::Type type)
     }
 }
 
+namespace minsky
+{
 template <> int Variable<VariableBase::undefined>::numPorts() const {return 0;}
 template <> int Variable<VariableBase::flow>::numPorts() const {return 2;}
 template <> int Variable<VariableBase::stock>::numPorts() const {return 1;}
@@ -70,6 +74,7 @@ template <> int Variable<VariableBase::tempFlow>::numPorts() const {return 2;}
 template <> int Variable<VariableBase::integral>::numPorts() const 
 {
   return inPort()<0? 1: 2;
+}
 }
 
 void VariableBase::MoveTo(float x1, float y1) 
@@ -94,7 +99,9 @@ void VariableBase::move(float dx, float dy)
 array<int> VariableBase::ports() const 
 {
   array<int> r(numPorts());
-  r[0]=outPort();
+  if (numPorts()>0) r[0]=outPort();
   if (numPorts()>1) r[1]=inPort();
   return r;
 }
+
+

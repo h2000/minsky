@@ -23,34 +23,38 @@
 #include "godley.h"
 #include <map>
 
-class Minsky;
-
-struct GodleyIcon
+namespace minsky
 {
-  float adjustHoriz, adjustVert; // difference between where variables are displayed and screen coordinates
-  float x, y; ///< position of Godley icon
-  float scale; ///< scale factor of the XGL image
-  typedef std::vector<VariablePtr> Variables;
-  Variables flowVars, stockVars;
-  GodleyTable table;
-  /// updates the variable lists with the Godley table
-  void update();
+  class Minsky;
 
-  int numPorts() const;
-  array<int> ports() const;
-  void MoveTo(float x1, float x2);
-  void moveTo(TCL_args args) {MoveTo(args[0], args[1]);}
+  struct GodleyIcon
+  {
+    float adjustHoriz, adjustVert; // difference between where variables are displayed and screen coordinates
+    float x, y; ///< position of Godley icon
+    float scale; ///< scale factor of the XGL image
+    typedef std::vector<VariablePtr> Variables;
+    Variables flowVars, stockVars;
+    GodleyTable table;
+    /// updates the variable lists with the Godley table
+    void update();
 
-  /// returns the name of a variable if point (x,y) is within a
-  /// variable icon, "@" otherwise, indicating that the Godley table
-  /// has been selected.
-  int Select(float x, float y);
-  int select(TCL_args args) {return Select(args[0],args[1]);}
+    int numPorts() const;
+    array<int> ports() const;
+    void MoveTo(float x1, float x2);
+    void moveTo(TCL_args args) {MoveTo(args[0], args[1]);}
 
-  /// override GodleyIcon's minsky reference
-  static void setMinsky(Minsky&);
+    /// returns the name of a variable if point (x,y) is within a
+    /// variable icon, "@" otherwise, indicating that the Godley table
+    /// has been selected.
+    int Select(float x, float y);
+    int select(TCL_args args) {return Select(args[0],args[1]);}
 
-};
+    /// override GodleyIcon's minsky reference
+    static void setMinsky(Minsky&);
+
+  };
+
+}
 
 #include "godleyIcon.cd"
 #endif

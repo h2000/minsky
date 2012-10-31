@@ -26,8 +26,9 @@
 #include <arrays.h>
 using namespace ecolab::cairo;
 using namespace ecolab;
-using namespace ecolab::array_ns;
+//using namespace ecolab::array_ns;
 using namespace std;
+using namespace minsky;
 
 namespace 
 {
@@ -377,7 +378,7 @@ namespace
         OperationItem* opItem=(OperationItem*)(tkMinskyItem->cairoItem);
         if (opItem) 
           {
-            opItem->op=&minsky.operations[tkMinskyItem->id];
+            opItem->op=&minsky::minsky.operations[tkMinskyItem->id];
             opItem->draw();
             TkImageCode::ComputeImageBbox(canvas, tkMinskyItem);
           }
@@ -396,7 +397,7 @@ namespace
         VariableItem* varItem=dynamic_cast<VariableItem*>(tkMinskyItem->cairoItem);
         if (varItem) 
           {
-            varItem->var=minsky.variables[tkMinskyItem->id];
+            varItem->var=minsky::minsky.variables[tkMinskyItem->id];
             varItem->draw();
             TkImageCode::ComputeImageBbox(canvas, tkMinskyItem);
           }
@@ -516,8 +517,8 @@ bool RenderVariable::inImage(float x, float y)
 }
 
 
-void drawTriangle(cairo_t* cairo, double x, double y, cairo::Colour& col,
-                  double angle)
+void minsky::drawTriangle
+(cairo_t* cairo, double x, double y, cairo::Colour& col, double angle)
 {
   cairo_save(cairo);
   cairo_new_path(cairo);

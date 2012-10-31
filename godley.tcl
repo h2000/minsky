@@ -204,6 +204,10 @@ proc whenIdleUpdateGodley {id} {
         incr ncols
     }
 
+    # remove any selection - ticket 88
+    .godley$id.table selection clear all
+    .godley$id.table activate -1,-1
+
     wm title .godley$id "Godley Table: [godleyItem.table.title]"
     .godley$id.topbar delete 0 end
     if {[godleyItem.table.title]==""} {

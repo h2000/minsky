@@ -19,18 +19,18 @@
 #ifndef PORT_H
 #define PORT_H
 
-
-struct Port
+namespace minsky
 {
-  bool input; //true if input port
-  float x,y;
-  int refCnt;
-  Port(float x=0, float y=0, bool input=false): x(x), y(y), input(input), 
-                                                refCnt(1) {}
-  /// move port by a relative distance
-  void move(float dx, float dy) {x+=dx; y+=dy;}
-};
+  struct Port
+  {
+    bool input; //true if input port
+    float x,y;
+    Port(float x=0, float y=0, bool input=false): x(x), y(y), input(input) {}
 
+    /// move port by a relative distance
+    void move(float dx, float dy) {x+=dx; y+=dy;}
+  };
+}
 
 #include "port.cd"
 #endif

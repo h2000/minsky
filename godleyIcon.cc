@@ -32,6 +32,7 @@ using namespace ecolab::cairo;
 using namespace ecolab;
 using namespace ecolab::array_ns;
 using namespace std;
+using namespace minsky;
 
 namespace
 {
@@ -43,7 +44,7 @@ namespace
 
   // local reference to global Minsky object. Can be overridden (eg
   // for eg testing purposes).
-  Minsky* _minsky=&minsky;
+  Minsky* _minsky=&minsky::minsky;
 
   struct GodleyIconItem: public XGLItem
   {

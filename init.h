@@ -23,9 +23,12 @@
 
 #include <vector>
 
-typedef int (*Fun)();
-inline std::vector<Fun>& initVec() 
+namespace minsky
 {
-  static std::vector<Fun> v;
-  return v;
+  typedef int (*Fun)();
+  inline std::vector<Fun>& initVec() 
+  {
+    static std::vector<Fun> v;
+    return v;
+  }
 }

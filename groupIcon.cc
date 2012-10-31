@@ -27,8 +27,9 @@
 #include <plot.h>
 using namespace ecolab::cairo;
 using namespace ecolab;
-using namespace ecolab::array_ns;
+//using namespace ecolab::array_ns;
 using namespace std;
+using namespace minsky;
 
 namespace
 {
@@ -65,7 +66,7 @@ namespace
     {
       if (cairoSurface && id>=0)
         {
-          GroupIcon& g=minsky.groupItems[id];
+          GroupIcon& g=minsky::minsky.groupItems[id];
           CairoRenderer renderer(cairoSurface->surface());
           cairo_save(renderer.cairo());
           
@@ -218,7 +219,7 @@ void GroupIcon::group(float x0, float y0, float x1, float y1)
         {
           if (bbox.inside(to.x, to.y))
             {
-              wires.push_back(w->first);
+              m_wires.push_back(w->first);
               w->second.visible=false;
             }
           else if (edgePorts.insert(w->second.from).second)
@@ -230,11 +231,11 @@ void GroupIcon::group(float x0, float y0, float x1, float y1)
 
     }
 
-  for (Operations::iterator o=minsky.operations.begin(); 
-       o!=minsky.operations.end(); ++o)
+  for (Operations::iterator o=minsky::minsky.operations.begin(); 
+       o!=minsky::minsky.operations.end(); ++o)
     if (bbox.inside(o->second.x,o->second.y))
       {
-        operations.push_back(o->first);
+        m_operations.push_back(o->first);
         o->second.x-=x; o->second.y-=y;
         o->second.visible=false;
         const vector<int>& ports=o->second.ports();
@@ -243,12 +244,12 @@ void GroupIcon::group(float x0, float y0, float x1, float y1)
             m_ports<<=*p;
       }
 
-  VariableManager::Variables& vars=minsky.variables;
+  VariableManager::Variables& vars=minsky::minsky.variables;
   for (VariableManager::Variables::iterator v=vars.begin(); 
        v!=vars.end(); ++v)
     if (bbox.inside(v->second->x,v->second->y))
       {
-        variables.push_back(v->first);
+        m_variables.push_back(v->first);
         // make variable coordinates relative
         v->second->x-=x; v->second->y-=y;
         v->second->visible=false;
@@ -261,27 +262,33 @@ void GroupIcon::group(float x0, float y0, float x1, float y1)
 
 void GroupIcon::ungroup()
 {
-  for (size_t i=0; i<operations.size(); ++i)
+  // we must apply visibility to the wires first, as the call to
+  // toggleCoupled in the operations section potentially deletes a
+  // wire.
+  for (size_t i=0; i<m_wires.size(); ++i)
+    portManager().wires[m_wires[i]].visible=true;
+
+  for (size_t i=0; i<m_operations.size(); ++i)
     {
-      Operation& o=minsky.operations[operations[i]];
+      Operation& o=minsky::minsky.operations[m_operations[i]];
       o.MoveTo(o.x+x, o.y+y);
       o.visible=true;
       if (!o.coupled()) o.toggleCoupled();
     }
-  operations.clear();
-  VariableManager::Variables& vars=minsky.variables;
-  for (size_t i=0; i<variables.size(); ++i)
+  VariableManager::Variables& vars=minsky::minsky.variables;
+  for (size_t i=0; i<m_variables.size(); ++i)
     {
-      VariableBase& v=*vars[variables[i]];
+      VariableBase& v=*vars[m_variables[i]];
         // restore variable coordinates to their absolute values
       v.MoveTo(v.x+x, v.y+y);
       if (v.type()!=VariableType::integral) 
         v.visible=true;
     }
-  variables.clear();
-  for (size_t i=0; i<wires.size(); ++i)
-    portManager().wires[wires[i]].visible=true;
-  wires.clear();
+
+  m_operations.clear();
+  m_variables.clear();
+  m_wires.clear();
+  m_ports.resize(0);
 }
 
 void GroupIcon::MoveTo(float x1, float y1)
@@ -346,9 +353,9 @@ void GroupIcon::copy(const GroupIcon& src)
   //  a map of port correspondences
   PortMap portMap;
   *this=src;
-  operations.resize(src.operations.size());
-  variables.resize(src.variables.size());
-  wires.resize(src.wires.size());
+  m_operations.resize(src.m_operations.size());
+  m_variables.resize(src.m_variables.size());
+  m_wires.resize(src.m_wires.size());
   m_ports.resize(m_ports.size());
 
   // map of integral variable names
@@ -357,12 +364,12 @@ void GroupIcon::copy(const GroupIcon& src)
   set<int> integrationVars;
 
   // generate copies of operations
-  for (int i=0; i<src.operations.size(); ++i)
+  for (int i=0; i<src.m_operations.size(); ++i)
     {
-      operations[i]=minsky.CopyOperation(src.operations[i]);
-      Operations& op=minsky.operations;
-      Operation& srcOp=op[src.operations[i]];
-      Operation& destOp=op[operations[i]];
+      m_operations[i]=minsky::minsky.CopyOperation(src.m_operations[i]);
+      Operations& op=minsky::minsky.operations;
+      Operation& srcOp=op[src.m_operations[i]];
+      Operation& destOp=op[m_operations[i]];
       portMap.addPorts(srcOp, destOp);
       // add intVarMap entry if an integral
       if (srcOp.type()==Operation::integrate)
@@ -372,23 +379,23 @@ void GroupIcon::copy(const GroupIcon& src)
         }
     }
   // generate copies of variables
-  for (int i=0; i<src.variables.size(); ++i)
-    if (!integrationVars.count(src.variables[i]))
+  for (int i=0; i<src.m_variables.size(); ++i)
+    if (!integrationVars.count(src.m_variables[i]))
       {
-        variables[i] = minsky.CopyVariable(src.variables[i]);
-        VariablePtr& v=variableManager()[variables[i]];
+        m_variables[i] = minsky::minsky.CopyVariable(src.m_variables[i]);
+        VariablePtr& v=variableManager()[m_variables[i]];
         if (v->type()==VariableType::integral && intVarMap.count(v->name))
           // remap the variable name
           v->name=intVarMap[v->name];
-        portMap.addPorts(*variableManager()[src.variables[i]], *v);
+        portMap.addPorts(*variableManager()[src.m_variables[i]], *v);
       }
   
   // add corresponding wires
-  for (int i=0; i<src.wires.size(); ++i)
+  for (int i=0; i<src.m_wires.size(); ++i)
     {
-      Wire w=minsky.wires[src.wires[i]];
+      Wire w=minsky::minsky.wires[src.m_wires[i]];
       w.from=portMap[w.from]; w.to=portMap[w.to];
-      wires[i]=portManager().addWire(w);
+      m_wires[i]=portManager().addWire(w);
     }
 
   // add corresponding I/O ports

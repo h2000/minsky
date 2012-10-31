@@ -24,6 +24,7 @@
 using namespace ecolab::cairo;
 using namespace ecolab;
 using namespace std;
+using namespace minsky;
 
 namespace
 {
@@ -31,7 +32,7 @@ namespace
 
   map<string, shared_ptr<TkPhotoSurface> > surfaces;
 
-  Plots::Map& plots() {return minsky.plots.plots;}
+  Plots::Map& plots() {return minsky::minsky.plots.plots;}
 
   /// temporarily sets nTicks and fontScale, restoring them on scope exit
   struct SetTicksAndFontSize

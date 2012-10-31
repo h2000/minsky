@@ -22,14 +22,15 @@
 
 #include <set>
 using namespace std;
+using namespace minsky;
 
 namespace 
 {
-  VariableManager* theVariableManager=&minsky.variables;
+  VariableManager* theVariableManager=&minsky::minsky.variables;
 }
 
-VariableManager& variableManager() {return *theVariableManager;}
-void setVariableManager(VariableManager& pm) {theVariableManager=&pm;}
+VariableManager& minsky::variableManager() {return *theVariableManager;}
+void minsky::setVariableManager(VariableManager& pm) {theVariableManager=&pm;}
 
 array<int> VariableManager::visibleVariables() const
 {
