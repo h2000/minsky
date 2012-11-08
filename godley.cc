@@ -50,6 +50,8 @@ void GodleyTable::DeleteRow(unsigned row)
 
 void GodleyTable::InsertCol(unsigned col)
 {
+  if (col>=m_assetClass.size())
+    m_assetClass.resize(cols(), noAssetClass);
   m_assetClass.insert(m_assetClass.begin()+col,noAssetClass);
   if (data.size()>0 && col<=data[0].size())
     for (unsigned row=0; row<data.size(); ++row)
@@ -58,6 +60,8 @@ void GodleyTable::InsertCol(unsigned col)
 
 void GodleyTable::DeleteCol(unsigned col)
 {
+  if (col>=m_assetClass.size())
+    m_assetClass.resize(cols(), noAssetClass);
   m_assetClass.erase(m_assetClass.begin()+col-1);
   if (col>0 && col<=data[0].size())
     for (unsigned row=0; row<rows(); ++row)

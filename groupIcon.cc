@@ -233,12 +233,12 @@ void GroupIcon::group(float x0, float y0, float x1, float y1)
 
   for (Operations::iterator o=minsky::minsky.operations.begin(); 
        o!=minsky::minsky.operations.end(); ++o)
-    if (bbox.inside(o->second.x,o->second.y))
+    if (bbox.inside(o->second->x,o->second->y))
       {
         m_operations.push_back(o->first);
-        o->second.x-=x; o->second.y-=y;
-        o->second.visible=false;
-        const vector<int>& ports=o->second.ports();
+        o->second->x-=x; o->second->y-=y;
+        o->second->visible=false;
+        const vector<int>& ports=o->second->ports();
         for (vector<int>::const_iterator p=ports.begin(); p!=ports.end(); ++p)
           if (wiredPorts.insert(*p).second)
             m_ports<<=*p;
@@ -270,10 +270,11 @@ void GroupIcon::ungroup()
 
   for (size_t i=0; i<m_operations.size(); ++i)
     {
-      Operation& o=minsky::minsky.operations[m_operations[i]];
+      OperationBase& o=*minsky::minsky.operations[m_operations[i]];
       o.MoveTo(o.x+x, o.y+y);
       o.visible=true;
-      if (!o.coupled()) o.toggleCoupled();
+      if (IntOp* i=dynamic_cast<IntOp*>(&o))
+        if (!i->coupled()) i->toggleCoupled();
     }
   VariableManager::Variables& vars=minsky::minsky.variables;
   for (size_t i=0; i<m_variables.size(); ++i)
@@ -368,14 +369,15 @@ void GroupIcon::copy(const GroupIcon& src)
     {
       m_operations[i]=minsky::minsky.CopyOperation(src.m_operations[i]);
       Operations& op=minsky::minsky.operations;
-      Operation& srcOp=op[src.m_operations[i]];
-      Operation& destOp=op[m_operations[i]];
+      OperationBase& srcOp=*op[src.m_operations[i]];
+      OperationBase& destOp=*op[m_operations[i]];
       portMap.addPorts(srcOp, destOp);
       // add intVarMap entry if an integral
-      if (srcOp.type()==Operation::integrate)
+      if (IntOp* i=dynamic_cast<IntOp*>(&srcOp))
         {
-          intVarMap[srcOp.description()] = destOp.description();
-          integrationVars.insert(srcOp.intVarID());
+          intVarMap[i->description()] = 
+            dynamic_cast<IntOp&>(destOp).description();
+          integrationVars.insert(i->intVarID());
         }
     }
   // generate copies of variables

@@ -524,6 +524,7 @@ proc setM1Binding {item id tag} {
         }
         default { 
             # pan mode
+            .wiring.canvas bind $tag <Button-1> ""
             .wiring.canvas bind $tag <B1-Motion> ""
             .wiring.canvas bind $tag <B1-ButtonRelease> ""
         }
@@ -534,6 +535,7 @@ proc setInteractionMode {args} {
     global interactionMode
     if [llength $args] {set interactionMode [lindex $args 0]}
 
+    bind .wiring.canvas <Button-1> ""
     bind .wiring.canvas <B1-Motion> ""
     bind .wiring.canvas <B1-ButtonRelease> ""
     
@@ -553,6 +555,7 @@ proc setInteractionMode {args} {
     foreach op [operations.#keys] {setM1Binding op $op op$op}
     foreach id [godleyItems.#keys] {setM1Binding godleyItem $id godley$id}
     foreach id [groupItems.#keys] {setM1Binding groupItem $id group$id}
+    foreach id [plots.plots.#keys] {setM1Binding plot $id plot#$id}
 }
 
 proc updateCanvas {} {
@@ -587,7 +590,8 @@ proc updateCanvas {} {
     }
 
     foreach im [plots.plots.#keys] {
-        newPlotItem $im [plots.X $im] [plots.Y $im]
+        plot.get $im
+        newPlotItem $im [plot.x] [plot.y]
     }
 
     foreach g [godleyItems.#keys] {
@@ -663,8 +667,9 @@ proc contextMenu {item x y} {
                 .wiring.context add command -label "Copy Var" -command "copyVar [op.intVarID]"
             }
             if {[op.name]=="constant"} {
+                constant.get $id
                 global sliderCheck$id
-                set sliderCheck$id [op.sliderVisible]
+                set sliderCheck$id [constant.sliderVisible]
                 .wiring.context add checkbutton -label "Slider" \
                     -command "drawSlider $id $x $y" \
                     -variable "sliderCheck$id"
@@ -904,18 +909,18 @@ proc closeEditWindow {window} {
 }
 
 proc setConstantValue {} {
-    op.value [.wiring.editConstant.val.value get]
+    constant.value [.wiring.editConstant.val.value get]
     global relStepSize
-    op.sliderStepRel $relStepSize
-    op.sliderMin [.wiring.editConstant.sliderBoundsMin.val get]
-    op.sliderMax [.wiring.editConstant.sliderBoundsMax.val get]
-    op.sliderStep [.wiring.editConstant.stepSize.val get]
-    op.sliderBoundsSet 1
-    op.set
+    constant.description [.wiring.editConstant.text.value get]
+    constant.sliderStepRel $relStepSize
+    constant.sliderMin [.wiring.editConstant.sliderBoundsMin.val get]
+    constant.sliderMax [.wiring.editConstant.sliderBoundsMax.val get]
+    constant.sliderStep [.wiring.editConstant.stepSize.val get]
+    constant.sliderBoundsSet 1
 }
 
-proc setIntegralIValue {} {
-    value.get [op.description]
+proc setIntegralIValue {id} {
+    value.get [integral.description [.wiring.editConstant.text.value get]]
     setItem value init {.wiring.editConstant.val.value get}
 }
 
@@ -954,31 +959,37 @@ proc editItem {id tag} {
                 .wiring.editConstant.stepSize.val delete 0 end
                 switch [op.name] {
                     constant {
+                        constant.get $id
+                        .wiring.editConstant.text.value delete 0 end
+                        .wiring.editConstant.text.value insert 0 [constant.description]
                         .wiring.editConstant.val.label configure -text "Value"
-                        .wiring.editConstant.val.value insert 0 [op.value]
+                        .wiring.editConstant.val.value delete 0 end
+                        .wiring.editConstant.val.value insert 0 [constant.value]
                         initOpSliderBounds
-                        .wiring.editConstant.sliderBoundsMin.val insert 0 [op.sliderMin]
-                        .wiring.editConstant.sliderBoundsMax.val insert 0 [op.sliderMax]
-                        .wiring.editConstant.stepSize.val insert 0 [op.sliderStep]
-                        set relStepSize [op.sliderStepRel]
+                        .wiring.editConstant.sliderBoundsMin.val delete 0 end
+                        .wiring.editConstant.sliderBoundsMin.val insert 0 [constant.sliderMin]
+                        .wiring.editConstant.sliderBoundsMax.val delete 0 end
+                        .wiring.editConstant.sliderBoundsMax.val insert 0 [constant.sliderMax]
+                        .wiring.editConstant.stepSize.val delete 0 end
+                        .wiring.editConstant.stepSize.val insert 0 [constant.sliderStep]
+                        set relStepSize [constant.sliderStepRel]
                         set setValue setConstantValue
                     }
                     integrate {
+                        integral.get $id
                         .wiring.editConstant.val.label configure -text "Initial Value"
-                        value.get [op.description]
+                        value.get [integral.description]
                         .wiring.editConstant.val.value insert 0 [value.init]
                         set setValue setIntegralIValue
+                        .wiring.editConstant.text.value insert 0 [integral.description]
                     }
                 }
                 .wiring.editConstant.title configure -text [op.name]
-                .wiring.editConstant.text.value delete 0 end
-                .wiring.editConstant.text.value insert 0 [op.description]
                 .wiring.editConstant.rotation.value delete 0 end
                 .wiring.editConstant.rotation.value insert 0 [op.rotation]
                 # value needs to be regotten, as var name may have changed
                 .wiring.editConstant.buttonBar.ok configure \
                     -command "
-                        setItem op description {.wiring.editConstant.text.value get}
                         $setValue
                         setSliderProperties $id
                         setItem op rotation {.wiring.editConstant.rotation.value get}
@@ -1006,70 +1017,69 @@ proc editItem {id tag} {
 }
 
 proc setOpVal {op x} {
-    op.get $op
-    op.value $x
-    op.set
+    constant.get $op
+    constant.value $x
 }
 
 # initialises sliderbounds based on current value, if not set otherwise
 proc initOpSliderBounds {} {
-    if {![op.sliderBoundsSet]} {
-        if {[op.value]==0} {
-            op.sliderMin -1
-            op.sliderMax 1
-            op.sliderStep 0.1
+    if {![constant.sliderBoundsSet]} {
+        if {[constant.value]==0} {
+            constant.sliderMin -1
+            constant.sliderMax 1
+            constant.sliderStep 0.1
         } else {
-            op.sliderMin [expr -[op.value]*10]
-            op.sliderMax [expr [op.value]*10]
-            op.sliderStep [expr abs(0.1*[op.value])]
+            constant.sliderMin [expr -[constant.value]*10]
+            constant.sliderMax [expr [constant.value]*10]
+            constant.sliderStep [expr abs(0.1*[constant.value])]
         }
-        op.sliderStepRel 0
-        op.sliderBoundsSet 1
-        op.set
+        constant.sliderStepRel 0
+        constant.sliderBoundsSet 1
     }
 }
  
 proc setSliderProperties {id} {
     if [winfo  exists .wiring.slider$id] {
-        op.get $id
+        constant.get $id
         initOpSliderBounds
-        if [op.sliderStepRel] {
-            set res [expr [op.sliderStep]*([op.sliderMax]-[op.sliderMin])]
+        if [constant.sliderStepRel] {
+            set res [expr [constant.sliderStep]*([constant.sliderMax]-[constant.sliderMin])]
         } else {
-            set res [op.sliderStep]
+            set res [constant.sliderStep]
         }
         
         # ensure resolution is accurate enough to not mutate variable value
-        set decPos [string first . [op.value]]
+        set decPos [string first . [constant.value]]
         if {$decPos==-1} {
             set newRes 1
         } else {
-            set newRes [expr pow(10,1+$decPos-[string len [op.value]])]
+            set newRes [expr pow(10,1+$decPos-[string len [constant.value]])]
         }
        if {$newRes<$res} {set res $newRes}
 
         # ensure slider does not override value
-        if {[op.sliderMax]<[op.value]} {op.sliderMax [op.value]}
-        if {[op.sliderMin]>[op.value]} {op.sliderMin [op.value]}
+        if {[constant.sliderMax]<[constant.value]} {
+            constant.sliderMax [constant.value]}
+        if {[constant.sliderMin]>[constant.value]} {
+            constant.sliderMin [constant.value]}
 
-        set origValue [op.value]
-        .wiring.slider$id configure -to [op.sliderMax] -from [op.sliderMin] -resolution $res
-        .wiring.slider$id set [op.value]
-        op.value $origValue
-        op.set
+        set origValue [constant.value]
+        .wiring.slider$id configure -to [constant.sliderMax] \
+            -from [constant.sliderMin] -resolution $res
+        .wiring.slider$id set [constant.value]
+        constant.value $origValue
     }
 }
 
 proc drawSlider {op x y} {
     global sliderCheck$op
-    op.get $op
+    constant.get $op
     if {![info exists sliderCheck$op]} {
-        # sliderCheck$op gets initialised to op.sliderVisible,
+        # sliderCheck$op gets initialised to constant.sliderVisible,
         # otherwise sliderCheck$op is more up to date
-        set sliderCheck$op [op.sliderVisible]
+        set sliderCheck$op [constant.sliderVisible]
     }
-    op.sliderVisible [set sliderCheck$op]
-    op.set
+    constant.sliderVisible [set sliderCheck$op]
 
     if {[set sliderCheck$op]} {
         if {![winfo exists .wiring.slider$op]} {

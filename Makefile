@@ -41,7 +41,7 @@ VPATH=schema
 .h.cd:
 	$(CLASSDESC) -nodef -I $(CDINCLUDE) -I $(ECOLAB_HOME)/include  -i $< $(ACTIONS) >$@
 # xml_pack/unpack need to -typeName option, as well as including privates
-	$(CLASSDESC) -typeName -nodef -I $(CDINCLUDE) -I $(ECOLAB_HOME)/include  -i $< xml_pack xml_unpack >>$@
+	$(CLASSDESC) -typeName -nodef -I $(CDINCLUDE) -I $(ECOLAB_HOME)/include  -i $< xml_pack xml_unpack xsd_generate >>$@
 	$(CLASSDESC) -nodef -I $(CDINCLUDE) -I $(ECOLAB_HOME)/include \
 	  -respect_private -i $< $(RPACTIONS) >>$@
 
@@ -59,7 +59,7 @@ endif
 LIBS+=-lgsl -lgslcblas -lxgl -lxlib -lcairo -lpng -lz
 
 #chmod command is to counteract AEGIS removing execute privelege from scripts
-all: $(MODELS) $(TESTS)
+all: $(MODELS) $(TESTS) minsky.xsd
 	-$(CHMOD) a+x *.tcl *.sh *.pl
 
 # This option removes the black window, but this also prevents being
@@ -92,7 +92,7 @@ tests: $(MODELS)
 	cd test; $(MAKE)
 
 clean:
-	$(BASIC_CLEAN)
+	$(BASIC_CLEAN) minsky.xsd
 	rm -f $(MODELS) 
 	cd test; $(BASIC_CLEAN)
 	cd schema; $(BASIC_CLEAN)
@@ -137,3 +137,9 @@ mac-dist:
 checkMissing:
 	chmod a+x test/checkMissing.sh
 	test/checkMissing.sh
+
+minsky.xsd: minsky
+	minsky exportSchema.tcl
+
+upload-schema: minsky.xsd
+	scp minsky.xsd hpcoder@web.sourceforge.net:/home/project-web/minsky/htdocs

@@ -79,24 +79,21 @@ TEST_FIXTURE(TestFixture,constructEquationsEx1)
   CHECK(!var["e"]->lhs());
   CHECK(var["f"]->lhs());
 
-  operations[1]=Operation(Operation::add);
-  operations[1].addPorts();
-  CHECK_EQUAL(3, operations[1].numPorts());
-  operations[2]=Operation(Operation::integrate);
-  operations[2].addPorts();
-  CHECK_EQUAL(2, operations[2].numPorts());
-  operations[3]=Operation(Operation::multiply);
-  operations[3].addPorts();
-  CHECK_EQUAL(3, operations[3].numPorts());
+  operations[1]=OperationPtr(OperationType::add);
+  CHECK_EQUAL(3, operations[1]->numPorts());
+  operations[2]=OperationPtr(OperationType::integrate);
+  CHECK_EQUAL(2, operations[2]->numPorts());
+  operations[3]=OperationPtr(OperationType::multiply);
+  CHECK_EQUAL(3, operations[3]->numPorts());
  
   addWire(Wire(var["e"]->outPort(), var["f"]->inPort()));
-  addWire(Wire(var["c"]->outPort(), operations[1].ports()[1]));
-  addWire(Wire(var["d"]->outPort(), operations[1].ports()[2]));;
-  addWire(Wire(operations[1].ports()[0], operations[2].ports()[1]));
-  addWire(Wire(operations[2].ports()[0], var["a"]->inPort()));
-  addWire(Wire(operations[2].ports()[0], operations[3].ports()[1]));
-  addWire(Wire(var["e"]->outPort(), operations[3].ports()[2]));
-  addWire(Wire(operations[3].ports()[0], var["b"]->inPort()));
+  addWire(Wire(var["c"]->outPort(), operations[1]->ports()[1]));
+  addWire(Wire(var["d"]->outPort(), operations[1]->ports()[2]));;
+  addWire(Wire(operations[1]->ports()[0], operations[2]->ports()[1]));
+  addWire(Wire(operations[2]->ports()[0], var["a"]->inPort()));
+  addWire(Wire(operations[2]->ports()[0], operations[3]->ports()[1]));
+  addWire(Wire(var["e"]->outPort(), operations[3]->ports()[2]));
+  addWire(Wire(operations[3]->ports()[0], var["b"]->inPort()));
 
   for (PortManager::Wires::const_iterator w=wires.begin(); w!=wires.end(); ++w)
     {
@@ -111,21 +108,21 @@ TEST_FIXTURE(TestFixture,constructEquationsEx1)
   CHECK_EQUAL(operations.size()+1, equations.size());
 
   // first is the variable to variable copy
-  CHECK_EQUAL("copy", Operation::OpName(equations[0].op));
+  CHECK_EQUAL("copy", OperationBase::OpName(equations[0].op));
   CHECK_EQUAL(variables.values["e"].idx(), equations[0].in1);
   CHECK_EQUAL(variables.values["f"].idx(), equations[0].out);
 
   // check that the integral has been changed to a copy
   CHECK_EQUAL(1, integrals.size());
-  CHECK_EQUAL("copy", Operation::OpName(equations[1].op));
+  CHECK_EQUAL("copy", OperationBase::OpName(equations[1].op));
   CHECK_EQUAL(integrals[0].stock.idx(), equations[1].in1);
   CHECK_EQUAL(variables.values["a"].idx(), equations[1].out);
 
-  CHECK_EQUAL("add", Operation::OpName(equations[2].op));
+  CHECK_EQUAL("add", OperationBase::OpName(equations[2].op));
   CHECK_EQUAL(variables.values["c"].idx(), equations[2].in1);
   CHECK_EQUAL(variables.values["d"].idx(), equations[2].in2);
 
-  CHECK_EQUAL("multiply", Operation::OpName(equations[3].op));
+  CHECK_EQUAL("multiply", OperationBase::OpName(equations[3].op));
   CHECK_EQUAL(integrals[0].stock.idx(), equations[3].in1);
   CHECK_EQUAL(variables.values["e"].idx(), equations[3].in2);
   CHECK_EQUAL(variables.values["b"].idx(), equations[3].out);
@@ -160,20 +157,17 @@ TEST_FIXTURE(TestFixture,constructEquationsEx2)
       CHECK(v->second->m_godley);
     }
 
-  operations[4]=Operation(Operation::constant);
-  operations[4].addPorts();
-  CHECK_EQUAL(1, operations[4].numPorts());
-  operations[5]=Operation(Operation::constant);
-  operations[5].addPorts();
-  CHECK_EQUAL(1, operations[5].numPorts());
-  operations[6]=Operation(Operation::add);
-  operations[6].addPorts();
-  CHECK_EQUAL(3, operations[6].numPorts());
+  operations[4]=OperationPtr(OperationType::constant);
+  CHECK_EQUAL(1, operations[4]->numPorts());
+  operations[5]=OperationPtr(OperationType::constant);
+  CHECK_EQUAL(1, operations[5]->numPorts());
+  operations[6]=OperationPtr(OperationType::add);
+  CHECK_EQUAL(3, operations[6]->numPorts());
 
-  wires[8]=Wire(operations[4].ports()[0], var["g"]->inPort());
-  wires[9]=Wire(operations[4].ports()[0], operations[6].ports()[1]);
-  wires[10]=Wire(operations[5].ports()[0], operations[6].ports()[2]);
-  wires[11]=Wire(operations[6].ports()[0], var["h"]->inPort());
+  wires[8]=Wire(operations[4]->ports()[0], var["g"]->inPort());
+  wires[9]=Wire(operations[4]->ports()[0], operations[6]->ports()[1]);
+  wires[10]=Wire(operations[5]->ports()[0], operations[6]->ports()[2]);
+  wires[11]=Wire(operations[6]->ports()[0], var["h"]->inPort());
 
   for (PortManager::Wires::const_iterator w=wires.begin(); w!=wires.end(); ++w)
     {
@@ -185,12 +179,12 @@ TEST_FIXTURE(TestFixture,constructEquationsEx2)
 
   CHECK_EQUAL(3, equations.size());
 
-  CHECK_EQUAL("constant", Operation::OpName(equations[0].op));
+  CHECK_EQUAL("constant", OperationBase::OpName(equations[0].op));
   CHECK_EQUAL(variables.values["g"].idx(), equations[0].out);
 
-  CHECK_EQUAL("constant", Operation::OpName(equations[1].op));
+  CHECK_EQUAL("constant", OperationBase::OpName(equations[1].op));
 
-  CHECK_EQUAL("add", Operation::OpName(equations[2].op));
+  CHECK_EQUAL("add", OperationBase::OpName(equations[2].op));
   CHECK_EQUAL(variables.values["g"].idx(), equations[2].in1);
   CHECK_EQUAL(variables.values["h"].idx(), equations[2].out);
 
@@ -263,24 +257,21 @@ TEST_FIXTURE(TestFixture,derivative)
       CHECK(v->second->m_godley);
     }
 
-  operations[1]=Operation(Operation::add);
-  operations[1].addPorts();
-  CHECK_EQUAL(3, operations[1].numPorts());
-  operations[2]=Operation(Operation::integrate);
-  operations[2].addPorts();
-  CHECK_EQUAL(2, operations[2].numPorts());
-  operations[3]=Operation(Operation::multiply);
-  operations[3].addPorts();
-  CHECK_EQUAL(3, operations[3].numPorts());
+  operations[1]=OperationPtr(OperationType::add);
+  CHECK_EQUAL(3, operations[1]->numPorts());
+  operations[2]=OperationPtr(OperationType::integrate);
+  CHECK_EQUAL(2, operations[2]->numPorts());
+  operations[3]=OperationPtr(OperationType::multiply);
+  CHECK_EQUAL(3, operations[3]->numPorts());
  
   wires[7]=Wire(var["e"]->outPort(), var["f"]->inPort());
-  wires[6]=Wire(var["c"]->outPort(), operations[1].ports()[1]);
-  wires[5]=Wire(var["d"]->outPort(), operations[1].ports()[2]);
-  wires[4]=Wire(operations[1].ports()[0], operations[2].ports()[1]);
-  wires[3]=Wire(operations[2].ports()[0], var["a"]->inPort());
-  wires[2]=Wire(operations[2].ports()[0], operations[3].ports()[1]);
-  wires[1]=Wire(var["e"]->outPort(), operations[3].ports()[2]);
-  wires[0]=Wire(operations[3].ports()[0], var["b"]->inPort());
+  wires[6]=Wire(var["c"]->outPort(), operations[1]->ports()[1]);
+  wires[5]=Wire(var["d"]->outPort(), operations[1]->ports()[2]);
+  wires[4]=Wire(operations[1]->ports()[0], operations[2]->ports()[1]);
+  wires[3]=Wire(operations[2]->ports()[0], var["a"]->inPort());
+  wires[2]=Wire(operations[2]->ports()[0], operations[3]->ports()[1]);
+  wires[1]=Wire(var["e"]->outPort(), operations[3]->ports()[2]);
+  wires[0]=Wire(operations[3]->ports()[0], var["b"]->inPort());
 
   constructEquations();
   vector<double> j(stockVars.size()*stockVars.size());
@@ -316,30 +307,28 @@ TEST_FIXTURE(TestFixture,derivative)
 TEST_FIXTURE(TestFixture,integrals)
 {
   // First, integrate a constant
-  operations[1]=Operation(Operation::constant);
-  operations[1].addPorts();
-  operations[2]=Operation(Operation::integrate);
-  operations[2].addPorts();
+  operations[1]=OperationPtr(OperationType::constant);
+  operations[2]=OperationPtr(OperationType::integrate);
   int var=variables.addVariable(VariablePtr(VariableType::flow,"output"));
-  wires[0]=Wire(operations[1].ports()[0], operations[2].ports()[1]);
-  wires[1]=Wire(operations[2].ports()[0], variables[var]->inPort());
+  wires[0]=Wire(operations[1]->ports()[0], operations[2]->ports()[1]);
+  wires[1]=Wire(operations[2]->ports()[0], variables[var]->inPort());
 
   constructEquations();
-  operations[1].value=10;
+  double& value = dynamic_cast<Constant*>(operations[1].get())->value;
+  value=10;
   nSteps=1;
   step();
-  CHECK_EQUAL(operations[1].value*t, integrals[0].stock.value());
+  CHECK_EQUAL(value*t, integrals[0].stock.value());
   double prevInt=integrals[0].stock.value();
   step();
   CHECK_EQUAL(prevInt, variables.values["output"].value());
 
   // now integrate the linear function
-  operations[3]=Operation(Operation::integrate);
-  operations[3].addPorts();
-  wires[2]=Wire(operations[2].ports()[0], operations[3].ports()[1]);
+  operations[3]=OperationPtr(OperationType::integrate);
+  wires[2]=Wire(operations[2]->ports()[0], operations[3]->ports()[1]);
   constructEquations();
   step();
-  CHECK_EQUAL(0.5*operations[1].value*t*t, integrals[1].stock.value());
+  CHECK_EQUAL(0.5*value*t*t, integrals[1].stock.value());
 }
 
 /*
@@ -355,15 +344,14 @@ TEST_FIXTURE(TestFixture,integrals)
 TEST_FIXTURE(TestFixture,cyclicThrows)
 {
   // First, integrate a constant
-  operations[1]=Operation(Operation::add);
-  operations[1].addPorts();
+  operations[1]=OperationPtr(OperationType::add);
   int w=variables.addVariable(VariablePtr(VariableType::flow,"w"));
   int a=variables.addVariable(VariablePtr(VariableType::flow,"a"));
-  CHECK(variables.addWire(operations[1].ports()[0], variables[w]->inPort()));
-  CHECK(variables.addWire(variables[w]->outPort(), operations[1].ports()[1]));
-  PortManager::addWire(Wire(operations[1].ports()[0], variables[w]->inPort()));
-  PortManager::addWire(Wire(variables[w]->outPort(), operations[1].ports()[1]));
-  PortManager::addWire(Wire(variables[a]->outPort(), operations[1].ports()[2]));
+  CHECK(variables.addWire(operations[1]->ports()[0], variables[w]->inPort()));
+  CHECK(variables.addWire(variables[w]->outPort(), operations[1]->ports()[1]));
+  PortManager::addWire(Wire(operations[1]->ports()[0], variables[w]->inPort()));
+  PortManager::addWire(Wire(variables[w]->outPort(), operations[1]->ports()[1]));
+  PortManager::addWire(Wire(variables[a]->outPort(), operations[1]->ports()[2]));
 
   CHECK_THROW(constructEquations(), ecolab::error);
 }
@@ -381,18 +369,16 @@ TEST_FIXTURE(TestFixture,cyclicThrows)
 TEST_FIXTURE(TestFixture,cyclicIntegrateDoesntThrow)
 {
   // First, integrate a constant
-  operations[1]=Operation(Operation::integrate);
-  operations[1].addPorts();
-  operations[2]=Operation(Operation::multiply);
-  operations[2].addPorts();
+  operations[1]=OperationPtr(OperationType::integrate);
+  operations[2]=OperationPtr(OperationType::multiply);
   int a=variables.addVariable(VariablePtr(VariableType::flow,"a"));
-  CHECK(variables.addWire(operations[1].ports()[0], operations[2].ports()[1]));
-  CHECK(variables.addWire(operations[2].ports()[0], operations[1].ports()[1]));
-  CHECK(variables.addWire(variables[a]->outPort(), operations[2].ports()[2]));
+  CHECK(variables.addWire(operations[1]->ports()[0], operations[2]->ports()[1]));
+  CHECK(variables.addWire(operations[2]->ports()[0], operations[1]->ports()[1]));
+  CHECK(variables.addWire(variables[a]->outPort(), operations[2]->ports()[2]));
 
-  PortManager::addWire(Wire(operations[1].ports()[0], operations[2].ports()[1]));
-  PortManager::addWire(Wire(operations[2].ports()[0], operations[1].ports()[1]));
-  PortManager::addWire(Wire(variables[a]->outPort(), operations[2].ports()[2]));
+  PortManager::addWire(Wire(operations[1]->ports()[0], operations[2]->ports()[1]));
+  PortManager::addWire(Wire(operations[2]->ports()[0], operations[1]->ports()[1]));
+  PortManager::addWire(Wire(variables[a]->outPort(), operations[2]->ports()[2]));
 
   constructEquations();
 }
@@ -432,24 +418,22 @@ TEST_FIXTURE(TestFixture,multiVariableInputsAdd)
   variables.values["a"]=0.1;
   variables.values["b"]=0.2;
 
-  Operation& intOp = operations[0]=Operation(Operation::integrate); //enables equations to step
-  intOp.addPorts();
+  OperationPtr& intOp = operations[0]=OperationPtr(OperationType::integrate); //enables equations to step
   
 
-  Operation& op=operations[1]=Operation(Operation::add);
-  op.addPorts();
+  OperationPtr& op=operations[1]=OperationPtr(OperationType::add);
 
-  addWire(Wire(varA->outPort(), op.ports()[1]));
-  addWire(Wire(varB->outPort(), op.ports()[1]));
-  addWire(Wire(op.ports()[0], varC->inPort()));
-  addWire(Wire(varC->outPort(), intOp.ports()[1]));
+  addWire(Wire(varA->outPort(), op->ports()[1]));
+  addWire(Wire(varB->outPort(), op->ports()[1]));
+  addWire(Wire(op->ports()[0], varC->inPort()));
+  addWire(Wire(varC->outPort(), intOp->ports()[1]));
 
   // move stuff around to make layout a bit better
   varA->MoveTo(10,100);
   varB->MoveTo(10,200);
   varC->MoveTo(100,150);
-  op.MoveTo(50,150);
-  intOp.MoveTo(150,150);
+  op->MoveTo(50,150);
+  intOp->MoveTo(150,150);
 
   Save("multiVariableInputs.mky");
 
@@ -466,24 +450,22 @@ TEST_FIXTURE(TestFixture,multiVariableInputsSubtract)
   variables.values["a"]=0.1;
   variables.values["b"]=0.2;
 
-  Operation& intOp = operations[0]=Operation(Operation::integrate); //enables equations to step
-  intOp.addPorts();
+  OperationPtr& intOp = operations[0]=OperationPtr(OperationType::integrate); //enables equations to step
   
 
-  Operation& op=operations[1]=Operation(Operation::subtract);
-  op.addPorts();
+  OperationPtr& op=operations[1]=OperationPtr(OperationType::subtract);
 
-  addWire(Wire(varA->outPort(), op.ports()[2]));
-  addWire(Wire(varB->outPort(), op.ports()[2]));
-  addWire(Wire(op.ports()[0], varC->inPort()));
-  addWire(Wire(varC->outPort(), intOp.ports()[1]));
+  addWire(Wire(varA->outPort(), op->ports()[2]));
+  addWire(Wire(varB->outPort(), op->ports()[2]));
+  addWire(Wire(op->ports()[0], varC->inPort()));
+  addWire(Wire(varC->outPort(), intOp->ports()[1]));
 
   // move stuff around to make layout a bit better
   varA->MoveTo(10,100);
   varB->MoveTo(10,200);
   varC->MoveTo(100,150);
-  op.MoveTo(50,150);
-  intOp.MoveTo(150,150);
+  op->MoveTo(50,150);
+  intOp->MoveTo(150,150);
 
   Save("multiVariableInputs.mky");
 
@@ -500,24 +482,22 @@ TEST_FIXTURE(TestFixture,multiVariableInputsMultiply)
   variables.values["a"]=0.1;
   variables.values["b"]=0.2;
 
-  Operation& intOp = operations[0]=Operation(Operation::integrate); //enables equations to step
-  intOp.addPorts();
+  OperationPtr& intOp = operations[0]=OperationPtr(OperationType::integrate); //enables equations to step
   
 
-  Operation& op=operations[1]=Operation(Operation::multiply);
-  op.addPorts();
+  OperationPtr& op=operations[1]=OperationPtr(OperationType::multiply);
 
-  addWire(Wire(varA->outPort(), op.ports()[1]));
-  addWire(Wire(varB->outPort(), op.ports()[1]));
-  addWire(Wire(op.ports()[0], varC->inPort()));
-  addWire(Wire(varC->outPort(), intOp.ports()[1]));
+  addWire(Wire(varA->outPort(), op->ports()[1]));
+  addWire(Wire(varB->outPort(), op->ports()[1]));
+  addWire(Wire(op->ports()[0], varC->inPort()));
+  addWire(Wire(varC->outPort(), intOp->ports()[1]));
 
   // move stuff around to make layout a bit better
   varA->MoveTo(10,100);
   varB->MoveTo(10,200);
   varC->MoveTo(100,150);
-  op.MoveTo(50,150);
-  intOp.MoveTo(150,150);
+  op->MoveTo(50,150);
+  intOp->MoveTo(150,150);
 
   Save("multiVariableInputs.mky");
 
@@ -534,24 +514,21 @@ TEST_FIXTURE(TestFixture,multiVariableInputsDivide)
   variables.values["a"]=0.1;
   variables.values["b"]=0.2;
 
-  Operation& intOp = operations[0]=Operation(Operation::integrate); //enables equations to step
-  intOp.addPorts();
-  
+  OperationPtr& intOp = operations[0]=OperationPtr(OperationType::integrate); //enables equations to step
 
-  Operation& op=operations[1]=Operation(Operation::divide);
-  op.addPorts();
+  OperationPtr& op=operations[1]=OperationPtr(OperationType::divide);
 
-  addWire(Wire(varA->outPort(), op.ports()[2]));
-  addWire(Wire(varB->outPort(), op.ports()[2]));
-  addWire(Wire(op.ports()[0], varC->inPort()));
-  addWire(Wire(varC->outPort(), intOp.ports()[1]));
+  addWire(Wire(varA->outPort(), op->ports()[2]));
+  addWire(Wire(varB->outPort(), op->ports()[2]));
+  addWire(Wire(op->ports()[0], varC->inPort()));
+  addWire(Wire(varC->outPort(), intOp->ports()[1]));
 
   // move stuff around to make layout a bit better
   varA->MoveTo(10,100);
   varB->MoveTo(10,200);
   varC->MoveTo(100,150);
-  op.MoveTo(50,150);
-  intOp.MoveTo(150,150);
+  op->MoveTo(50,150);
+  intOp->MoveTo(150,150);
 
   Save("multiVariableInputs.mky");
 

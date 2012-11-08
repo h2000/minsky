@@ -55,10 +55,8 @@ namespace minsky
       op.m_outPort=outPort;
       op.m_inPort=inPort;
     }
-    static void setPrivates(Operation& op, const std::vector<int>& ports, 
-                            const string& description, int intVar)
+    static void setPrivates(IntOp& op, const string& description, int intVar)
     {
-      op.m_ports=ports;
       op.m_description=description;
       op.intVar=intVar;
     }

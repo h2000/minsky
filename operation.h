@@ -33,6 +33,15 @@
 // override EcoLab's default CLASSDESC_ACCESS macro
 #include "classdesc_access.h"
 
+struct OperationType
+{
+  enum Type {constant, time, // zero input port ops
+             copy, integrate, exp,     // single input port ops
+             add, subtract, multiply, divide, // dual input port ops
+             numOps // last operation, for iteration purposes
+  };
+};
+
 namespace minsky
 {
   using namespace ecolab;
@@ -40,53 +49,41 @@ namespace minsky
   using namespace std;
   //using ecolab::array_ns::array;
 
-  class OpAttributes
+  class OpAttributes: public OperationType
   {
-    CLASSDESC_ACCESS(OpAttributes);
-
   public:
-    enum Type {constant, time, // zero input port ops
-               copy, integrate, exp,     // single input port ops
-               add, subtract, multiply, divide, // dual input port ops
-               numOps // last operation, for iteration purposes
-    };
 
-
-    // offset for coupled integration variable, tr
-    static const float intVarOffset=10;
     // triangle parameters - l: xcoord of lhs, r; xcoord of apex, h: height of base
     static const float l=-8, h=12, r=12;
 
     float x, y;
     // operator dependent data
-    double value; /// for constants
     double rotation; /// rotation if icon, in degrees
 
     bool visible; ///< whether operation is visible on Canvas 
-    Type m_type;
 
-    bool sliderVisible, sliderBoundsSet, sliderStepRel;
-    double sliderMin, sliderMax, sliderStep;
-    OpAttributes(): x(10), y(10), m_type(numOps), value(0), rotation(0),
-                    visible(true), sliderVisible(false), 
-                    sliderBoundsSet(false), sliderStepRel(false) {}
+    OpAttributes(): x(10), y(10), rotation(0), visible(true) {}
   };
 
-  class Operation: public OpAttributes
+  class OperationBase: public classdesc::PolyBase<OperationType::Type>,
+                       public OpAttributes
   {
-    CLASSDESC_ACCESS(Operation);
-    friend struct SchemaHelper;
+    CLASSDESC_ACCESS(OperationBase);
   public:
     typedef OpAttributes::Type Type;
-    Type type() const {return m_type;}
+    virtual Type type() const=0;
     const vector<int>& ports() const {return m_ports;}
-    int numPorts() const {return m_ports.size();}
-    // manage the port structures associated with this operation
-    void addPorts();
-    void delPorts();
+    int numPorts() const  {return m_ports.size();}
+    ///factory method. \a ports is used for recreating an object read
+    ///from a schema
+    static OperationBase* create(Type type, 
+                                 const vector<int>& ports = vector<int>()); 
+    virtual OperationBase* clone() const=0;
 
-    Operation(Type op=numOps): intVar(-1) {m_type=op;}
-    Operation(const OpAttributes& attr): OpAttributes(attr), intVar(-1) {}
+    OperationBase() {}
+    OperationBase(const OpAttributes& attr): OpAttributes(attr) {}
+    OperationBase(const vector<int>& ports): m_ports(ports) {}
+    virtual ~OperationBase() {}
 
     /// return the symbolic name of this operation's type
     string name() const;
@@ -99,10 +96,94 @@ namespace minsky
     void MoveTo(float x, float y); 
     void moveTo(TCL_args args) {MoveTo(args[0], args[1]);}
 
+    /// returns true if from matches the out port, and to matches one of
+    /// the in ports
+    bool selfWire(int from, int to) const;
+
+  protected:
+    // manage the port structures associated with this operation
+    virtual void addPorts();
+    void addPorts(const vector<int>& ports) {
+      if (!ports.empty())
+        // TODO - possible consistency check possible here
+        m_ports=ports; 
+      else
+        addPorts(); 
+    }
+    void delPorts();
+
+    vector<int> m_ports;
+    friend struct EvalOp;
+  };
+
+  template <OperationType::Type T>
+  class Operation: public classdesc::PolyBaseT<Operation<T>, OperationBase>
+  {
+    typedef classdesc::PolyBaseT<Operation<T>, OperationBase> Super;
+  public:
+    typedef OperationType::Type Type;
+    Type type() const {return T;}
+    Operation* clone() const {
+      return new Operation(*this);
+    }
+
+    // ensure copies create new ports
+    Operation(const Operation& x): Super(x) {this->addPorts();}
+    const Operation& operator=(const Operation& x)
+    {Super::operator=(x); this->addPorts();}
+
+    Operation() {this->addPorts();}
+    Operation(const vector<int>& ports) {this->addPorts(ports);}
+    ~Operation() {this->delPorts();}
+  };
+
+  class Constant: public Operation<OperationType::constant>
+  {
+    typedef Operation<OperationType::constant> Super;
+  public:
+    // constants have sliders
+    bool sliderVisible, ///< slider is visible on canvas
+      sliderBoundsSet, ///< slider bounds have been initialised at some point
+      sliderStepRel;   /**< sliderStep is relative to the range
+                          [sliderMin,sliderMax] */
+
+    double sliderMin, sliderMax, sliderStep;
+    string description; ///< constant name
+    double value; ///< constant value
+    Constant(const vector<int>& ports=vector<int>()):  
+      Super(ports), value(0), sliderVisible(false), sliderBoundsSet(false), 
+      sliderStepRel(false) {}
+  };
+
+  class IntOp: public Operation<OperationType::integrate>
+  {
+    typedef Operation<OperationType::integrate> Super;
+    // integrals have named integration variables
+    ///integration variable associated with this op. -1 if not used
+    int intVar; 
+    /// name of integration variable
+    string m_description; 
+    CLASSDESC_ACCESS(IntOp);
+    void addPorts(); // override
+    friend struct SchemaHelper;
+  public:
+    // offset for coupled integration variable, tr
+    static const float intVarOffset=10;
+
+    IntOp(): intVar(-1) {}
+    IntOp(const vector<int>& ports);
+
+    // ensure that copies create a new integral variable
+    IntOp(const IntOp& x): Super(x) {setDescription(x.getDescription());}
+    const IntOp& operator=(const IntOp& x)
+    {Super::operator=(x); setDescription(x.getDescription());}
+
+    ~IntOp() {variableManager().erase(intVarID());}
+
     /// set integration variable name
     void setDescription();
     /// description pretends to be an attribute for TCL purposes
-    void setDescription(string desc) {
+    void setDescription(const string& desc) {
       m_description=desc;
       setDescription();
     }
@@ -127,42 +208,47 @@ namespace minsky
         return VariablePtr();
     }
 
-    /// returns true if from matches the out port, and to matches one of
-    /// the in ports
-    bool selfWire(int from, int to) const;
-
     /// toggles coupled state of integration variable. Only valid for integrate
-    /// @return coupled stated
+    /// @return coupled state
     bool toggleCoupled();
     bool coupled() const {
-      return intVar>-1 && m_ports.size()>1 && m_ports[0]==getIntVar()->outPort();
+      return intVar>-1 && ports().size()>1 && ports()[0]==getIntVar()->outPort();
     }
 
-
-  private:
-    string m_description; ///name of constant, variable, or UNURAN string for RNG,
-    vector<int> m_ports;
-    friend struct EvalOp;
-    ///integration variable associated with this op. -1 if not used
-    int intVar; 
   };
+
+  /// shared_ptr class for polymorphic operation objects. Note, you
+  /// may assume that this pointer is always valid, although currently
+  /// the implementation doesn't guarantee it (eg reset() is exposed).
+  class OperationPtr: public shared_ptr<OperationBase>
+  {
+  public:
+    OperationPtr(OperationType::Type type=OperationType::numOps,
+                 const vector<int>& ports=vector<int>()): 
+      shared_ptr<OperationBase>(OperationBase::create(type, ports)) {}
+    // reset pointer to a newly created operation
+    OperationPtr(OperationBase* op): shared_ptr<OperationBase>(op) 
+    {assert(op);}
+    OperationPtr clone() const {return OperationPtr(get()->clone());}
+  };
+
 
   /// represents the operation when evaluating the equations
   struct EvalOp
   {
-    Operation::Type op;
+    OperationType::Type op;
     /// indexes into the Godley variables vector
     int out, in1, in2;
     ///indicate whether in1/in2 are flow variables (out is always a flow variable)
     bool flow1, flow2; 
 
     /// state data (for those ops that need it)
-    Operation* state;
+    OperationPtr state;
 
     EvalOp() {}
-    EvalOp(Operation::Type op, int out, int in1=0, int in2=0, 
+    EvalOp(OperationType::Type op, int out, int in1=0, int in2=0, 
            bool flow1=true, bool flow2=true): 
-      op(op), out(out), in1(in1), in2(in2), state(0), flow1(flow1), flow2(flow2) 
+      op(op), out(out), in1(in1), in2(in2), flow1(flow1), flow2(flow2) 
     {}
 
     /// reset state to initial values
@@ -198,7 +284,7 @@ namespace minsky
     /// @}
   };
 
-  struct Operations: public map<int, Operation>
+  struct Operations: public map<int, OperationPtr>
   {
     array<int> visibleOperations() const;
   };

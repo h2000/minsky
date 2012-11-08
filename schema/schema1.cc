@@ -19,10 +19,13 @@
 
 #include "schema1.h"
 #include "schemaHelper.h"
+#include <classdesc_epilogue.h>
 
 namespace schema1
 {
   using minsky::SchemaHelper;
+  const int Minsky::version;
+
 
   namespace
   {
@@ -39,13 +42,17 @@ namespace schema1
     // internal type for associating layout data with model data
     class Combine
     {
-      typedef map<int, Layout> Layouts;
+      typedef map<int, UnionLayout> Layouts;
       Layouts layout;
       minsky::VariableManager& vm;
     public:
-      Combine(const vector<Layout>& l, minsky::VariableManager& vm): vm(vm) {
+      Combine(const vector<shared_ptr<Layout> >& l, minsky::VariableManager& vm): vm(vm) {
         for (size_t i=0; i<l.size(); ++i)
-          layout.insert(make_pair(l[i].id, l[i]));
+          {
+            const UnionLayout* ul=dynamic_cast<const UnionLayout*>(l[i].get());
+            if (ul)
+              layout.insert(make_pair(l[i]->id, *ul));
+          }
       }
 
       /// combine model and layout data
@@ -67,7 +74,7 @@ namespace schema1
       /// populate the variable manager from a vector of schema data
       void populate(minsky::VariableManager& vm, const vector<Variable>& v) const
       {
-        for (typename vector<Variable>::const_iterator i=v.begin(); i!=v.end(); ++i)
+        for (vector<Variable>::const_iterator i=v.begin(); i!=v.end(); ++i)
           {
             vm.addVariable(combine(minsky::VariablePtr(i->type), *i), i->id);
             vm.setInit(i->name, i->init);
@@ -105,23 +112,34 @@ namespace schema1
       return w;
     }
 
-    template <> minsky::Operation 
-    Combine::combine(minsky::Operation& o, const Operation& o1) const
+    template <> minsky::OperationPtr 
+    Combine::combine(minsky::OperationPtr& o, const Operation& o1) const
     {
       Layouts::const_iterator li=layout.find(o1.id);
+      o=minsky::OperationPtr(o1.type, o1.ports);
+      if (o1.type==OperationType::integrate)
+        SchemaHelper::setPrivates
+          (dynamic_cast<minsky::IntOp&>(*o), o1.name, o1.intVar);
+      if (minsky::Constant* c=dynamic_cast<minsky::Constant*>(o.get()))
+        {
+          c->value=o1.value;
+          c->description=o1.name;
+        }
       if (li!=layout.end())
         {
-          const Layout& l=li->second;
-          o.value=o1.value;
-          o.rotation=l.rotation;
-          o.visible=l.visible;
-          o.m_type=o1.type;
-          o.sliderVisible=l.sliderVisible;
-          o.sliderMin=l.sliderMin;
-          o.sliderMax=l.sliderMax;
-          o.sliderStep=l.sliderStep;
-          SchemaHelper::setPrivates(o, o1.ports, o1.name, o1.intVar);
-          o.MoveTo(l.x, l.y);
+          const UnionLayout& l=li->second;
+          o->rotation=l.rotation;
+          o->visible=l.visible;
+          if (minsky::Constant* c=dynamic_cast<minsky::Constant*>(o.get()))
+            {
+              c->sliderVisible=l.sliderVisible;
+              c->sliderBoundsSet=l.sliderBoundsSet;
+              c->sliderStepRel=l.sliderStepRel;
+              c->sliderMin=l.sliderMin;
+              c->sliderMax=l.sliderMax;
+              c->sliderStep=l.sliderStep;
+            }
+          o->MoveTo(l.x, l.y);
         }
       return o;
     }
@@ -133,7 +151,7 @@ namespace schema1
       Layouts::const_iterator li=layout.find(v1.id);
       if (li!=layout.end())
         {
-          const Layout& l=li->second;
+          const UnionLayout& l=li->second;
           v->init=v1.init;
           v->name=v1.name;
           v->rotation=l.rotation;
@@ -152,11 +170,11 @@ namespace schema1
       Layouts::const_iterator li=layout.find(p1.id);
       if (li!=layout.end())
         {
-          const Layout& l=li->second;
+          const UnionLayout& l=li->second;
           p.ports.resize(p1.ports.size());
           for (size_t i=0; i<p1.ports.size(); ++i)
             p.ports[i]=p1.ports[i];
-          p.moveTo(l.x, l.y);
+          p.MoveTo(l.x, l.y);
         }
       return p;
     }
@@ -167,7 +185,7 @@ namespace schema1
       Layouts::const_iterator li=layout.find(g1.id);
       if (li!=layout.end())
         {
-          const Layout& l=li->second;
+          const UnionLayout& l=li->second;
           // installing these has to happen later, as at this point,
           // we just have a list of anonymous items, not what type
           // they are
@@ -190,7 +208,7 @@ namespace schema1
      Layouts::const_iterator li=layout.find(g1.id);
       if (li!=layout.end())
         {
-          const Layout& l=li->second;
+          const UnionLayout& l=li->second;
           SchemaHelper::setPrivates(g.table, g1.data, g1.assetClasses);
           g.table.doubleEntryCompliant=g1.doubleEntryCompliant;
           g.table.title=g1.name;
@@ -234,6 +252,55 @@ namespace schema1
       }
    };
 
+    template <class T> shared_ptr<Layout> layoutFactory(int id, const T&);
+
+    template <> shared_ptr<Layout> layoutFactory
+    (int id, const minsky::Port& p)
+    {return shared_ptr<Layout>(new PositionLayout(id,p));}
+
+    template <> shared_ptr<Layout> layoutFactory
+    (int id, const minsky::Wire& w)
+    {return shared_ptr<Layout>(new WireLayout(id,w));}
+
+    template <> shared_ptr<Layout> layoutFactory
+    (int id, const minsky::VariablePtr& v)
+    {return shared_ptr<Layout>(new ItemLayout(id,*v));}
+
+    template <> shared_ptr<Layout> layoutFactory
+    (int id, const minsky::OperationBase& o)
+    {
+      if (const minsky::Constant* c=dynamic_cast<const minsky::Constant*>(&o))
+        return shared_ptr<Layout>(new SliderLayout(id,*c));
+      else
+        return shared_ptr<Layout>(new ItemLayout(id,o));
+    }
+
+    template <> shared_ptr<Layout> layoutFactory
+    (int id, const minsky::GodleyIcon& g)
+    {return shared_ptr<Layout>(new PositionLayout(id,g));}
+
+    template <> shared_ptr<Layout> layoutFactory
+    (int id, const minsky::PlotWidget& p)
+    {return shared_ptr<Layout>(new PositionLayout(id,p));}
+
+    template <> shared_ptr<Layout> layoutFactory
+    (int id, const minsky::GroupIcon& g)
+    {return shared_ptr<Layout>(new GroupLayout(id,g));}
+  }
+
+  Operation::Operation(int id, const minsky::OperationBase& op): 
+    Item(id), type(op.type()), value(0), ports(op.ports()), intVar(-1) 
+  {
+    if (const minsky::Constant* c=dynamic_cast<const minsky::Constant*>(&op))
+      {
+        name=c->description;
+        value=c->value;
+      }
+    else if (const minsky::IntOp* i=dynamic_cast<const minsky::IntOp*>(&op))
+      {
+        name=i->getDescription();
+        intVar=i->intVarID();
+      }
   }
 
   bool MinskyModel::validate() const
@@ -316,7 +383,7 @@ namespace schema1
          p!=m.ports.end(); ++p, ++id)
       {
         model.ports.push_back(Port(id, p->second));
-        layout.push_back(Layout(id, p->second));
+        layout.push_back(layoutFactory(id, p->second));
         portMap[p->first]=id;
       }
 
@@ -326,20 +393,17 @@ namespace schema1
         model.wires.push_back(Wire(id, w->second));
         model.wires.back().from=portMap[w->second.from];
         model.wires.back().to=portMap[w->second.to];
-        layout.push_back(Layout(id, w->second));
+        layout.push_back(layoutFactory(id, w->second));
         wireMap[w->first]=id;
       }
 
      for (minsky::VariableManager::const_iterator v=m.variables.begin(); 
          v!=m.variables.end(); ++v, ++id)
       {
-        // godley table variables should be omitted from schema, as
-        // they can be reconstructed by godleyIcons::update()
-        //    if (v->second->m_godley) continue;
         model.variables.push_back(Variable(id, v->second));
         Variable& var=model.variables.back();
         portMap.remap(var.ports);
-        layout.push_back(Layout(id, v->second));
+        layout.push_back(layoutFactory(id, v->second));
         var.init=m.variables.values.find(var.name)->second.init;
         varMap[v->first]=id;
       }
@@ -347,10 +411,10 @@ namespace schema1
      for (minsky::Operations::const_iterator o=m.operations.begin(); 
          o!=m.operations.end(); ++o, ++id)
       {
-        model.operations.push_back(Operation(id, o->second));
+        model.operations.push_back(Operation(id, *o->second));
         portMap.remap(model.operations.back().ports);
         model.operations.back().intVar=varMap[model.operations.back().intVar];
-        layout.push_back(Layout(id, o->second));
+        layout.push_back(layoutFactory(id, *o->second));
         opMap[o->first]=id;
       }
 
@@ -359,7 +423,7 @@ namespace schema1
       {
         model.godleys.push_back(Godley(id, g->second));
         portMap.remap(model.godleys.back().ports);
-        layout.push_back(Layout(id, g->second));
+        layout.push_back(layoutFactory(id, g->second));
       }
 
       for (minsky::Minsky::GroupIcons::const_iterator g=m.groupItems.begin(); 
@@ -380,7 +444,7 @@ namespace schema1
         for (size_t i=0; i<g1.variables().size(); ++i)
           group.items.push_back(varMap[g1.variables()[i]]);
 
-        layout.push_back(Layout(id, g->second));
+        layout.push_back(layoutFactory(id, g->second));
       }
 
       for (minsky::Plots::Map::const_iterator p=m.plots.plots.begin(); 
@@ -388,7 +452,7 @@ namespace schema1
       {
         model.plots.push_back(Plot(id, p->second));
         portMap.remap(model.plots.back().ports);        
-        layout.push_back(Layout(id, p->second));
+        layout.push_back(layoutFactory(id, p->second));
       }
 
       model.rungeKutta=RungeKutta(m);

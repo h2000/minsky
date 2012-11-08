@@ -16,8 +16,12 @@
   You should have received a copy of the GNU General Public License
   along with Minsky.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef CLASSDESC_ACCESS_H
+#define CLASSDESC_ACCESS_H
+
 #include <xml_pack_base.h>
 #include <xml_unpack_base.h>
+#include <xsd_generate_base.h>
 
 // redefine this to include xml_* descriptors
 #undef CLASSDESC_ACCESS
@@ -25,5 +29,7 @@
   friend struct classdesc_access::access_pack<type>;        \
   friend struct classdesc_access::access_unpack<type>;      \
   friend struct classdesc_access::access_xml_pack<type>;    \
-  friend struct classdesc_access::access_xml_unpack<type>
+  friend struct classdesc_access::access_xml_unpack<type>;  \
+  friend struct classdesc_access::access_xsd_generate<type>   
 
+#endif

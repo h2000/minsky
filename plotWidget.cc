@@ -178,7 +178,7 @@ void PlotWidget::deletePorts()
   ports.resize(0);
 }
 
-void PlotWidget::moveTo(float x1, float y1)
+void PlotWidget::MoveTo(float x1, float y1)
 {
   float w=width(), h=height();
   float dx=x1-x, dy=y1-y;
@@ -290,10 +290,10 @@ void PlotWidget::connectVar(const VariableValue& var, unsigned port)
     }
 }
 
-void Plots::moveTo(TCL_args args)
-{
-  plots[args[0]].moveTo(args[1],args[2]);
-}
+//void Plots::moveTo(TCL_args args)
+//{
+//  plots[args[0]].MoveTo(args[1],args[2]);
+//}
 
 void Plots::addImage(TCL_args args) {
   string id=args, image=args;

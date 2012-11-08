@@ -66,7 +66,7 @@ namespace schema0
     double rotation; /// rotation if icon, in degrees
 
     bool visible; ///< whether operation is visible on Canvas 
-    minsky::Operation::Type m_type;
+    OperationType::Type m_type;
 
     bool sliderVisible, sliderBoundsSet, sliderStepRel;
     double sliderMin, sliderMax, sliderStep;
@@ -77,11 +77,11 @@ namespace schema0
     ///integration variable associated with this op. -1 if not used
     int intVar; 
 
-    Operation(): x(10), y(10), m_type(minsky::Operation::numOps), value(0), 
+    Operation(): x(10), y(10), m_type(OperationType::numOps), value(0), 
                  rotation(0), visible(true), sliderVisible(false), 
                  sliderBoundsSet(false), sliderStepRel(false), intVar(-1) {}
 
-    operator minsky::Operation() const;
+    operator minsky::OperationPtr() const;
   };
 
   struct VariablePtr

@@ -28,6 +28,7 @@ but any renamed attributes require bumping the schema number.
 #include "minsky.h"
 #include "schemaHelper.h"
 
+#include <xsd_generate_base.h>
 #include <vector>
 #include <string>
 
@@ -56,15 +57,13 @@ namespace schema1
 
   struct Operation: public Item
   {
-    minsky::Operation::Type type;
+    OperationType::Type type;
     double value;
     vector<int> ports;
     string name;
     int intVar;
-    Operation(): type(minsky::Operation::numOps), value(0) {}
-    Operation(int id, const minsky::Operation& op): 
-      Item(id), type(op.type()), value(op.value), ports(op.ports()), 
-      name(op.getDescription()), intVar(op.intVarID()) {}
+    Operation(): type(OperationType::numOps), value(0) {}
+    Operation(int id, const minsky::OperationBase& op); 
   };
 
   struct Variable: public Item
@@ -111,40 +110,115 @@ namespace schema1
       name(g.table.title), data(g.table.getData()) {}
   };
 
-  struct Layout: public Item
+  template <class T> 
+  void xml_pack_layout(xml_pack_t& x, const string& d, const T& a);
+
+  struct Layout
+  {
+    int id;
+    Layout(int id=-1): id(id) {}
+    virtual ~Layout() {}
+    virtual void xml_pack(xml_pack_t&, const string&) const=0;
+  };
+
+  /// represent objects whose layouts just have a position (ports,
+  /// plots, godleyIcons)
+  struct PositionLayout: public virtual Layout
   {
     float x,y;
-    bool visible;
-    float rotation;
-    bool sliderVisible;
-    double sliderMin, sliderMax, sliderStep;
-    vector<float> coords;
-    float width, height;
 
-    // body of default ctor
-    void init() {x=y=rotation=0; visible=true; sliderVisible=false; 
-      sliderMin=sliderMax=sliderStep=0; width=height=0;}
-    Layout() {init();}
-    Layout(int id, const minsky::Port& p): Item(id) {init(); x=p.x; y=p.y;}
-    Layout(int id, const minsky::Wire& w): Item(id) 
-    {init(); coords=toVector(w.coords); visible=w.visible;}
-    Layout(int id, const minsky::Operation& o): Item(id) {
-      init(); x=o.x; y=o.y; rotation=o.rotation; visible=o.visible;
-      sliderVisible=o.sliderVisible; sliderMin=o.sliderMin; 
-      sliderMax=o.sliderMax; sliderStep=o.sliderStep;
-    }
-    Layout(int id, const minsky::VariablePtr& v): Item(id) {
-      init(); x=v->x; y=v->y; rotation=v->rotation; visible=v->visible;
-    }
-    Layout(int id, const minsky::PlotWidget& p): Item(id) {
-      init(); x=p.x; y=p.y;
-    }
-    Layout(int id, const minsky::GodleyIcon& g): Item(id) {
-      init(); x=g.x; y=g.y;
-    }
-    Layout(int id, const minsky::GroupIcon& g): Item(id) {
-      init(); x=g.x; y=g.y; width=g.width; height=g.height; rotation=g.rotation;
-    }
+    PositionLayout(): x(0), y(0) {}
+    template <class T> PositionLayout(int id, const T& item): 
+      Layout(id), x(item.x), y(item.y) {}
+    void xml_pack(xml_pack_t& x, const string& d) const
+    {xml_pack_layout(x,d,*this);}
+  };
+
+  /// represents items with a visibility attribute
+  struct VisibilityLayout: public virtual Layout
+  {
+    bool visible;
+    VisibilityLayout(): visible(true) {}
+    template <class T> VisibilityLayout(int id, const T& item):
+      Layout(id), visible(item.visible) {}
+    VisibilityLayout(int id, const minsky::GroupIcon& g):
+      Layout(id), visible(true) {}
+    void xml_pack(xml_pack_t& x, const string& d) const
+    {xml_pack_layout(x,d,*this);}
+  };
+
+  /// represents layouts of wires
+  struct WireLayout: public virtual VisibilityLayout
+  {
+    vector<float> coords;
+
+    WireLayout() {}
+    WireLayout(int id, const minsky::Wire& wire): 
+      Layout(id), VisibilityLayout(id, wire), coords(toVector(wire.coords)) {}
+    void xml_pack(xml_pack_t& x, const string& d) const
+    {xml_pack_layout(x,d,*this);}
+  };
+
+  /// represents layouts of objects like variables and operators
+  struct ItemLayout: public virtual PositionLayout, 
+                     public virtual VisibilityLayout
+  {
+    float rotation;
+
+    ItemLayout() {}
+    template <class T> ItemLayout(int id, const T& item): 
+      Layout(id), PositionLayout(id, item), VisibilityLayout(id, item),
+      rotation(item.rotation) {}
+    void xml_pack(xml_pack_t& x, const string& d) const
+    {xml_pack_layout(x,d,*this);}
+ };
+
+  /// group layouts also have a width & height
+  struct GroupLayout: public virtual ItemLayout
+  {
+    float width, height;
+    GroupLayout() {}
+    GroupLayout(int id, const minsky::GroupIcon& g):
+      Layout(id), PositionLayout(id,g), VisibilityLayout(id, g),
+      ItemLayout(id, g), width(g.width), height(g.height) {}
+    void xml_pack(xml_pack_t& x, const string& d) const
+    {xml_pack_layout(x,d,*this);}
+  };
+
+  /// describes item with sliders - currently just constants
+  struct SliderLayout: public virtual ItemLayout
+  {
+    bool sliderVisible, sliderBoundsSet, sliderStepRel;
+    double sliderMin, sliderMax, sliderStep;
+    SliderLayout() {}
+    SliderLayout(int id, const minsky::Constant& item):
+      Layout(id), PositionLayout(id,item), VisibilityLayout(id, item), 
+      ItemLayout(id, item), sliderVisible(item.sliderVisible),
+      sliderBoundsSet(item.sliderBoundsSet), sliderStepRel(item.sliderStepRel),
+      sliderMin(item.sliderMin), sliderMax(item.sliderMax), 
+      sliderStep(item.sliderStep) {}
+    void xml_pack(xml_pack_t& x, const string& d) const
+    {xml_pack_layout(x,d,*this);}
+  };
+
+  /// structure representing a union of all of the above Layout
+  /// classes, for xml_unpack
+  struct UnionLayout: public virtual SliderLayout, 
+                      public virtual GroupLayout, public virtual WireLayout
+  {
+    // not used, but needed to resolve ambiguity
+    void xml_pack(xml_pack_t&,const string&) const {} 
+  };
+
+  inline void xml_pack(xml_pack_t& x, const string& d, 
+                       const shared_ptr<Layout>& a)
+  {a->xml_pack(x,d);}
+
+  /// unpack into a UnionLayout structure, so everything's at hand 
+  inline void xml_unpack(xml_unpack_t& x, const string& d, shared_ptr<Layout>& a)
+  {
+    a.reset(new UnionLayout);
+    ::xml_unpack(x, d, dynamic_cast<UnionLayout&>(*a));
   };
 
   struct RungeKutta
@@ -178,7 +252,7 @@ namespace schema1
     static const int version=1;
     int schemaVersion;
     MinskyModel model;
-    vector<Layout> layout;
+    vector<shared_ptr<Layout> > layout;
     Minsky(): schemaVersion(-1) {} // schemaVersion defined on read in
     Minsky(const minsky::Minsky& m);
 
@@ -187,5 +261,44 @@ namespace schema1
   };
 }
 
+namespace classdesc
+{
+  // we provide a specialisation here, to ensure our intended schema
+  // is as a "vector of Layouts"
+  template <> inline std::string typeName<shared_ptr<schema1::Layout> >() 
+  {return "schema1::Layout";}
+
+  // decalare the polymorphic base classes
+//  template <> struct IsPoly<schema1::UnionLayout>: 
+//    public PolyBaseIs<schema1::Layout> {};
+
+//  template <> inline
+//  void xsd_generate(xsd_generate_t& x, const string& d, 
+//                    const shared_ptr<schema1::Layout>& a)
+//  {xsd_generate(x,d,schema1::UnionLayout());}
+
+
+  // we're not using pack/unpack, so disable unpack because the
+  // abstract base class causes problems
+
+  inline void unpack(unpack_t&,const string&,shared_ptr<schema1::Layout>&) {}
+}
+
+using schema1::xml_pack;
+using schema1::xml_unpack;
+using classdesc::unpack;
+using classdesc::xsd_generate;
+
 #include "schema1.cd"
+
+namespace schema1
+{
+  template <class T> 
+  void xml_pack_layout(xml_pack_t& x, const string& d, const T& a)
+  {
+    //    ::xml_pack(x,d+".type",typeName<T>());
+    ::xml_pack(x,d,a);
+  }
+}
+
 #endif

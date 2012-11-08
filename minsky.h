@@ -43,6 +43,11 @@ using namespace classdesc;
 
 namespace minsky
 {
+  /// utility function to create a string representation of a numeric type
+  string str(long x);
+  string str(double x);
+
+
   // An integral is an additional stock variable, that integrates its flow variable
   struct Integral
   {
@@ -68,6 +73,7 @@ namespace minsky
   {
     size_t n;
     double *data;
+    CLASSDESC_ACCESS(MinskyMatrix);
   public:
     MinskyMatrix(size_t n, double* data): n(n), data(data) {}
     double& operator()(size_t i, size_t j) {return data[i*n+j];}
@@ -99,7 +105,7 @@ namespace minsky
     void operator=(const GetterSetter&) {}
   };
 
-  template <class K, class T>
+  template <class K, class T, class V=typename T::element_type>
   class GetterSetterPtr
   {
     std::map<K, T>& map;
@@ -116,7 +122,15 @@ namespace minsky
         {
           cmdPrefix.erase(cmdPrefix.rfind(".get"));
           // register current object with TCL
-          TCL_obj(null_TCL_obj, cmdPrefix, i->second);
+          V* v=dynamic_cast<V*>(i->second.get());
+          if (v)
+            TCL_obj(null_TCL_obj, cmdPrefix, *v);
+          else
+            {
+              ostringstream s;
+              s<<"gotten object "<<key<<" not of type "<<typeName<V>();
+              throw error(s.str().c_str());
+            }
         }
       else
         throw error("object not found: %s[%s]",(char*)args[-1],(char*)args[0]);
@@ -167,7 +181,9 @@ namespace minsky
     /// TCL accessors
     GetterSetter<int, Port> port;
     GetterSetter<int, Wire> wire;
-    GetterSetter<int, Operation> op;
+    GetterSetterPtr<int, OperationPtr> op;
+    GetterSetterPtr<int, OperationPtr, Constant> constant;
+    GetterSetterPtr<int, OperationPtr, IntOp> integral;
     GetterSetterPtr<int, VariablePtr> var;
     GetterSetter<string, VariableValue> value;
     GetterSetter<string, PlotWidget> plot;
@@ -305,6 +321,14 @@ namespace minsky
     void Load(const char* filename);
     void load(TCL_args args) {Load(args);}
 
+    void ExportSchema(const char* filename, int schemaLevel=1);
+    void exportSchema(TCL_args args) {
+      const char* filename=args;
+      int schemaLevel=1;
+      if (args.count) schemaLevel=args;
+      ExportSchema(filename, schemaLevel);
+    }
+
     void latex(TCL_args args) {
       ofstream f(args);
       f<<"\\documentclass{article}\n\\begin{document}\n";
@@ -334,21 +358,25 @@ inline void xml_unpack(xml_unpack_t&, const string&,minsky::MinskyExclude&) {}
 #pragma omit unpack minsky::MinskyExclude
 #pragma omit xml_pack minsky::MinskyExclude
 #pragma omit xml_unpack minsky::MinskyExclude
+#pragma omit xsd_generate minsky::MinskyExclude
 
   // we don't want to serialise this helper
 #pragma omit pack minsky::GetterSetter
 #pragma omit unpack minsky::GetterSetter
 #pragma omit xml_pack minsky::GetterSetter
 #pragma omit xml_unpack minsky::GetterSetter
+#pragma omit xsd_generate minsky::GetterSetter
 #pragma omit pack minsky::GetterSetterPtr
 #pragma omit unpack minsky::GetterSetterPtr
 #pragma omit xml_pack minsky::GetterSetterPtr
 #pragma omit xml_unpack minsky::GetterSetterPtr
+#pragma omit xsd_generate minsky::GetterSetterPtr
 
 #pragma omit pack minsky::MinskyMatrix
 #pragma omit unpack minsky::MinskyMatrix
 #pragma omit xml_pack minsky::MinskyMatrix
 #pragma omit xml_unpack minsky::MinskyMatrix
+#pragma omit xsd_generate minsky::MinskyMatrix
 #endif
 
 template <class K, class T> 
@@ -359,13 +387,13 @@ template <class K, class T>
 void xml_pack(classdesc::xml_pack_t&,const string&,minsky::GetterSetter<K,T>&) {}
 template <class K, class T> 
 void xml_unpack(classdesc::xml_unpack_t&,const string&,minsky::GetterSetter<K,T>&) {}
-template <class K, class T> 
-void pack(classdesc::pack_t&,const string&,minsky::GetterSetterPtr<K,T>&) {}
-template <class K, class T> 
-void unpack(classdesc::unpack_t&,const string&,minsky::GetterSetterPtr<K,T>&) {}
-template <class K, class T> 
-void xml_pack(classdesc::xml_pack_t&,const string&,minsky::GetterSetterPtr<K,T>&) {}
-template <class K, class T> 
-void xml_unpack(classdesc::xml_unpack_t&,const string&,minsky::GetterSetterPtr<K,T>&) {}
+template <class K, class T, class V> 
+void pack(classdesc::pack_t&,const string&,minsky::GetterSetterPtr<K,T,V>&) {}
+template <class K, class T, class V> 
+void unpack(classdesc::unpack_t&,const string&,minsky::GetterSetterPtr<K,T,V>&) {}
+template <class K, class T, class V> 
+void xml_pack(classdesc::xml_pack_t&,const string&,minsky::GetterSetterPtr<K,T,V>&) {}
+template <class K, class T, class V> 
+void xml_unpack(classdesc::xml_unpack_t&,const string&,minsky::GetterSetterPtr<K,T,V>&) {}
 
 #endif

@@ -23,23 +23,25 @@
 #include "minsky.h"
 #include "cairoItems.h"
 
+#include <ecolab_epilogue.h>
+
 #include <math.h>
 using namespace minsky;
 
 // necessary for Classdesc reflection!
-const float OpAttributes::intVarOffset;
+const float IntOp::intVarOffset;
 const float OpAttributes::l;
 const float OpAttributes::h;
 const float OpAttributes::r;
 
 
-string Operation::name() const 
-{return enumKey<Type>(m_type);}
+string OperationBase::name() const 
+{return enumKey<Type>(type());}
 
-string Operation::OpName(int op) 
+string OperationBase::OpName(int op) 
 {return enumKey<Type>(op);}
 
-void Operation::MoveTo(float x1, float y1)
+void OperationBase::MoveTo(float x1, float y1)
 {
   float dx=x1-x, dy=y1-y;
   x=x1; y=y1;
@@ -47,9 +49,9 @@ void Operation::MoveTo(float x1, float y1)
     portManager().movePort(m_ports[i], dx, dy);
 }
 
-void Operation::addPorts()
+void OperationBase::addPorts()
 {
-    switch (m_type)
+  switch (type())
     {
       // zero input port case
     case constant: 
@@ -71,22 +73,34 @@ void Operation::addPorts()
       assert(portManager().ports[m_ports.back()].input);
       assert(portManager().ports.size()>2);
       break;
-    case integrate:
-      setDescription();
-      //      m_ports.push_back(portManager().addPort(Port()));
-      m_ports.push_back(portManager().addPort(Port(0,0,true)));
-      break;
     }
 
 }
 
-void Operation::delPorts()
+IntOp::IntOp(const vector<int>& ports): Operation(ports), intVar(-1) 
+{
+  if (ports.empty())
+    {
+      delPorts(); // to be sure, although there shouldn't be any ports
+      addPorts();
+    }
+}
+
+void IntOp::addPorts()
+{
+  setDescription();
+  m_ports.push_back(portManager().addPort(Port(0,0,true)));
+}
+
+
+void OperationBase::delPorts()
 {
   for (size_t i=0; i<m_ports.size(); ++i)
     portManager().delPort(m_ports[i]);
+  m_ports.clear();
 }
 
-void Operation::setDescription()
+void IntOp::setDescription()
 {
   if (type()!=integrate) return;
   vector<Wire> savedWires;
@@ -144,7 +158,7 @@ void Operation::setDescription()
     }
 }
 
-bool Operation::selfWire(int from, int to) const
+bool OperationBase::selfWire(int from, int to) const
 {
   bool r=false;
   if (numPorts()>1 && from==ports()[0])
@@ -153,32 +167,59 @@ bool Operation::selfWire(int from, int to) const
   return r;
 }
 
+OperationBase* OperationBase::create(OperationType::Type type,
+                                     const vector<int>& ports)
+{
+  switch (type)
+  {
+  case constant:
+    return new Constant(ports);
+  case time:
+    return new Operation<time>(ports);
+  case copy:
+    return new Operation<copy>(ports);
+  case integrate:
+    return new IntOp(ports);
+  case exp:
+    return new Operation<exp>(ports);
+  case add:
+    return new Operation<add>(ports);
+  case subtract:
+    return new Operation<subtract>(ports);
+  case multiply:
+    return new Operation<multiply>(ports);
+  case divide:
+    return new Operation<divide>(ports);
+  case numOps:  // default, do nothing op
+    return new Operation<numOps>(ports);
+  default:
+    assert("Invalid operation type requested" && false);
+    return NULL;
+  }
+}
+
 
 void EvalOp::reset()
 {
-  switch (op)
-    {
-    case Operation::constant:
-      ValueVector::flowVars[out]=state->value;
-      break;
-    }
+  if (Constant* c=dynamic_cast<Constant*>(state.get()))
+    ValueVector::flowVars[out]=c->value;
 }
 
 int EvalOp::numArgs()
 {
   switch (op)
     {
-    case Operation::constant:
-    case Operation::time:
+    case OperationType::constant:
+    case OperationType::time:
       return 0;
-    case Operation::copy:
-    case Operation::integrate:
-    case Operation::exp:
+    case OperationType::copy:
+    case OperationType::integrate:
+    case OperationType::exp:
       return 1;      
-    case Operation::add:
-    case Operation::subtract:
-    case Operation::multiply:
-    case Operation::divide:
+    case OperationType::add:
+    case OperationType::subtract:
+    case OperationType::multiply:
+    case OperationType::divide:
       return 2;
     }
   assert(false); //shouldn't be here
@@ -225,24 +266,24 @@ void EvalOp::deriv(double df[], const double ds[],
 
 double EvalOp::evaluate(double in1, double in2, const double v[]) const
 {
-  assert(op != Operation::integrate);
+  assert(op != OperationType::integrate);
   switch (op)
     {
-    case Operation::constant:
-      return state->value;
-    case Operation::time:
+    case OperationType::constant:
+      return dynamic_cast<Constant&>(*state).value;
+    case OperationType::time:
       return minsky.t;
-    case Operation::copy:
+    case OperationType::copy:
       return in1;
-    case Operation::exp:
+    case OperationType::exp:
       return exp(in1);      
-    case Operation::add:
+    case OperationType::add:
       return in1+in2;
-    case Operation::subtract:
+    case OperationType::subtract:
       return in1-in2;
-    case Operation::multiply:
+    case OperationType::multiply:
       return in1*in2;
-    case Operation::divide:
+    case OperationType::divide:
       return in1/in2;
     default:
       return 0;
@@ -253,21 +294,21 @@ double EvalOp::d1(double x1, double x2)
 {
   switch (op)
     {
-    case Operation::constant:
-    case Operation::time:
+    case OperationType::constant:
+    case OperationType::time:
       return 0;
-    case Operation::copy:
+    case OperationType::copy:
       return 1;
-    case Operation::integrate:
+    case OperationType::integrate:
       return x1;
-    case Operation::exp:
+    case OperationType::exp:
       return exp(in1);      
-    case Operation::add:
-    case Operation::subtract:
+    case OperationType::add:
+    case OperationType::subtract:
       return 1;
-    case Operation::multiply:
+    case OperationType::multiply:
       return x2;
-    case Operation::divide:
+    case OperationType::divide:
       return 1/x2;
     }
   assert(false); // shouldn't be here
@@ -278,19 +319,19 @@ double EvalOp::d2(double x1, double x2)
 {
   switch (op)
     {
-    case Operation::constant:
-    case Operation::time:
-    case Operation::copy:
-    case Operation::integrate:
-    case Operation::exp:
+    case OperationType::constant:
+    case OperationType::time:
+    case OperationType::copy:
+    case OperationType::integrate:
+    case OperationType::exp:
       return 0;
-    case Operation::add:
+    case OperationType::add:
       return 1;
-    case Operation::subtract:
+    case OperationType::subtract:
       return -1;
-    case Operation::multiply:
+    case OperationType::multiply:
       return x1;
-    case Operation::divide:
+    case OperationType::divide:
       return -x1/(x2*x2);
     }
   assert(false); // shouldn't be here
@@ -301,13 +342,13 @@ array<int> Operations::visibleOperations() const
 {
   array<int> ret;
   for (const_iterator i=begin(); i!=end(); ++i)
-    if (i->second.visible)
+    if (i->second->visible)
       ret<<=i->first;
   return ret;
 }
 
 
-bool Operation::toggleCoupled()
+bool IntOp::toggleCoupled()
 {
   if (type()!=integrate) return false;
   if (intVar==-1) setDescription();

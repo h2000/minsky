@@ -32,6 +32,8 @@ using namespace classdesc;
 
 namespace
 {
+  const char* schemaURL="http://minsky.sf.net/minsky";
+
   /*
     For using GSL Runge-Kutta routines
   */
@@ -54,6 +56,21 @@ namespace
 
 namespace minsky
 {
+
+  string str(long x)
+  {
+    ostringstream o;
+    o<<x;
+    return o.str();
+  }
+
+  string str(double x)
+  {
+    ostringstream o;
+    o<<x;
+    return o.str();
+  }
+
   struct RKdata
   {
     gsl_odeiv2_system sys;
@@ -89,7 +106,8 @@ namespace minsky
 }
 
 Minsky::Minsky(): edited(true), 
-                  port(ports), wire(wires), op(operations), var(variables),
+                  port(ports), wire(wires), op(operations), 
+                  constant(operations), integral(operations), var(variables),
                   value(variables.values), plot(plots.plots), 
                   godleyItem(godleyItems), groupItem(groupItems),
                   t(0), stepMin(0), stepMax(1), nSteps(1),
@@ -139,7 +157,7 @@ int Minsky::addWire(TCL_args args) {
   // TODO: check that multiple input wires are only to binary ops.
   for (Operations::const_iterator o=operations.begin(); 
        o!=operations.end(); ++o)
-    if (o->second.selfWire(from, to))
+    if (o->second->selfWire(from, to))
       return -1;
 
   // check whether variable manager will allow the connection
@@ -184,18 +202,13 @@ array<float> Minsky::wireCoords(TCL_args args)
 
 int Minsky::AddOperation(const char* o)
 {
-  string op(o);
-  for (int i=0; i<Operation::numOps; ++i)
-    if (op==Operation::OpName(i))
-      {
-        Operation newOp(static_cast<Operation::Type>(i));
-        newOp.addPorts();
-        int id=operations.empty()? 0: operations.rbegin()->first+1;
-        operations.insert(make_pair(id, newOp));
-        edited = true;
-        return id;
-      }
-  return -1;
+  OperationPtr newOp(static_cast<OperationType::Type>
+                     (enumKey<OperationType::Type>(o)));
+  if (!newOp) return -1;
+  int id=operations.empty()? 0: operations.rbegin()->first+1;
+  operations.insert(make_pair(id, newOp));
+  edited = true;
+  return id;
 }
 
 int Minsky::CopyOperation(int id)
@@ -203,9 +216,9 @@ int Minsky::CopyOperation(int id)
   Operations::iterator source=operations.find(id);
   if (source==operations.end()) return -1;
   int newId=operations.empty()? 0: operations.rbegin()->first+1;
-  Operation newOp(static_cast<OpAttributes&>(source->second));
-  newOp.setDescription(source->second.description());
-  newOp.addPorts();
+  OperationPtr newOp = source->second->clone();
+  // newOp->setDescription(source->second->description());
+  //  newOp.addPorts();
   operations.insert(make_pair(newId, newOp));
   return newId;
 }
@@ -217,9 +230,9 @@ void Minsky::DeleteOperation(int opid)
   if (op!=operations.end())
     {
       // delete all wires attached to this operation
-      for (int p=0; p<op->second.numPorts(); ++p)
+      for (int p=0; p<op->second->numPorts(); ++p)
         {
-          array<int> wires=WiresAttachedToPort(op->second.ports()[p]);
+          array<int> wires=WiresAttachedToPort(op->second->ports()[p]);
           for (int w=0; w<wires.size(); ++w)
             {
               int wid=wires[w];
@@ -227,8 +240,6 @@ void Minsky::DeleteOperation(int opid)
               PortManager::deleteWire(wid);
             }
         }
-      op->second.delPorts();
-      variables.erase(op->second.intVarID());
       operations.erase(op);
       edited = true;
     }
@@ -261,8 +272,8 @@ array<int> Minsky::unwiredOperations()
 {
   array<int> ret;
   for (Operations::iterator op=operations.begin(); op!=operations.end(); ++op)
-    for (int i=0; i<op->second.numPorts(); ++i)
-      if (WiresAttachedToPort(op->second.ports()[i]).size()==0)
+    for (int i=0; i<op->second->numPorts(); ++i)
+      if (WiresAttachedToPort(op->second->ports()[i]).size()==0)
         {
           ret<<=op->first;
           break;
@@ -359,8 +370,8 @@ void Minsky::garbageCollect()
 
   for (Operations::const_iterator o=operations.begin(); 
        o!=operations.end(); ++o)
-    for (int p=0; p<o->second.numPorts(); ++p)
-      ports[o->second.ports()[p]] = oldPortMap[o->second.ports()[p]];
+    for (int p=0; p<o->second->numPorts(); ++p)
+      ports[o->second->ports()[p]] = oldPortMap[o->second->ports()[p]];
 
   for (Plots::Map::iterator pl=plots.plots.begin(); pl!=plots.plots.end(); ++pl)
     for (int p=0; p<pl->second.ports.size(); ++p)
@@ -405,7 +416,7 @@ namespace {
   struct Copy: public EvalOp
   {
     Copy(const VariableValue& from, const VariableValue& to):
-      EvalOp(Operation::copy, to.idx(), from.idx(), 0, from.lhs()) 
+      EvalOp(OperationType::copy, to.idx(), from.idx(), 0, from.lhs()) 
     {
       assert(to.idx()>=0 && from.idx()>=0); 
       assert(to.lhs());
@@ -430,7 +441,7 @@ void Minsky::addCopies(const map<int, vector<EvalOp> >& extraCopies,
 
 // obtain a reference to the variable from which this port obtains its value
 const VariableValue& getInputFromVar
-(const map<int,VariableValue>& inputFrom, int port, Operation::Type op)
+(const map<int,VariableValue>& inputFrom, int port, OperationType::Type op)
 {
   map<int,VariableValue>::const_iterator p=inputFrom.find(port);
   if (p!=inputFrom.end())
@@ -440,11 +451,11 @@ const VariableValue& getInputFromVar
     // group identity variable
     switch (op)
       {
-      case Operation::add: 
-      case Operation::subtract:
+      case OperationType::add: 
+      case OperationType::subtract:
         return VariableValue(VariableBase::tempFlow, 0).allocValue();
-      case Operation::multiply: 
-      case Operation::divide:
+      case OperationType::multiply: 
+      case OperationType::divide:
         return VariableValue(VariableBase::tempFlow, 1).allocValue();
       default:
         throw error("No input for port %d",port);
@@ -465,15 +476,15 @@ void Minsky::recordInputFrom
       if (nextOpId==operationIdFromInputsPort.end())
         throw error("Too many inputs"); // to many inputs to a non-operator
 
-      switch (operations[nextOpId->second].type()) 
+      switch (operations[nextOpId->second]->type()) 
         {
-        case Operation::add:
-        case Operation::subtract:
-          insert_type = Operation::add;
+        case OperationType::add:
+        case OperationType::subtract:
+          insert_type = OperationType::add;
           break;
-        case Operation::multiply:
-        case Operation::divide:
-          insert_type = Operation::multiply;
+        case OperationType::multiply:
+        case OperationType::divide:
+          insert_type = OperationType::multiply;
           break;
         default: 
           throw error("Too many inputs");
@@ -504,9 +515,9 @@ void Minsky::constructEquations()
   for (Operations::const_iterator o=operations.begin(); 
        o!=operations.end(); ++o)
     {
-      for (int p=0; p<o->second.numPorts(); ++p)
-        operationIdFromInputsPort[o->second.ports()[p]]=o->first;
-      if (o->second.numPorts()==1 || o->second.type()==Operation::integrate)
+      for (int p=0; p<o->second->numPorts(); ++p)
+        operationIdFromInputsPort[o->second->ports()[p]]=o->first;
+      if (o->second->numPorts()==1 || o->second->type()==OperationType::integrate)
         sourceOperations.push_back(o->first);
     }
 
@@ -519,8 +530,8 @@ void Minsky::constructEquations()
       map<int,int>::iterator to = operationIdFromInputsPort.find(w->second.to);
       if (from!=operationIdFromInputsPort.end() && to!=operationIdFromInputsPort.end()
           // break potential cycles, but not links between integration operations
-          && (operations[from->second].type()!=Operation::integrate
-              || operations[to->second].type()==Operation::integrate))
+          && (operations[from->second]->type()!=OperationType::integrate
+              || operations[to->second]->type()==OperationType::integrate))
         operationOrder.links[from->second].push_back(to->second);
     }
 
@@ -542,7 +553,7 @@ void Minsky::constructEquations()
                     operationIdFromInputsPort.find(wires[outWires[j]].to);
                   if (from!=operationIdFromInputsPort.end() && 
                       to!=operationIdFromInputsPort.end() &&
-                      operations[from->second].type()!=Operation::integrate)
+                      operations[from->second]->type()!=OperationType::integrate)
                     operationOrder.links[from->second].push_back(to->second);
                 }
             }
@@ -617,14 +628,12 @@ void Minsky::constructEquations()
   // integrals will often be evaluated towards the end of the chain,
   // but feed in (via their stock variables) to earlier on operations.
   for (int i=0; i<orderedOperations.size(); ++i)
-    {
-      Operation& op = operations[orderedOperations[i].first];
-      if (op.type()==Operation::integrate)
-        {
-          integrals.push_back(Integral());
-          integrals.back().stock=variables.getVariableValue(op.description());
-        }
-    }  
+    if (IntOp* integ=
+        dynamic_cast<IntOp*>(operations[orderedOperations[i].first].get()))
+      {
+        integrals.push_back(Integral());
+        integrals.back().stock=variables.getVariableValue(integ->description());
+      }
 
   // now add the initial set of copy operations
   addCopies(extraCopies, -1);
@@ -634,20 +643,20 @@ void Minsky::constructEquations()
   // copy the operations, in order, to the equation vector
   for (int i=0; i<orderedOperations.size(); ++i)
     {
-      Operation& op = operations[orderedOperations[i].first];
-      assert(op.numPorts()>0);
+      OperationPtr& op = operations[orderedOperations[i].first];
+      assert(op->numPorts()>0);
 
-      EvalOp e(op.type(), -1);
-      e.state=&op;
+      EvalOp e(op->type(), -1);
+      e.state=op;
 
-      array<int> outgoingWires = WiresAttachedToPort(op.ports()[0]);
+      array<int> outgoingWires = WiresAttachedToPort(op->ports()[0]);
         
       VariableValue v;
 
-      if (op.type()==Operation::integrate)
+      if (op->type()==OperationType::integrate)
         {
           assert(integral!=integrals.end());
-          integral->input=inputFrom[op.ports()[1]];
+          integral->input=inputFrom[op->ports()[1]];
           v=integral->stock;
           ++integral;
         }
@@ -675,27 +684,27 @@ void Minsky::constructEquations()
       assert(v.idx()!=-1);
       e.out = v.idx();
 
-      if (op.numPorts()>1)
+      if (op->numPorts()>1)
         {
-          const VariableValue& v=getInputFromVar(inputFrom, op.ports()[1], e.op);
+          const VariableValue& v=getInputFromVar(inputFrom, op->ports()[1], e.op);
           e.in1 = v.idx();
           e.flow1 = v.lhs();
         }
 
-      if (op.numPorts()>2)
+      if (op->numPorts()>2)
         {
-          const VariableValue& v=getInputFromVar(inputFrom, op.ports()[2], e.op);
+          const VariableValue& v=getInputFromVar(inputFrom, op->ports()[2], e.op);
           e.in2 = v.idx();
           e.flow2 = v.lhs();
         }
       
       // integration has already been replaced by a copy
-      if (e.op != Operation::integrate)
+      if (e.op != OperationType::integrate)
         {
           equations.push_back(e);
           addCopies(extraCopies, e.out);
-          assert(e.out>=0 && (op.numPorts()<1 || e.in1>=0) && 
-                 op.numPorts()<2 || e.in2>=0);
+          assert(e.out>=0 && (op->numPorts()<1 || e.in1>=0) && 
+                 op->numPorts()<2 || e.in2>=0);
 
           // record destination in inputFrom map (already done for integrals)
           for (int w=0; w<outgoingWires.size(); ++w) 
@@ -803,7 +812,7 @@ void Minsky::jacobian(Matrix& jac, const double sv[])
 void Minsky::Save(const char* filename) 
 {
   ofstream of(filename);
-  xml_pack_t saveFile(of);
+  xml_pack_t saveFile(of, schemaURL);
   saveFile.prettyPrint=true;
   garbageCollect();
   xml_pack(saveFile, "Minsky", schema1::Minsky(*this));
@@ -836,13 +845,22 @@ void Minsky::Load(const char* filename)
   edited=true;
 }
 
+void Minsky::ExportSchema(const char* filename, int schemaLevel)
+{
+  xsd_generate_t x;
+  // currently, there is only 1 schema level, so ignore second arg
+  xsd_generate(x,"Minsky",schema1::Minsky());
+  ofstream f(filename);
+  x.output(f,schemaURL);
+}
+
 array<int> Minsky::opOrder()
 {
   array<int> r;
   for (size_t i=0; i<equations.size(); ++i)
     if (equations[i].state)
       for (Operations::iterator j=operations.begin(); j!=operations.end(); ++j)
-        if (equations[i].state==&j->second)
+        if (equations[i].state==j->second)
           r<<=j->first;
   return r;
 }

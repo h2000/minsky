@@ -40,18 +40,18 @@ namespace MathDAG
   {
     switch (type)
       {
-      case Operation::time:
-      case Operation::copy:
-      case Operation::integrate:
-      case Operation::exp:
+      case OperationType::time:
+      case OperationType::copy:
+      case OperationType::integrate:
+      case OperationType::exp:
         return 0;
-      case Operation::multiply:
-      case Operation::divide:
+      case OperationType::multiply:
+      case OperationType::divide:
         return 1;
-      case Operation::subtract:
-      case Operation::add:
+      case OperationType::subtract:
+      case OperationType::add:
         return 2;
-      case Operation::constant: // varies, depending on what's in it
+      case OperationType::constant: // varies, depending on what's in it
         if (name.find_first_of("+-")!=string::npos)
           return 2;
         else
@@ -101,14 +101,14 @@ namespace MathDAG
     switch (type)
       {
 
-      case Operation::constant:
+      case OperationType::constant:
         o<<mathrm(name);
         break;
 
-      case Operation::time:
+      case OperationType::time:
         o<<" t ";
         break;
-      case Operation::exp:
+      case OperationType::exp:
         assert(arguments.size()>=1);
         if (arguments[0].size()>=1)
           {
@@ -117,11 +117,11 @@ namespace MathDAG
           }
         break;
 
-      case Operation::integrate:
+      case OperationType::integrate:
         assert(!"integration should be turned into a derivative!");
         break;
         
-      case Operation::add:
+      case OperationType::add:
         assert(arguments.size()>=2);
         for (size_t i=0; i<arguments[0].size(); ++i)
           {
@@ -138,7 +138,7 @@ namespace MathDAG
           }
          break;
 
-      case Operation::subtract:
+      case OperationType::subtract:
         assert(arguments.size()>=2);
         for (size_t i=0; i<arguments[0].size(); ++i)
           {
@@ -160,7 +160,7 @@ namespace MathDAG
           }
          break;
         
-      case Operation::multiply:
+      case OperationType::multiply:
         assert(arguments.size()>=2);
         for (size_t i=0; i<arguments[0].size(); ++i)
           {
@@ -179,7 +179,7 @@ namespace MathDAG
           }
          break;
 
-      case Operation::divide:
+      case OperationType::divide:
         assert(arguments.size()>=2);
         o<< "\\frac{";
         if (arguments[0].size()==0) o<<"1";
@@ -232,19 +232,19 @@ namespace MathDAG
   {
     // firstly, we need to create a map of ports belonging to operations
     for (Operations::const_iterator o=ops.begin(); o!=ops.end(); ++o)
-      for (int i=0; i<o->second.numPorts(); ++i)
-        portToOperation[o->second.ports()[i]]=o->first;
+      for (int i=0; i<o->second->numPorts(); ++i)
+        portToOperation[o->second->ports()[i]]=o->first;
 
     // search through operations looking for integrals
     for (Operations::const_iterator o=ops.begin(); o!=ops.end(); ++o)
-      if (o->second.type()==Operation::integrate)
+      if (IntOp* i=dynamic_cast<IntOp*>(o->second.get()))
         {
           
           integrationVariables.push_back
-            (VariableDAG(const_cast<Operation&>(o->second).description()));
-          assert(pm.WiresAttachedToPort(o->second.ports()[1]).size()==1);
+            (VariableDAG(i->description()));
+          assert(pm.WiresAttachedToPort(i->ports()[1]).size()==1);
           integrationVariables.back().rhs.reset
-            (createNodeFromWire(pm.WiresAttachedToPort(o->second.ports()[1])[0]));
+            (createNodeFromWire(pm.WiresAttachedToPort(i->ports()[1])[0]));
         }
 
     // process the Godley tables
@@ -276,12 +276,15 @@ namespace MathDAG
     return r;
   }
 
-  OperationDAG SystemOfEquations::makeDAG(const Operation& op)
+  OperationDAG SystemOfEquations::makeDAG(const OperationBase& op)
   {
-    // const cast OK here, because getter used, but const getter
-    // cannot be provided otherwise it makes description invisible to
-    // TCL
-    OperationDAG r(op.type(), const_cast<Operation&>(op).description());
+    string description;
+    if (const Constant* c=dynamic_cast<const Constant*>(&op))
+      description=c->description;
+    else if (const IntOp* i=dynamic_cast<const IntOp*>(&op))
+      description=i->getDescription();
+
+    OperationDAG r(op.type(), description);
     r.arguments.resize(op.numPorts()-1);
     for (size_t i=1; i<op.numPorts(); ++i)
       {
@@ -310,7 +313,7 @@ namespace MathDAG
         else if (portToOperation.count(w.from))
           // we're wired to an operation
           return new OperationDAG
-            (makeDAG(ops.find(portToOperation[w.from])->second));
+            (makeDAG(*ops.find(portToOperation[w.from])->second));
       }
   return NULL;
 }

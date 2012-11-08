@@ -43,23 +43,32 @@ namespace schema0
   }
  
 
-  Operation::operator minsky::Operation() const 
+  Operation::operator minsky::OperationPtr() const 
   {
-    minsky::Operation op(m_type);
-    op.x=x;
-    op.y=y;
-    op.value=value;
-    op.rotation=rotation;
-    op.visible=visible;
-    op.sliderVisible=sliderVisible;
-    op.sliderBoundsSet=sliderBoundsSet;
-    op.sliderStepRel=sliderStepRel;
-    op.sliderMin=sliderMin;
-    op.sliderMax=sliderMax;
-    op.sliderStep=sliderStep;
+    minsky::OperationPtr op(m_type, m_ports);
+    op->x=x;
+    op->y=y;
+    // handle a previous schema change
+    string desc=m_description.empty()? description: m_description;
+    if (minsky::Constant* c=dynamic_cast<minsky::Constant*>(op.get()))
+      {
+        c->description=desc;
+        c->value=value;
+        c->sliderVisible=sliderVisible;
+        c->sliderBoundsSet=sliderBoundsSet;
+        c->sliderStepRel=sliderStepRel;
+        c->sliderMin=sliderMin;
+        c->sliderMax=sliderMax;
+        c->sliderStep=sliderStep;
+      }
+    else if (minsky::IntOp* i=dynamic_cast<minsky::IntOp*>(op.get()))
+      {
+        minsky::SchemaHelper::setPrivates(*i, desc, intVar);
+      }
+
+    op->rotation=rotation;
+    op->visible=visible;
     // deal with an older schema
-    minsky::SchemaHelper::setPrivates
-      (op, m_ports, m_description.empty()? description: m_description, intVar);
     return op;
   }
 

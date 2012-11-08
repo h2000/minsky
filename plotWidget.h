@@ -48,7 +48,8 @@ namespace minsky
  
     // we could put in an explicit pointer to the memory location here...
     float x,y;
-    void moveTo(float x, float y);
+    void MoveTo(float x, float y);
+    void moveTo(TCL_args args) {MoveTo(args[0],args[1]);}
     void addPlotPt(double t); ///< add another plot point
     /// connect variable \a var to port \a port. 
     void connectVar(const VariableValue& var, unsigned port);
@@ -73,15 +74,15 @@ namespace minsky
     /// @param id - image name identifying plotwidget to move
     /// @param x - x coordinate
     /// @paral y - y coordinate
-    void moveTo(TCL_args args);
-    float X(TCL_args args) {return plots[args].x;}
-    float Y(TCL_args args) {return plots[args].y;}
-    void ports(TCL_args args) {
-      PlotWidget& pw=plots[args];
-      tclreturn ret;
-      for (size_t p=0; p<pw.ports.size(); ++p)
-        ret<<pw.ports[p];
-    }
+//    void moveTo(TCL_args args);
+//    float X(TCL_args args) {return plots[args].x;}
+//    float Y(TCL_args args) {return plots[args].y;}
+//    void ports(TCL_args args) {
+//      PlotWidget& pw=plots[args];
+//      tclreturn ret;
+//      for (size_t p=0; p<pw.ports.size(); ++p)
+//        ret<<pw.ports[p];
+//    }
     /// reset the plots. Needs to be called after a VariableManager has been reset
     void reset(const VariableManager&);
     /// returns a suitable image identifier for the next plot to be added

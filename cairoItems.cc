@@ -51,8 +51,8 @@ namespace
 
   struct OperationItem: public MinskyItemImage
   {
-    OperationItem(const std::string& image): MinskyItemImage(image), op(NULL) {}
-    Operation* op;    
+    OperationItem(const std::string& image): MinskyItemImage(image) {}
+    shared_ptr<OperationBase> op;    
     cairo_t * cairo;
 
     void drawPlus()
@@ -139,17 +139,19 @@ namespace
 
           switch (op->type())
             {
-            case Operation::constant:
+            case OperationType::constant:
               {
                 cairo_text_extents_t bbox;
-                cairo_text_extents(cairo,op->description().c_str(),&bbox);
+                Constant *c=dynamic_cast<Constant*>(op.get());
+                assert(c);
+                cairo_text_extents(cairo,c->description.c_str(),&bbox);
                 float w=0.5*bbox.width+2; 
                 float h=0.5*bbox.height+2;
                 cairo_save(cairo);
                 cairo_rotate(cairo, angle + (textFlipped? M_PI: 0));
 
                 cairo_move_to(cairo,-w+1,h-4);
-                cairo_show_text(cairo,op->description().c_str());
+                cairo_show_text(cairo,c->description.c_str());
                 cairo_restore(cairo);
                 cairo_rotate(cairo, angle);
                
@@ -178,43 +180,43 @@ namespace
                   (op->ports()[0], op->x+x, op->y+y);
                 break;
               }
-            case Operation::time:
+            case OperationType::time:
               cairo_move_to(cairo,-4,2);
               cairo_show_text(cairo,"t");
               break;
-            case Operation::copy:
+            case OperationType::copy:
               cairo_move_to(cairo,-4,2);
               cairo_show_text(cairo,"=");
               break;
-            case Operation::integrate:
+            case OperationType::integrate:
               cairo_move_to(cairo,-7,4.5);
               cairo_show_text(cairo,"\xE2\x88\xAB");
               cairo_show_text(cairo,"dx");
              break;
-            case Operation::exp:
+            case OperationType::exp:
               cairo_move_to(cairo,-9,3);
               cairo_show_text(cairo,"e");
               cairo_rel_move_to(cairo,0,-2);
               cairo_show_text(cairo,"x");
               break;
-            case Operation::add:
+            case OperationType::add:
               drawPlus();
               drawPort(&OperationItem::drawPlus, l, h);
               drawPort(&OperationItem::drawPlus, l, -h);
               break;
-            case Operation::subtract:
+            case OperationType::subtract:
               //label="\xA2\x80\x92"; //doesn't display
               drawMinus();
               drawPort(&OperationItem::drawPlus, l, -h);
               drawPort(&OperationItem::drawMinus, l, h);
               break;
-            case Operation::multiply:
+            case OperationType::multiply:
               //label="\xE0\x83\x97";
               drawMultiply();
               drawPort(&OperationItem::drawMultiply, l, h);
               drawPort(&OperationItem::drawMultiply, l, -h);
               break;
-            case Operation::divide:
+            case OperationType::divide:
               //              label="\xE0\x83\xB7";
               drawDivide();
               drawPort(&OperationItem::drawMultiply, l, -h);
@@ -222,31 +224,32 @@ namespace
               break;
             }
           int intVarWidth=0, intVarHeight=0;
-          if (op->type()!=Operation::constant)
+          if (op->type()!=OperationType::constant)
             {
               double angle=op->rotation * M_PI / 180.0;
               cairo_rotate(cairo, angle);
-              if (op->coupled())
-                {
-                  cairo_move_to(cairo,r,0);
-                  cairo_line_to(cairo,r+10,0);
-                  cairo_stroke(cairo);
-                  // display an integration variable next to it
-                  RenderVariable rv(op->getIntVar(),cairo);
-                  // save the render width for later use in setting the clip
-                  intVarWidth=rv.width(); intVarHeight=2*rv.height();
-                  // set the port location...
-                  op->getIntVar()->MoveTo(op->x+op->intVarOffset, op->y);
+              if (IntOp* i=dynamic_cast<IntOp*>(op.get()))
+                if (i->coupled())
+                  {
+                    cairo_move_to(cairo,r,0);
+                    cairo_line_to(cairo,r+10,0);
+                    cairo_stroke(cairo);
+                    // display an integration variable next to it
+                    RenderVariable rv(i->getIntVar(),cairo);
+                    // save the render width for later use in setting the clip
+                    intVarWidth=rv.width(); intVarHeight=2*rv.height();
+                    // set the port location...
+                    i->getIntVar()->MoveTo(i->x+i->intVarOffset, i->y);
 
-                  cairo_save(cairo);
-                  cairo_translate(cairo,r+op->intVarOffset+intVarWidth,0);
-                  // to get text to render correctly, we need to set
-                  // the var's rotation, then antirotate it
-                  op->getIntVar()->rotation=op->rotation;
-                  cairo_rotate(cairo, -M_PI*op->rotation/180.0);
-                  rv.draw();
-                  cairo_restore(cairo);
-               }
+                    cairo_save(cairo);
+                    cairo_translate(cairo,r+i->intVarOffset+intVarWidth,0);
+                    // to get text to render correctly, we need to set
+                    // the var's rotation, then antirotate it
+                    i->getIntVar()->rotation=i->rotation;
+                    cairo_rotate(cairo, -M_PI*i->rotation/180.0);
+                    rv.draw();
+                    cairo_restore(cairo);
+                  }
               cairo_move_to(cairo,l,h);
               cairo_line_to(cairo,l,-h);
               cairo_line_to(cairo,r,0);
@@ -257,14 +260,15 @@ namespace
               cairo_save(cairo);
               cairo_set_source_rgb(cairo,0,0,1);
               cairo_stroke_preserve(cairo);
-              if (op->coupled())
-                {
-                  // we need to add some additional clip region to
-                  // cover the variable
-                  cairo_rectangle
-                    (cairo,r,-intVarHeight, op->intVarOffset+2*intVarWidth+2, 
-                     2*intVarHeight);
-                }
+              if (IntOp* i=dynamic_cast<IntOp*>(op.get()))
+                if (i->coupled())
+                  {
+                    // we need to add some additional clip region to
+                    // cover the variable
+                    cairo_rectangle
+                      (cairo,r,-intVarHeight, i->intVarOffset+2*intVarWidth+2, 
+                       2*intVarHeight);
+                  }
               cairo_restore(cairo);
               cairo_clip(cairo);
 
@@ -276,8 +280,9 @@ namespace
               if (textFlipped) swap(y1,y2);
 
               // adjust for integration variable
-              if (op->coupled())
-                x0+=op->intVarOffset+2*intVarWidth;
+              if (IntOp* i=dynamic_cast<IntOp*>(op.get()))
+                if (i->coupled())
+                  x0+=i->intVarOffset+2*intVarWidth;
               // adjust so that 0 is in centre
               float dx=0.5*(x0+l);
               x0-=dx;
@@ -378,7 +383,7 @@ namespace
         OperationItem* opItem=(OperationItem*)(tkMinskyItem->cairoItem);
         if (opItem) 
           {
-            opItem->op=&minsky::minsky.operations[tkMinskyItem->id];
+            opItem->op=minsky::minsky.operations[tkMinskyItem->id];
             opItem->draw();
             TkImageCode::ComputeImageBbox(canvas, tkMinskyItem);
           }

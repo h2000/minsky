@@ -79,10 +79,10 @@ namespace MathDAG
 
   struct OperationDAG: public Node
   {
-    Operation::Type type;
+    OperationType::Type type;
     string name;
     vector<vector<shared_ptr<Node> > > arguments;
-    OperationDAG(Operation::Type type=Operation::numOps, 
+    OperationDAG(OperationType::Type type=OperationType::numOps, 
                  const string& name=""): 
       type(type), name(name) {}
     int BODMASlevel() const;
@@ -108,7 +108,7 @@ namespace MathDAG
     map<int, int> portToOperation;
 
     VariableDAG makeDAG(const string& name);
-    OperationDAG makeDAG(const Operation& op);
+    OperationDAG makeDAG(const OperationBase& op);
 
     // creates a node object representing what feeds the wire
     Node* createNodeFromWire(int wire);

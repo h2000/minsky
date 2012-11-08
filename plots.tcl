@@ -29,15 +29,13 @@ proc newPlotItem {image x y} {
     
     set id [.wiring.canvas create plot $x $y -image $image -scale 1 -rotation 0\
                 -tags "plots plot#$image"]
-    .wiring.canvas bind $id <B1-Motion> "movePlot $image %x %y"
-    .wiring.canvas bind $id <B1-ButtonRelease> "movePlot $image %x %y"
+    setM1Binding plot $image plots#$image
     .wiring.canvas bind $id <Double-Button-1> "plotDoubleClick $image"
     .wiring.canvas bind $id <<contextMenu>> "contextMenu $id %X %Y"
 }
 
 proc newPlot {} {
     # place this at the mouse if in canvas, otherwise at 0 0
-#    set xy [placeObject]
 
     set image [plots.nextPlotID]
     set id [eval newPlotItem $image 0 0 ]
@@ -47,8 +45,6 @@ proc newPlot {} {
     bind .wiring.canvas <Button-1> \
         "bind .wiring.canvas <Motion> {}; bind .wiring.canvas <Enter> {}"
 
-#    eval plots.moveTo $image $xy
-#    updateCanvas
     return $id
 }
 
@@ -65,7 +61,9 @@ proc updatePlotPosition {image} {
 }
 
 proc movePlot {image x y} {
-    plots.moveTo  $image $x $y
+    plot.get $image
+    plot.moveTo  $x $y
+    plot.set
     # for some reason, we should queue up screen updates to happen once idle, to prevent Tk from getting overloaded
     global updatePlotPositionSubmitted
     if {!$updatePlotPositionSubmitted} {
@@ -144,8 +142,6 @@ proc resizePlot {image w h dw dh} {
 
 # double click handling for plot (creates new toplevel plot window)
 proc plotDoubleClick {image} {
-#    set tags [.wiring.canvas gettags $item]
-#    set image [lindex $tags [lsearch -regexp $tags {plot#[[:alnum:]]+}]]
 
     toplevel .plot$image
     image create photo .plot$image.image -width 500 -height 500
