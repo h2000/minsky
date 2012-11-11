@@ -100,6 +100,143 @@ canvas .wiring.canvas -height 600 -width 800 -scrollregion {0 0 10000 10000} \
     -closeenough 2
 pack .wiring.canvas -fill both -expand 1
 
+proc get_pointer_x {c} {
+  return [expr {[winfo pointerx $c] - [winfo rootx $c]}]
+}
+
+proc get_pointer_y {c} {
+  return [expr {[winfo pointery $c] - [winfo rooty $c]}]
+}
+
+bind . <Key-plus> {zoom 1.1}
+bind . <Key-equal> {zoom 1.1}
+bind . <Key-minus> {zoom [expr 1.0/1.1]}
+# mouse wheel bindings for X11
+bind .wiring.canvas <Button-4> {zoom 1.1}
+bind .wiring.canvas <Button-5> {zoom [expr 1.0/1.1]}
+# mouse wheel bindings for pc and aqua
+bind .wiring.canvas <MouseWheel> { if {%D>=0} {zoom [expr 1+.1*%D]} {zoom [expr 1.0/(1+.1*-%D)]} }
+
+#this can be changed at run time using File->Command
+set globals(zoom_function) linear
+
+proc zoom {factor} {
+  global globals
+  switch $globals(zoom_function) {
+      linear { return [zoom_linear $factor] }
+      relative { return [zoom_relative $factor] }
+      default {error "unknown zoom mode $globals(zoom_function)"}
+  }
+}
+
+proc zoom_linear {factor} {
+
+  # normally you would just use the canvas "scale" command:
+  # .wiring.canvas scale all [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]] [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]] $factor $factor
+  # but it doesn't work because of the custom widgets
+
+  # TODO set widget scale, similar to the way rotation is set
+
+    global updateItemPositionSubmitted
+    set updateItemPositionSubmitted 1
+
+    # move everything relative to the pointer by $factor and nudge it
+    foreach {item        set          prefix} {
+             var         variables    var
+             groupItem   groupItems   group
+             op          operations   op
+             godleyItem  godleyItems  godley} {
+
+	foreach id [$set.#keys] {
+	    $item.get $id
+	    set x1 [$item.x]
+	    set y1 [$item.y]
+	    moveSet $item $id $prefix$id $x1 $y1
+	    move $item $id $prefix$id [expr {$factor * $x1}] [expr {$factor * $y1}]
+	}
+
+    }
+
+    # pan the canvas so we're still pointing at the same place
+    set x0 [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]]
+    set y0 [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]]
+    set nudge_x [expr {-int($factor * $x0 - $x0)}]
+    set nudge_y [expr {-int($factor * $y0 - $y0)}]
+    .wiring.canvas scan mark 0 0
+    .wiring.canvas scan dragto $nudge_x $nudge_y 1
+
+    # wires will update automatically when the canvas redraws
+
+    # move plots
+    foreach im [plots.plots.#keys] {
+        plot.get $im
+        set x1 [plot.x]
+        set y1 [plot.y]
+        movePlot $im [expr {$factor * $x1}] [expr {$factor * $y1}]
+    }
+
+    set updateItemPositionSubmitted 0
+    updateCanvas
+}
+
+proc zoom_relative {factor} {
+
+  # normally you would just use the canvas "scale" command:
+  # .wiring.canvas scale all [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]] [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]] $factor $factor
+  # but it doesn't work because of the custom widgets
+
+  # TODO set widget scale, similar to the way rotation is set
+
+    global updateItemPositionSubmitted
+    set updateItemPositionSubmitted 1
+
+    set x0 [get_pointer_x .wiring.canvas]
+    set y0 [get_pointer_y .wiring.canvas]
+
+    # if elements will be moved into negative coordinates, set nudge
+    set nudge_x 0
+    set nudge_y 0
+    foreach {bbx0 bby0 bbx1 bby1} [.wiring.canvas bbox all] {}
+    set new_bbx0 [expr {int($factor * ($bbx0-$x0) + $x0)}]
+    set new_bby0 [expr {int($factor * ($bby0-$y0) + $y0)}]
+    if {$new_bbx0 < 0} { set nudge_x $new_bbx0 }
+    if {$new_bby0 < 0} { set nudge_y $new_bby0 }
+    # pan the canvas so the nudge will be transparent to the user
+    .wiring.canvas scan mark 0 0
+    .wiring.canvas scan dragto $nudge_x $nudge_y 1
+
+    # move everything relative to the pointer by $factor and nudge it
+    foreach {item        set          prefix} {
+             var         variables    var
+             groupItem   groupItems   group
+             op          operations   op
+             godleyItem  godleyItems  godley} {
+
+	foreach id [$set.#keys] {
+	    $item.get $id
+	    set x1 [$item.x]
+	    set y1 [$item.y]
+	    moveSet $item $id $prefix$id $x1 $y1
+	    move $item $id $prefix$id [expr {$factor * ($x1-$x0) + $x0 - $nudge_x}] [expr {$factor * ($y1-$y0) + $y0 - $nudge_y}]
+	}
+
+    }
+
+
+    # wires will update automatically when the canvas redraws
+
+    # move plots
+    foreach im [plots.plots.#keys] {
+        plot.get $im
+        set x1 [plot.x]
+        set y1 [plot.y]
+        movePlot $im [expr {$factor * ($x1-$x0) + $x0}] [expr {$factor * ($y1-$y0) + $y0}]
+    }
+
+    set updateItemPositionSubmitted 0
+    updateCanvas
+}
+
 .menubar.ops.menu add command -label "Godley Table" -command {addNewGodleyItem [addGodleyTable 10 10]}
 
 .menubar.ops.menu add command -label "Variable" -command "addVariable" 
