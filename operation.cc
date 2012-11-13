@@ -77,7 +77,7 @@ void OperationBase::addPorts()
 
 }
 
-IntOp::IntOp(const vector<int>& ports): Operation(ports), intVar(-1) 
+IntOp::IntOp(const vector<int>& ports): Super(ports), intVar(-1) 
 {
   if (ports.empty())
     {
