@@ -121,6 +121,8 @@ menu .menubar.file.menu
 button .menubar.rkData -text "Runge Kutta" -relief flat -command {
     foreach {var text} $rkVars { set rkVarInput($var) [$var] }
     wm deiconify .rkDataForm
+    update idletasks
+    ::tk::TabToWindow $rkVarInput(initial_focus)
     grab .rkDataForm
 } -underline 0 
 tooltip .menubar.rkData "Set Runge Kutta parameters"
@@ -317,14 +319,16 @@ set rkVars {
 
 set row 0
 foreach {var text} $rkVars {
+    set rowdict($text) $row
     grid [label .rkDataForm.label$row -text $text] -column 10 -row $row -sticky e
     grid [entry  .rkDataForm.text$row -width 20 -textvariable rkVarInput($var)] -column 20 -row $row -sticky ew
     incr row 10
 }
+set rkVarInput(initial_focus) ".rkDataForm.text$rowdict(Min Step Size)"
 frame .rkDataForm.buttonBar
 button .rkDataForm.buttonBar.ok -text OK -command {setRKparms; closeRKDataForm}
 button .rkDataForm.buttonBar.cancel -text cancel -command {closeRKDataForm}
-pack .rkDataForm.buttonBar.ok .rkDataForm.buttonBar.cancel -side left
+pack .rkDataForm.buttonBar.ok [label .rkDataForm.buttonBar.spacer -width 2] .rkDataForm.buttonBar.cancel -side left -pady 10
 grid .rkDataForm.buttonBar -column 1 -row 999 -columnspan 999
 
 # invokes OK or cancel button with given window, depending on current focus

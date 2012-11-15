@@ -207,14 +207,16 @@ proc placeNewVar {id} {
 }
 
 proc addVariablePostModal {} {
-    set name [string trim [.wiring.initVar.text.value get]]
+    global varInput
+
+    set name [string trim $varInput(Name)]
     set varExists [variables.exists $name]
     set id [newVariable $name]
     if {!$varExists} {
         var.get $id
         value.get $name
-        setItem value init {.wiring.initVar.val.value get}
-        setItem var rotation {.wiring.initVar.rotation.value get}
+        setItem value init {set varInput(Value)}
+        setItem var rotation {set varInput(Rotation)}
     }
     closeEditWindow .wiring.initVar
 
@@ -222,14 +224,13 @@ proc addVariablePostModal {} {
 }
 
 proc addVariable {} {
-    .wiring.initVar.title configure -text "Create Variable"
-    .wiring.initVar.text.value delete 0 end
-    .wiring.initVar.text.value insert 0 ""
-    .wiring.initVar.val.value delete 0 end
-    .wiring.initVar.val.value insert 0 0
-    .wiring.initVar.buttonBar.ok configure \
-        -command "addVariablePostModal"
+    global varInput
+
+    set varInput(title) "Create Variable"
+    set varInput(Name) ""
+    set varInput(Value) ""
     wm deiconify .wiring.initVar
+    ::tk::TabToWindow $varInput(initial_focus);
     grab .wiring.initVar
 }
 
@@ -854,27 +855,32 @@ wm title .wiring.editVar "Edit Variable"
 wm withdraw .wiring.editVar
 wm transient .wiring.editVar .wiring
 
-label .wiring.editVar.name
-pack .wiring.editVar.name
+set row 0
+grid [label .wiring.editVar.title -textvariable editVarInput(title)] -row $row -column 0 -columnspan 999 -pady 10
 
-frame .wiring.editVar.init
-label .wiring.editVar.init.label -text "Initial Value"
-entry  .wiring.editVar.init.val -width 20
-pack .wiring.editVar.init.label .wiring.editVar.init.val -side left
-
-frame .wiring.editVar.rot
-label .wiring.editVar.rot.label -text "     Rotation"
-entry  .wiring.editVar.rot.val -width 20
-pack .wiring.editVar.rot.label .wiring.editVar.rot.val -side left
-
-pack .wiring.editVar.init .wiring.editVar.rot
+set row 10
+foreach var {
+    "Initial Value"
+    "Rotation"
+} {
+    set rowdict($var) $row
+    grid [label .wiring.editVar.label$row -text $var] -row $row -column 10 -sticky e
+    grid [entry  .wiring.editVar.entry$row -textvariable editVarInput($var)] -row $row -column 20 -sticky ew -columnspan 2
+    incr row 10
+}
+set editVarInput(initial_focus_value) ".wiring.editVar.entry$rowdict(Initial Value)"
+set editVarInput(initial_focus_rotation) .wiring.editVar.entry$rowdict(Rotation)
 
 frame .wiring.editVar.buttonBar
-button .wiring.editVar.buttonBar.ok -text OK
+button .wiring.editVar.buttonBar.ok -text OK -command {
+                    setItem value init {set "editVarInput(Initial Value)"}
+                    setItem var rotation  {set editVarInput(Rotation)}
+                    closeEditWindow .wiring.editVar
+                }
 button .wiring.editVar.buttonBar.cancel -text Cancel -command {
     closeEditWindow .wiring.editVar}
-pack .wiring.editVar.buttonBar.ok .wiring.editVar.buttonBar.cancel -side left
-pack .wiring.editVar.buttonBar -side bottom
+pack .wiring.editVar.buttonBar.ok [label .wiring.editVar.buttonBar.spacer -width 2] .wiring.editVar.buttonBar.cancel -side left -pady 10
+grid .wiring.editVar.buttonBar -row 999 -column 0 -columnspan 1000
 bind .wiring.editVar <Key-Return> {invokeOKorCancel .wiring.editVar.buttonBar}
 
 toplevel .wiring.initVar
@@ -883,31 +889,28 @@ wm title .wiring.initVar "Specify variable name"
 wm withdraw .wiring.initVar
 wm transient .wiring.initVar .wiring
 
+set row 0
+grid [label .wiring.initVar.title -textvariable varInput(title)] -row $row -column 0 -columnspan 999 -pady 10
 frame .wiring.initVar.buttonBar
-label .wiring.initVar.title
-pack .wiring.initVar.title
-button .wiring.initVar.buttonBar.ok -text OK
+button .wiring.initVar.buttonBar.ok -text OK -command "addVariablePostModal"
 button .wiring.initVar.buttonBar.cancel -text Cancel -command {
     closeEditWindow .wiring.initVar}
-pack .wiring.initVar.buttonBar.ok .wiring.initVar.buttonBar.cancel -side left
-pack .wiring.initVar.buttonBar -side bottom
+pack .wiring.initVar.buttonBar.ok [label .wiring.initVar.buttonBar.spacer -width 2] .wiring.initVar.buttonBar.cancel -side left -pady 10
+grid .wiring.initVar.buttonBar -row 999 -column 0 -columnspan 1000
+bind .wiring.initVar <Key-Return> {invokeOKorCancel .wiring.initVar.buttonBar}
 
-frame .wiring.initVar.text
-label .wiring.initVar.text.label -text "Name"
-entry  .wiring.initVar.text.value -width 20
-pack .wiring.initVar.text.label .wiring.initVar.text.value -side left
-
-frame .wiring.initVar.val
-label .wiring.initVar.val.label -text "Value"
-entry  .wiring.initVar.val.value -width 20
-pack .wiring.initVar.val.label .wiring.initVar.val.value -side left
-
-frame .wiring.initVar.rotation
-label .wiring.initVar.rotation.label -text "Rotation"
-entry  .wiring.initVar.rotation.value -width 20
-pack .wiring.initVar.rotation.label .wiring.initVar.rotation.value -side left
-
-pack .wiring.initVar.text .wiring.initVar.val .wiring.initVar.rotation 
+set row 10
+foreach var {
+    "Name"
+    "Value"
+    "Rotation"
+} {
+    set rowdict($var) $row
+    grid [label .wiring.initVar.label$row -text $var] -row $row -column 10 -sticky e
+    grid [entry  .wiring.initVar.entry$row -textvariable varInput($var)] -row $row -column 20 -sticky ew -columnspan 2
+    incr row 10
+}
+set varInput(initial_focus) .wiring.initVar.entry$rowdict(Name)
 
 toplevel .wiring.editConstant
 wm resizable .wiring.editConstant 0 0
@@ -916,7 +919,7 @@ wm withdraw .wiring.editConstant
 wm transient .wiring.editConstant .wiring
 
 set row 0
-grid [label .wiring.editConstant.title -textvariable constInput(title)] -row $row -column 0 -columnspan 999
+grid [label .wiring.editConstant.title -textvariable constInput(title)] -row $row -column 0 -columnspan 999 -pady 10
 frame .wiring.editConstant.buttonBar
 button .wiring.editConstant.buttonBar.ok -text OK
 button .wiring.editConstant.buttonBar.cancel -text Cancel -command {
@@ -938,6 +941,7 @@ foreach var {
     grid [entry  .wiring.editConstant.entry$row -textvariable constInput($var)] -row $row -column 20 -sticky ew -columnspan 2
     incr row 10
 }
+set constInput(initial_focus) .wiring.editConstant.entry$rowdict(Name)
 
 # setup textvariable for label of "Value"
 set row "$rowdict(Value)"
@@ -957,25 +961,29 @@ wm withdraw .wiring.editOperation
 wm transient .wiring.editOperation .wiring
 
 frame .wiring.editOperation.buttonBar
-label .wiring.editOperation.title
-pack .wiring.editOperation.title
-button .wiring.editOperation.buttonBar.ok -text OK
+label .wiring.editOperation.title -textvariable opInput(title)
+pack .wiring.editOperation.title -pady 10
+button .wiring.editOperation.buttonBar.ok -text OK -command {
+    setItem op rotation {set opInput(Rotation)}
+    closeEditWindow .wiring.editOperation
+}
 button .wiring.editOperation.buttonBar.cancel -text Cancel -command {
     closeEditWindow .wiring.editOperation}
-pack .wiring.editOperation.buttonBar.ok .wiring.editOperation.buttonBar.cancel -side left
+pack .wiring.editOperation.buttonBar.ok [label .wiring.editOperation.buttonBar.spacer -width 2] .wiring.editOperation.buttonBar.cancel -side left -pady 10
 pack .wiring.editOperation.buttonBar -side bottom
 
 bind .wiring.editOperation <Key-Return> {invokeOKorCancel .wiring.editOperation.buttonBar}
 
 frame .wiring.editOperation.rotation
 label .wiring.editOperation.rotation.label -text "Rotation"
-entry  .wiring.editOperation.rotation.value -width 20
+entry  .wiring.editOperation.rotation.value -width 20 -textvariable opInput(Rotation)
 pack .wiring.editOperation.rotation.label .wiring.editOperation.rotation.value -side left
 pack .wiring.editOperation.rotation
+set opInput(initial_focus) .wiring.editOperation.rotation.value
 
 # set attribute, and commit to original item
 proc setItem {modelCmd attr dialogCmd} {
-    global constInput
+    global constInput varInput editVarInput opInput
     $modelCmd.$attr [string trim [eval $dialogCmd]]
     $modelCmd.set
 }
@@ -1010,27 +1018,22 @@ proc setIntegralIValue {id} {
 }
 
 proc editItem {id tag} {
+    global constInput varInput editVarInput opInput
     switch -regexp $tag {
         "^var" {
             var.get $id
             wm title .wiring.editVar "Edit [var.name]"
-            .wiring.editVar.init.val delete 0 end
             value.get [var.name]
-            .wiring.editVar.init.val insert 0 [value.init]
+            set "editVarInput(Initial Value)" [value.init]
+            set "editVarInput(Rotation)" [var.rotation]
             if {[value.godleyOverridden] || [variables.inputWired [var.name]]} {
-                .wiring.editVar.init.val configure -state disabled  -foreground gray
+                $editVarInput(initial_focus_value) configure -state disabled  -foreground gray
+		::tk::TabToWindow $editVarInput(initial_focus_rotation)
             } else {
-                .wiring.editVar.init.val configure -state normal  -foreground black
+                $editVarInput(initial_focus_value) configure -state normal  -foreground black
+		::tk::TabToWindow $editVarInput(initial_focus_value)
              }
-           .wiring.editVar.rot.val delete 0 end
-           .wiring.editVar.rot.val insert 0 [var.rotation]
-            .wiring.editVar.buttonBar.ok configure \
-                -command {
-                    setItem value init {.wiring.editVar.init.val get}
-                    setItem var rotation  {.wiring.editVar.rot.val get}
-                    closeEditWindow .wiring.editVar
-                }
-            .wiring.editVar.name configure -text "[var.name]: Value=[value.value]"
+            set editVarInput(title) "[var.name]: Value=[value.value]"
             wm deiconify .wiring.editVar
             grab .wiring.editVar
         }
@@ -1038,7 +1041,6 @@ proc editItem {id tag} {
             op.get $id
 
             if {[op.name]=="constant" || [op.name]=="integrate"} {
-                global constInput
                 set "constInput(Value)" ""
                 set "constInput(Slider Bounds: Min)" ""
                 set "constInput(Slider Bounds: Max)" ""
@@ -1077,18 +1079,14 @@ proc editItem {id tag} {
                     "
 
                 wm deiconify .wiring.editConstant
+		::tk::TabToWindow $constInput(initial_focus);
                 grab .wiring.editConstant
 
             } else {
-                .wiring.editOperation.title configure -text [op.name]
-                .wiring.editOperation.rotation.value delete 0 end
-                .wiring.editOperation.rotation.value insert 0 [op.rotation]
-                .wiring.editOperation.buttonBar.ok configure \
-                    -command {
-                        setItem op rotation {.wiring.editOperation.rotation.value get}
-                        closeEditWindow .wiring.editOperation
-                    }
+                set opInput(title) [op.name]
+                set opInput(Rotation) [op.rotation]
                 wm deiconify .wiring.editOperation
+		::tk::TabToWindow $opInput(initial_focus);
                 grab .wiring.editOperation
             }
         }
