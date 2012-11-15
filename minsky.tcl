@@ -119,11 +119,7 @@ menubutton .menubar.file -menu .menubar.file.menu -text File  -underline 0
 menu .menubar.file.menu
 
 button .menubar.rkData -text "Runge Kutta" -relief flat -command {
-    RKinitVar stepMin
-    RKinitVar stepMax
-    RKinitVar nSteps
-    RKinitVar epsAbs
-    RKinitVar epsRel
+    foreach {var text} $rkVars { set rkVarInput($var) [$var] }
     wm deiconify .rkDataForm
     grab .rkDataForm
 } -underline 0 
@@ -163,7 +159,8 @@ pack .menubar.rkData -side left
 
 pack .menubar.run .menubar.reset .menubar.step -side left
 pack .menubar.statusbar -side right -fill x
-pack .menubar -side top -fill x
+
+grid .menubar -row 0 -column 0 -columnspan 1000 -sticky ew
 
 # File menu
 .menubar.file.menu add command -label "About Minsky" -command aboutMinsky
@@ -307,25 +304,28 @@ proc newSystem {} {
 #pack append .buttonbar .nextOp left
 
 
-proc RKaddVar {var text} {
-    frame .rkDataForm.$var
-    label .rkDataForm.$var.label -text $text
-    entry  .rkDataForm.$var.text -width 20
-    pack .rkDataForm.$var.label .rkDataForm.$var.text -side left
+toplevel .rkDataForm
+wm resizable .rkDataForm 0 0
+
+set rkVars {
+          stepMin   "Min Step Size"
+          stepMax   "Max Step Size"
+          nSteps     "no. steps per iteration"
+          epsAbs     "Absolute error"
+          epsRel     "Relative error"
 }
 
-toplevel .rkDataForm
-RKaddVar stepMin "Min Step Size"
-RKaddVar stepMax "Max Step Size"
-RKaddVar nSteps "no. steps per iteration"
-RKaddVar epsAbs "Absolute error"
-RKaddVar epsRel "Relative error"
-pack .rkDataForm.stepMin .rkDataForm.stepMax .rkDataForm.nSteps .rkDataForm.epsAbs .rkDataForm.epsRel
+set row 0
+foreach {var text} $rkVars {
+    grid [label .rkDataForm.label$row -text $text] -column 10 -row $row -sticky e
+    grid [entry  .rkDataForm.text$row -width 20 -textvariable rkVarInput($var)] -column 20 -row $row -sticky ew
+    incr row 10
+}
 frame .rkDataForm.buttonBar
 button .rkDataForm.buttonBar.ok -text OK -command {setRKparms; closeRKDataForm}
 button .rkDataForm.buttonBar.cancel -text cancel -command {closeRKDataForm}
 pack .rkDataForm.buttonBar.ok .rkDataForm.buttonBar.cancel -side left
-pack .rkDataForm.buttonBar
+grid .rkDataForm.buttonBar -column 1 -row 999 -columnspan 999
 
 # invokes OK or cancel button with given window, depending on current focus
 proc invokeOKorCancel {window} {
@@ -341,29 +341,18 @@ bind .rkDataForm <Key-Return> {invokeOKorCancel .rkDataForm.buttonBar}
 wm title .rkDataForm "Runge-Kutta parameters"
 wm withdraw .rkDataForm 
 
-proc RKinitVar var {
-    .rkDataForm.$var.text delete 0 end
-    .rkDataForm.$var.text insert 0 [$var]
-}
-proc RKupdateVar var {
-    $var [.rkDataForm.$var.text get]
-}
-
-
 proc closeRKDataForm {} {
     grab release .rkDataForm
     wm withdraw .rkDataForm
 }
 
 proc setRKparms {} {
-    RKupdateVar stepMin
-    RKupdateVar stepMax
-    RKupdateVar nSteps
-    RKupdateVar epsAbs
-    RKupdateVar epsRel
+    global rkVars rkVarInput
+    foreach {var text} $rkVars { $var $rkVarInput($var) }
 }
 
 toplevel .aboutMinsky
+wm resizable .aboutMinsky 0 0
 label .aboutMinsky.text
 
 button .aboutMinsky.ok -text OK -command {
@@ -385,6 +374,11 @@ proc aboutMinsky {} {
    See http://www.gnu.org/licenses/ for details
    " 
     wm deiconify .aboutMinsky 
+
+    # wierd trick to resize toplevel windows:
+    update idletasks
+    wm geometry .aboutMinsky
+
     grab .aboutMinsky 
 }
 

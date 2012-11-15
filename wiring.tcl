@@ -24,7 +24,10 @@ proc createWire {coords} {
 
 #toplevel .wiring 
 frame .wiring 
-pack .wiring -fill both -expand 1
+grid .wiring -column 0 -row 10 -sticky news
+grid columnconfigure . 0 -weight 1
+grid rowconfigure . 10 -weight 1
+
 #menu .wiring.menubar -type menubar
 frame .wiring.menubar 
 
@@ -95,10 +98,18 @@ pack .wiring.menubar.godley .wiring.menubar.var .wiring.menubar.const .wiring.me
 pack .wiring.menubar.integrate .wiring.menubar.exp .wiring.menubar.add .wiring.menubar.subtract .wiring.menubar.multiply .wiring.menubar.divide .wiring.menubar.plot -side left
 pack .wiring.menubar -fill x
 
-
 canvas .wiring.canvas -height 600 -width 800 -scrollregion {0 0 10000 10000} \
-    -closeenough 2
+    -closeenough 2 -yscrollcommand ".vscroll set" -xscrollcommand ".hscroll set"
 pack .wiring.canvas -fill both -expand 1
+
+
+ttk::sizegrip .sizegrip
+scrollbar .vscroll -orient vertical -command ".wiring.canvas yview"
+scrollbar .hscroll -orient horiz -command ".wiring.canvas xview"
+
+grid .sizegrip -row 999 -column 999
+grid .vscroll -column 999 -row 10 -rowspan 989 -sticky ns
+grid .hscroll -row 999 -column 0 -columnspan 999 -sticky ew
 
 proc get_pointer_x {c} {
   return [expr {[winfo pointerx $c] - [winfo rootx $c]}]
@@ -117,19 +128,7 @@ bind .wiring.canvas <Button-5> {zoom [expr 1.0/1.1]}
 # mouse wheel bindings for pc and aqua
 bind .wiring.canvas <MouseWheel> { if {%D>=0} {zoom [expr 1+.1*%D]} {zoom [expr 1.0/(1+.1*-%D)]} }
 
-#this can be changed at run time using File->Command
-set globals(zoom_function) linear
-
 proc zoom {factor} {
-  global globals
-  switch $globals(zoom_function) {
-      linear { return [zoom_linear $factor] }
-      relative { return [zoom_relative $factor] }
-      default {error "unknown zoom mode $globals(zoom_function)"}
-  }
-}
-
-proc zoom_linear {factor} {
 
   # normally you would just use the canvas "scale" command:
   # .wiring.canvas scale all [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]] [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]] $factor $factor
@@ -140,7 +139,7 @@ proc zoom_linear {factor} {
     global updateItemPositionSubmitted
     set updateItemPositionSubmitted 1
 
-    # move everything relative to the pointer by $factor and nudge it
+    # move everything relative to the origin by $factor
     foreach {item        set          prefix} {
              var         variables    var
              groupItem   groupItems   group
@@ -165,7 +164,16 @@ proc zoom_linear {factor} {
     .wiring.canvas scan mark 0 0
     .wiring.canvas scan dragto $nudge_x $nudge_y 1
 
-    # wires will update automatically when the canvas redraws
+    # move wires
+    foreach id [visibleWires] {
+	wire.get $id
+	set coords {}
+	foreach {x y} [wire.coords] {
+	   lappend coords [expr {$factor * $x}] [expr {$factor * $y}]
+	}
+	wire.coords $coords
+	wire.set
+    }
 
     # move plots
     foreach im [plots.plots.#keys] {
@@ -173,64 +181,6 @@ proc zoom_linear {factor} {
         set x1 [plot.x]
         set y1 [plot.y]
         movePlot $im [expr {$factor * $x1}] [expr {$factor * $y1}]
-    }
-
-    set updateItemPositionSubmitted 0
-    updateCanvas
-}
-
-proc zoom_relative {factor} {
-
-  # normally you would just use the canvas "scale" command:
-  # .wiring.canvas scale all [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]] [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]] $factor $factor
-  # but it doesn't work because of the custom widgets
-
-  # TODO set widget scale, similar to the way rotation is set
-
-    global updateItemPositionSubmitted
-    set updateItemPositionSubmitted 1
-
-    set x0 [get_pointer_x .wiring.canvas]
-    set y0 [get_pointer_y .wiring.canvas]
-
-    # if elements will be moved into negative coordinates, set nudge
-    set nudge_x 0
-    set nudge_y 0
-    foreach {bbx0 bby0 bbx1 bby1} [.wiring.canvas bbox all] {}
-    set new_bbx0 [expr {int($factor * ($bbx0-$x0) + $x0)}]
-    set new_bby0 [expr {int($factor * ($bby0-$y0) + $y0)}]
-    if {$new_bbx0 < 0} { set nudge_x $new_bbx0 }
-    if {$new_bby0 < 0} { set nudge_y $new_bby0 }
-    # pan the canvas so the nudge will be transparent to the user
-    .wiring.canvas scan mark 0 0
-    .wiring.canvas scan dragto $nudge_x $nudge_y 1
-
-    # move everything relative to the pointer by $factor and nudge it
-    foreach {item        set          prefix} {
-             var         variables    var
-             groupItem   groupItems   group
-             op          operations   op
-             godleyItem  godleyItems  godley} {
-
-	foreach id [$set.#keys] {
-	    $item.get $id
-	    set x1 [$item.x]
-	    set y1 [$item.y]
-	    moveSet $item $id $prefix$id $x1 $y1
-	    move $item $id $prefix$id [expr {$factor * ($x1-$x0) + $x0 - $nudge_x}] [expr {$factor * ($y1-$y0) + $y0 - $nudge_y}]
-	}
-
-    }
-
-
-    # wires will update automatically when the canvas redraws
-
-    # move plots
-    foreach im [plots.plots.#keys] {
-        plot.get $im
-        set x1 [plot.x]
-        set y1 [plot.y]
-        movePlot $im [expr {$factor * ($x1-$x0) + $x0}] [expr {$factor * ($y1-$y0) + $y0}]
     }
 
     set updateItemPositionSubmitted 0
@@ -787,8 +737,8 @@ proc contextMenu {item x y} {
         "variables" {
             set tag [lindex $tags [lsearch -regexp $tags {var[0-9]+}]]
             set id [string range $tag 3 end]
-            .wiring.context delete 0 end
-            .wiring.context add command -label "Delete" -command "deleteItem $id $tag"
+	    .wiring.context delete 0 end
+	    .wiring.context add command -label "Delete" -command "deleteItem $id $tag"
             .wiring.context add command -label "Edit" -command "editItem $id $tag"
             .wiring.context add command -label "Copy" -command "copyVar $id"
             .wiring.context add command -label "Flip" -command "rotateVar $id 180"
@@ -801,7 +751,8 @@ proc contextMenu {item x y} {
             .wiring.context add command -label "Delete" -command "deleteItem $id $tag"
             .wiring.context add command -label "Edit" -command "editItem $id $tag"             
             if {[op.name]=="integrate"} {
-                .wiring.context add command -label "Copy Var" -command "copyVar [op.intVarID]"
+                # this gives an error: op.intVarID no such funtion
+                # .wiring.context add command -label "Copy Var" -command "copyVar [op.intVarID]"
             }
             if {[op.name]=="constant"} {
                 constant.get $id
@@ -898,6 +849,7 @@ proc rotateVar {id angle} {
 }
 
 toplevel .wiring.editVar 
+wm resizable .wiring.editVar 0 0
 wm title .wiring.editVar "Edit Variable"
 wm withdraw .wiring.editVar
 wm transient .wiring.editVar .wiring
@@ -926,6 +878,7 @@ pack .wiring.editVar.buttonBar -side bottom
 bind .wiring.editVar <Key-Return> {invokeOKorCancel .wiring.editVar.buttonBar}
 
 toplevel .wiring.initVar
+wm resizable .wiring.initVar 0 0
 wm title .wiring.initVar "Specify variable name"
 wm withdraw .wiring.initVar
 wm transient .wiring.initVar .wiring
@@ -953,60 +906,53 @@ frame .wiring.initVar.rotation
 label .wiring.initVar.rotation.label -text "Rotation"
 entry  .wiring.initVar.rotation.value -width 20
 pack .wiring.initVar.rotation.label .wiring.initVar.rotation.value -side left
+
 pack .wiring.initVar.text .wiring.initVar.val .wiring.initVar.rotation 
 
 toplevel .wiring.editConstant
+wm resizable .wiring.editConstant 0 0
 wm title .wiring.editConstant "Edit Constant"
 wm withdraw .wiring.editConstant
 wm transient .wiring.editConstant .wiring
 
+set row 0
+grid [label .wiring.editConstant.title -textvariable constInput(title)] -row $row -column 0 -columnspan 999
 frame .wiring.editConstant.buttonBar
-label .wiring.editConstant.title
-pack .wiring.editConstant.title
 button .wiring.editConstant.buttonBar.ok -text OK
 button .wiring.editConstant.buttonBar.cancel -text Cancel -command {
     closeEditWindow .wiring.editConstant}
-pack .wiring.editConstant.buttonBar.ok .wiring.editConstant.buttonBar.cancel -side left
-pack .wiring.editConstant.buttonBar -side bottom
+pack .wiring.editConstant.buttonBar.ok [label .wiring.editConstant.buttonBar.spacer -width 2] .wiring.editConstant.buttonBar.cancel -side left -pady 10
+grid .wiring.editConstant.buttonBar -row 999 -column 0 -columnspan 1000
 
-frame .wiring.editConstant.text
-label .wiring.editConstant.text.label -text "Name"
-entry  .wiring.editConstant.text.value -width 20
-pack .wiring.editConstant.text.label .wiring.editConstant.text.value -side left
+set row 10
+foreach var {
+    "Name"
+    "Value"
+    "Rotation"
+    "Slider Bounds: Max"
+    "Slider Bounds: Min"
+    "Slider Step Size"
+} {
+    set rowdict($var) $row
+    grid [label .wiring.editConstant.label$row -text $var] -row $row -column 10 -sticky e
+    grid [entry  .wiring.editConstant.entry$row -textvariable constInput($var)] -row $row -column 20 -sticky ew -columnspan 2
+    incr row 10
+}
 
-frame .wiring.editConstant.val
-label .wiring.editConstant.val.label -text "Value"
-entry  .wiring.editConstant.val.value -width 20
-pack .wiring.editConstant.val.label .wiring.editConstant.val.value -side left
+# setup textvariable for label of "Value"
+set row "$rowdict(Value)"
+.wiring.editConstant.label$row configure -textvariable constInput(ValueLabel)
 
-frame .wiring.editConstant.rotation
-label .wiring.editConstant.rotation.label -text "Rotation"
-entry  .wiring.editConstant.rotation.value -width 20
-pack .wiring.editConstant.rotation.label .wiring.editConstant.rotation.value -side left
-
-frame .wiring.editConstant.sliderBoundsMax
-label .wiring.editConstant.sliderBoundsMax.label -text "Slider Bounds: Max"
-entry  .wiring.editConstant.sliderBoundsMax.val -width 20
-pack .wiring.editConstant.sliderBoundsMax.val .wiring.editConstant.sliderBoundsMax.label -side right
-
-frame .wiring.editConstant.sliderBoundsMin
-label .wiring.editConstant.sliderBoundsMin.label -text "Slider Bounds: Min"
-entry  .wiring.editConstant.sliderBoundsMin.val -width 20
-pack .wiring.editConstant.sliderBoundsMin.val .wiring.editConstant.sliderBoundsMin.label -side right
-
-frame .wiring.editConstant.stepSize
-label .wiring.editConstant.stepSize.label -text "Slider Step Size:"
-entry  .wiring.editConstant.stepSize.val -width 20
-checkbutton .wiring.editConstant.stepSize.rel -text "relative" -variable relStepSize
-pack .wiring.editConstant.stepSize.label .wiring.editConstant.stepSize.val .wiring.editConstant.stepSize.rel -side left
-
-pack .wiring.editConstant.text .wiring.editConstant.val .wiring.editConstant.rotation .wiring.editConstant.sliderBoundsMin .wiring.editConstant.sliderBoundsMax .wiring.editConstant.stepSize
+# adjust "Slider Step Size" row to include "relative" radiobutton
+set row "$rowdict(Slider Step Size)"
+grid configure .wiring.editConstant.entry$row -columnspan 1
+grid [checkbutton .wiring.editConstant.checkbox$row -text "relative" -variable "constInput(relative)"] -row $row -column 21 -sticky ew -columnspan 1
 
 bind .wiring.editConstant <Key-Return> {invokeOKorCancel .wiring.editConstant.buttonBar}
 
-
 toplevel .wiring.editOperation
-wm title .wiring.editOperation "Edit Constant"
+wm resizable .wiring.editOperation 0 0
+wm title .wiring.editOperation "Edit Operation"
 wm withdraw .wiring.editOperation
 wm transient .wiring.editOperation .wiring
 
@@ -1029,6 +975,7 @@ pack .wiring.editOperation.rotation
 
 # set attribute, and commit to original item
 proc setItem {modelCmd attr dialogCmd} {
+    global constInput
     $modelCmd.$attr [string trim [eval $dialogCmd]]
     $modelCmd.set
 }
@@ -1046,19 +993,20 @@ proc closeEditWindow {window} {
 }
 
 proc setConstantValue {} {
-    constant.value [.wiring.editConstant.val.value get]
-    global relStepSize
-    constant.description [.wiring.editConstant.text.value get]
-    constant.sliderStepRel $relStepSize
-    constant.sliderMin [.wiring.editConstant.sliderBoundsMin.val get]
-    constant.sliderMax [.wiring.editConstant.sliderBoundsMax.val get]
-    constant.sliderStep [.wiring.editConstant.stepSize.val get]
+    global constInput
+    constant.value "$constInput(Value)"
+    constant.description "$constInput(Name)"
+    constant.sliderStepRel "$constInput(relative)"
+    constant.sliderMin "$constInput(Slider Bounds: Min)"
+    constant.sliderMax "$constInput(Slider Bounds: Max)"
+    constant.sliderStep "$constInput(Slider Step Size)"
     constant.sliderBoundsSet 1
 }
 
 proc setIntegralIValue {id} {
-    value.get [integral.description [.wiring.editConstant.text.value get]]
-    setItem value init {.wiring.editConstant.val.value get}
+    global constInput
+    value.get [integral.description "$constInput(Name)"]
+    setItem value init {set constInput(Value)}
 }
 
 proc editItem {id tag} {
@@ -1090,46 +1038,41 @@ proc editItem {id tag} {
             op.get $id
 
             if {[op.name]=="constant" || [op.name]=="integrate"} {
-                .wiring.editConstant.val.value delete 0 end
-                .wiring.editConstant.sliderBoundsMin.val delete 0 end
-                .wiring.editConstant.sliderBoundsMax.val delete 0 end
-                .wiring.editConstant.stepSize.val delete 0 end
+                global constInput
+                set "constInput(Value)" ""
+                set "constInput(Slider Bounds: Min)" ""
+                set "constInput(Slider Bounds: Max)" ""
+                set "constInput(Slider Step Size)" ""
                 switch [op.name] {
                     constant {
                         constant.get $id
-                        .wiring.editConstant.text.value delete 0 end
-                        .wiring.editConstant.text.value insert 0 [constant.description]
-                        .wiring.editConstant.val.label configure -text "Value"
-                        .wiring.editConstant.val.value delete 0 end
-                        .wiring.editConstant.val.value insert 0 [constant.value]
+                        set "constInput(Name)" [constant.description]
+                        set "constInput(ValueLabel)" "Value"
+                        set "constInput(Value)" [constant.value]
                         initOpSliderBounds
-                        .wiring.editConstant.sliderBoundsMin.val delete 0 end
-                        .wiring.editConstant.sliderBoundsMin.val insert 0 [constant.sliderMin]
-                        .wiring.editConstant.sliderBoundsMax.val delete 0 end
-                        .wiring.editConstant.sliderBoundsMax.val insert 0 [constant.sliderMax]
-                        .wiring.editConstant.stepSize.val delete 0 end
-                        .wiring.editConstant.stepSize.val insert 0 [constant.sliderStep]
-                        set relStepSize [constant.sliderStepRel]
+			set "constInput(Slider Bounds: Min)" [constant.sliderMin]
+			set "constInput(Slider Bounds: Max)" [constant.sliderMax]
+			set "constInput(Slider Step Size)" [constant.sliderStep]
+                        set "constInput(relative)" [constant.sliderStepRel]
                         set setValue setConstantValue
                     }
                     integrate {
                         integral.get $id
-                        .wiring.editConstant.val.label configure -text "Initial Value"
+                        set "constInput(ValueLabel)" "Initial Value"
                         value.get [integral.description]
-                        .wiring.editConstant.val.value insert 0 [value.init]
+                        set "constInput(Value)" [value.init]
                         set setValue setIntegralIValue
-                        .wiring.editConstant.text.value insert 0 [integral.description]
+                        set "constInput(Name)" [integral.description]
                     }
                 }
-                .wiring.editConstant.title configure -text [op.name]
-                .wiring.editConstant.rotation.value delete 0 end
-                .wiring.editConstant.rotation.value insert 0 [op.rotation]
+                set "constInput(title)" [op.name]
+                set "constInput(Rotation)" [op.rotation]
                 # value needs to be regotten, as var name may have changed
                 .wiring.editConstant.buttonBar.ok configure \
                     -command "
                         $setValue
                         setSliderProperties $id
-                        setItem op rotation {.wiring.editConstant.rotation.value get}
+                        setItem op rotation {set constInput(Rotation)}
                         closeEditWindow .wiring.editConstant
                     "
 
