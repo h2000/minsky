@@ -286,6 +286,7 @@ void GodleyIcon::update()
           if (start!=string::npos)
             {
               string val=table.cell(r,c).substr(start); //strip spaces
+                  
               // only override if a sensible floating number provided
               if (val.size()==1 && isdigit(val[0]) ||
                   val.size()>1 && (isDotOrDigit(val[0]) || 
@@ -297,6 +298,14 @@ void GodleyIcon::update()
                     v.init=-v.init;
                   v.godleyOverridden=true;
                 }
+            }
+          else
+            {
+              // populate cell with current variable's initial value
+              ostringstream val;
+              val << (table.signConventionReversed(c)? -v.init: v.init);
+              table.cell(r,c)=val.str();
+              v.godleyOverridden=true;
             }
         }
 

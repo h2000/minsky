@@ -1,24 +1,22 @@
-aegis: project "Minsky.1.2.1": change 11: integration has begun
-aegis: project "Minsky.1.2.1": change 11: adding another version to the history
-	of the "Makefile" file
-aegis: ci -f -u -d -M -m11 /tmp/aegis-51429975-8e8c-4d4f-a793-2850992f2dbb/
-	7e655e /home/aegis/Minsky/history/7e.uui/3c.uui/92753d57.476/5adf40e9.
-	d79/7e655e,v
-/home/aegis/Minsky/history/7e.uui/3c.uui/92753d57.476/5adf40e9.d79/7e655e,v  <--  /tmp/aegis-51429975-8e8c-4d4f-a793-2850992f2dbb/7e655e
-new revision: 1.55; previous revision: 1.54
-done
-aegis: ( rlog -r /home/aegis/Minsky/history/7e.uui/3c.uui/92753d57.476/
-	5adf40e9.d79/7e655e,v | awk '/^head:/ {print $2}' ) >
-	/tmp/aegis-b30c109d-8432-43f1-958a-878ab599eb3e
-aegis: project "Minsky.1.2.1": change 11: adding another version to the history
-	of the "minskyVersion.h" file
-aegis: ci -f -u -d -M -m11 /tmp/aegis-51429975-8e8c-4d4f-a793-2850992f2dbb/
-	607b44 /home/aegis/Minsky/history/08.uui/6e.uui/e8bc168d.4fd/aa16ee50.
-	8c0/607b44,v
-/home/aegis/Minsky/history/08.uui/6e.uui/e8bc168d.4fd/aa16ee50.8c0/607b44,v  <--  /tmp/aegis-51429975-8e8c-4d4f-a793-2850992f2dbb/607b44
-new revision: 1.133; previous revision: 1.132
-done
-aegis: ( rlog -r /home/aegis/Minsky/history/08.uui/6e.uui/e8bc168d.4fd/
-	aa16ee50.8c0/607b44,v | awk '/^head:/ {print $2}' ) >
-	/tmp/aegis-0b861f7f-1181-47e1-8677-e4ecb49f3177
-aegis: sleeping 16 seconds to allow file modifications times to be consistent
+aegis: project "Minsky.1.2.1": change 12: merging files from all baselines into
+	working directory according to directory style
+aegis: project "Minsky.1.2.1": change 12: development build started 14:56
+aegis: make -j2 AEGIS=1 project=Minsky.1.2.1 change=12 version=1.2.1.C012
+Makefile:42: warning: overriding commands for target `.h.cd'
+/home/rks/usr/ecolab/include/Makefile:483: warning: ignoring old commands for target `.h.cd'
+rm -f minskyVersion.h
+echo '#define MINSKY_VERSION "'1.2.1.C012'"' >minskyVersion.h
+chmod a+x test/checkMissing.sh
+test/checkMissing.sh
+g++ -c -I. -I/home/rks/usr/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/home/rks/usr/ecolab/include -I/home/rks/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/home/rks/usr/ecolab/include\" -DNDEBUG -I/home/rks/usr/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\"  minsky.cc
+aels: stat *.sh: No such file or directory
+aels: stat *.pl: No such file or directory
+g++ -O3 -I. -I/home/rks/usr/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/home/rks/usr/ecolab/include -I/home/rks/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/home/rks/usr/ecolab/include\" -DNDEBUG -I/home/rks/usr/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\"  tclmain.o godley.o port.o portManager.o variable.o variableManager.o variableValue.o operation.o plotWidget.o cairoItems.o XGLItem.o godleyIcon.o groupIcon.o equations.o schema0.o schema1.o minsky.o -L/opt/local/lib/db48 -L. /home/rks/usr/ecolab/lib/libecolab.a /home/rks/usr/ecolab/lib/libgraphcode.a -ldl -L/home/rks/usr/ecolab/lib -L/home/rks/usr/lib -L/usr/local/lib -L/usr/X11R6/lib  -lunuran -lprng -lgsl -lgslcblas -lz -lreadline -lncurses -ldb -ligraph -lgmp -L/usr/local/lib -lcairo   -L/usr/X11/lib -L/usr/X11R6/lib64 -L/usr/X11R6/lib -ltkstub8.4 -ltclstub8.4${TCL_DBGX} -ltk8.4 -ltcl8.4${TCL_DBGX} -lX11  -lm -pthread -L/usr/local/lib -lpangocairo-1.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lglib-2.0   -lTktable2.11 -lgsl -lgslcblas -lxgl -lxlib -lcairo -lpng -lz -o minsky
+cd test; make
+minsky exportSchema.tcl
+make[1]: Entering directory `/home/rks/Minsky.1.2.1.C012/test'
+g++ -I. -I/home/rks/usr/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/home/rks/usr/ecolab/include -I/home/rks/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/home/rks/usr/ecolab/include\" -I/home/rks/usr/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -I..  -o unittests main.o testMinsky.o  ../cairoItems.o ../equations.o ../godleyIcon.o ../godley.o ../groupIcon.o ../minsky.o ../operation.o ../plotWidget.o ../portManager.o ../port.o ../schema0.o ../schema1.o ../variableManager.o ../variable.o ../variableValue.o ../XGLItem.o /home/rks/usr/ecolab/lib/libecolab.a /home/rks/usr/ecolab/lib/libgraphcode.a -ldl -L/home/rks/usr/ecolab/lib -L/home/rks/usr/lib -L/usr/local/lib -L/usr/X11R6/lib  -lunuran -lprng -lgsl -lgslcblas -lz -lreadline -lncurses -ldb -ligraph -lgmp -L/usr/local/lib -lcairo   -L/usr/X11/lib -L/usr/X11R6/lib64 -L/usr/X11R6/lib -ltk8.4 -ltcl8.4${TCL_DBGX} -lX11  -lm -pthread -L/usr/local/lib -lpangocairo-1.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lglib-2.0   -lUnitTest++ -lgsl -lgslcblas  -lxgl -lxlib
+make[1]: Leaving directory `/home/rks/Minsky.1.2.1.C012/test'
+chmod -f a+x *.tcl *.sh *.pl
+make: [all] Error 1 (ignored)
+aegis: project "Minsky.1.2.1": change 12: development build complete 14:57

@@ -143,3 +143,7 @@ minsky.xsd: minsky
 
 upload-schema: minsky.xsd
 	scp minsky.xsd hpcoder@web.sourceforge.net:/home/project-web/minsky/htdocs
+
+# runs the regression tests
+sure: all tests
+	bash test/runtests.sh

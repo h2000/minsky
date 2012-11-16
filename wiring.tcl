@@ -752,8 +752,8 @@ proc contextMenu {item x y} {
             .wiring.context add command -label "Delete" -command "deleteItem $id $tag"
             .wiring.context add command -label "Edit" -command "editItem $id $tag"             
             if {[op.name]=="integrate"} {
-                # this gives an error: op.intVarID no such funtion
-                # .wiring.context add command -label "Copy Var" -command "copyVar [op.intVarID]"
+                integral.get $id
+                .wiring.context add command -label "Copy Var" -command "copyVar [integral.intVarID]"
             }
             if {[op.name]=="constant"} {
                 constant.get $id
@@ -1011,7 +1011,7 @@ proc setConstantValue {} {
     constant.sliderBoundsSet 1
 }
 
-proc setIntegralIValue {id} {
+proc setIntegralIValue {} {
     global constInput
     value.get [integral.description "$constInput(Name)"]
     setItem value init {set constInput(Value)}
@@ -1040,6 +1040,11 @@ proc editItem {id tag} {
         "^op" {
             op.get $id
 
+            .wiring.editConstant.text.value delete 0 end
+            .wiring.editConstant.val.value delete 0 end
+            .wiring.editConstant.sliderBoundsMin.val delete 0 end
+            .wiring.editConstant.sliderBoundsMax.val delete 0 end
+            .wiring.editConstant.stepSize.val delete 0 end
             if {[op.name]=="constant" || [op.name]=="integrate"} {
                 set "constInput(Value)" ""
                 set "constInput(Slider Bounds: Min)" ""
