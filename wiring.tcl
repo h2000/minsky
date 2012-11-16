@@ -921,7 +921,7 @@ wm transient .wiring.editConstant .wiring
 set row 0
 grid [label .wiring.editConstant.title -textvariable constInput(title)] -row $row -column 0 -columnspan 999 -pady 10
 frame .wiring.editConstant.buttonBar
-button .wiring.editConstant.buttonBar.ok -text OK
+button .wiring.editConstant.buttonBar.ok -text OK -command {eval $constInput(command)}
 button .wiring.editConstant.buttonBar.cancel -text Cancel -command {
     closeEditWindow .wiring.editConstant}
 pack .wiring.editConstant.buttonBar.ok [label .wiring.editConstant.buttonBar.spacer -width 2] .wiring.editConstant.buttonBar.cancel -side left -pady 10
@@ -1039,44 +1039,37 @@ proc editItem {id tag} {
         }
         "^op" {
             op.get $id
-
-            .wiring.editConstant.text.value delete 0 end
-            .wiring.editConstant.val.value delete 0 end
-            .wiring.editConstant.sliderBoundsMin.val delete 0 end
-            .wiring.editConstant.sliderBoundsMax.val delete 0 end
-            .wiring.editConstant.stepSize.val delete 0 end
             if {[op.name]=="constant" || [op.name]=="integrate"} {
-                set "constInput(Value)" ""
+                set constInput(Value) ""
                 set "constInput(Slider Bounds: Min)" ""
                 set "constInput(Slider Bounds: Max)" ""
                 set "constInput(Slider Step Size)" ""
                 switch [op.name] {
                     constant {
                         constant.get $id
-                        set "constInput(Name)" [constant.description]
-                        set "constInput(ValueLabel)" "Value"
-                        set "constInput(Value)" [constant.value]
+                        set constInput(Name) [constant.description]
+                        set constInput(ValueLabel) "Value"
+                        set constInput(Value) [constant.value]
                         initOpSliderBounds
 			set "constInput(Slider Bounds: Min)" [constant.sliderMin]
 			set "constInput(Slider Bounds: Max)" [constant.sliderMax]
 			set "constInput(Slider Step Size)" [constant.sliderStep]
-                        set "constInput(relative)" [constant.sliderStepRel]
+                        set constInput(relative) [constant.sliderStepRel]
                         set setValue setConstantValue
                     }
                     integrate {
                         integral.get $id
-                        set "constInput(ValueLabel)" "Initial Value"
+                        set constInput(ValueLabel) "Initial Value"
                         value.get [integral.description]
-                        set "constInput(Value)" [value.init]
+                        set constInput(Value) [value.init]
                         set setValue setIntegralIValue
-                        set "constInput(Name)" [integral.description]
+                        set constInput(Name) [integral.description]
                     }
                 }
-                set "constInput(title)" [op.name]
-                set "constInput(Rotation)" [op.rotation]
+                set constInput(title) [op.name]
+                set constInput(Rotation) [op.rotation]
                 # value needs to be regotten, as var name may have changed
-                .wiring.editConstant.buttonBar.ok configure \
-                    -command "
+                set constInput(command) "
                         $setValue
                         setSliderProperties $id
                         setItem op rotation {set constInput(Rotation)}
