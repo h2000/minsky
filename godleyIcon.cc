@@ -114,7 +114,8 @@ namespace
               y+height>cairoSurface->height() ||
               x<0|| y<0)
             {
-              resize(x+width, y+height);
+              //              resize(x+width+100, y+height+100);
+              resize(2*cairoSurface->width(), 2*cairoSurface->height());
               draw();
             }
 

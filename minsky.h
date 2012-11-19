@@ -109,6 +109,7 @@ namespace minsky
   class GetterSetterPtr
   {
     std::map<K, T>& map;
+    std::tr1::shared_ptr<V> val;
   public:
     // nb, in spite of appearances, this approach does not work well
     // with non-shared_pointer value types
@@ -120,11 +121,19 @@ namespace minsky
       typename std::map<K, T>::iterator i=map.find(key);
       if (i!=map.end()) 
         {
-          cmdPrefix.erase(cmdPrefix.rfind(".get"));
           // register current object with TCL
-          V* v=dynamic_cast<V*>(i->second.get());
+          std::tr1::shared_ptr<V> v=std::tr1::dynamic_pointer_cast<V>(i->second);
           if (v)
-            TCL_obj(null_TCL_obj, cmdPrefix, *v);
+            {
+              if (v!=val)
+                {
+                  // we keep another reference to value here so that we
+                  // never dereference an invalid object
+                  cmdPrefix.erase(cmdPrefix.rfind(".get"));
+                  TCL_obj(null_TCL_obj, cmdPrefix, *v);
+                  val=v;
+                }
+            }
           else
             {
               ostringstream s;

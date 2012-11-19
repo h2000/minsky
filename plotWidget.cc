@@ -99,9 +99,9 @@ namespace
       pw.grid=true;
       pw.Image(image);
     }
-    ~PlotItem() {
-      plots().erase(image);
-    }
+//    ~PlotItem() {
+//      plots().erase(image);
+//    }
     void draw();
   };
 

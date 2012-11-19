@@ -1,1 +1,1 @@
-#define MINSKY_VERSION ""
+#define MINSKY_VERSION "unknown"

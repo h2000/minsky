@@ -122,7 +122,7 @@ namespace
           const float l=op->l, h=op->h, r=op->r;
 
           cairo_reset_clip(cairo);
-          cairo_save(cairo);
+          //          cairo_save(cairo);
           cairo_identity_matrix(cairo);
           cairo_select_font_face(cairo, "sans-serif", CAIRO_FONT_SLANT_ITALIC,
                                  CAIRO_FONT_WEIGHT_NORMAL);
@@ -308,11 +308,16 @@ namespace
           redrawIfSurfaceTooSmall();
           array<double> bbox=boundingBox();
 
+          assert(bbox[0]+0.5*cairoSurface->width()>=0);
+          assert(bbox[1]+0.5*cairoSurface->height()>=0);
+          assert(bbox[2]-bbox[0]<=cairoSurface->width());
+          assert(bbox[3]-bbox[1]<=cairoSurface->height());
+
           cairoSurface->blit
             (bbox[0]+0.5*cairoSurface->width(), 
              bbox[1]+0.5*cairoSurface->height(), 
              bbox[2]-bbox[0], bbox[3]-bbox[1]);
-          cairo_restore(cairo);
+          //          cairo_restore(cairo);
         }
     }
   };

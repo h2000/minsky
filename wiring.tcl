@@ -128,18 +128,33 @@ bind .wiring.canvas <Button-5> {zoom [expr 1.0/1.1]}
 # mouse wheel bindings for pc and aqua
 bind .wiring.canvas <MouseWheel> { if {%D>=0} {zoom [expr 1+.1*%D]} {zoom [expr 1.0/(1+.1*-%D)]} }
 
+set zoomFactor 1
+set zoomInitiated 0
 proc zoom {factor} {
+    global zoomFactor zoomInitiated
+    set zoomFactor [expr $zoomFactor*$factor]
+    if {!$zoomInitiated} {
+        after idle doZoom
+        set zoomInitiated 1
+    }
+}
 
-  # normally you would just use the canvas "scale" command:
-  # .wiring.canvas scale all [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]] [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]] $factor $factor
-  # but it doesn't work because of the custom widgets
+proc doZoom {} {
 
-  # TODO set widget scale, similar to the way rotation is set
+ # normally you would just use the canvas "scale" command:
+ # .wiring.canvas scale all [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]] [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]] $factor $factor
+ # but it doesn't work because of the custom widgets
+
+ # TODO set widget scale, similar to the way rotation is set
+
+    global zoomFactor zoomInitiated
+    set factor $zoomFactor
+    set zoomFactor 1
 
     global updateItemPositionSubmitted
     set updateItemPositionSubmitted 1
 
-    # move everything relative to the origin by $factor
+    # move everything relative to the origin by $zoomFactor
     foreach {item        set          prefix} {
              var         variables    var
              groupItem   groupItems   group
@@ -148,10 +163,8 @@ proc zoom {factor} {
 
 	foreach id [$set.#keys] {
 	    $item.get $id
-	    set x1 [$item.x]
-	    set y1 [$item.y]
-	    moveSet $item $id $prefix$id $x1 $y1
-	    move $item $id $prefix$id [expr {$factor * $x1}] [expr {$factor * $y1}]
+            $item.moveTo [expr $factor*[$item.x]] [expr $factor*[$item.y]]
+            $item.set
 	}
 
     }
@@ -178,13 +191,13 @@ proc zoom {factor} {
     # move plots
     foreach im [plots.plots.#keys] {
         plot.get $im
-        set x1 [plot.x]
-        set y1 [plot.y]
-        movePlot $im [expr {$factor * $x1}] [expr {$factor * $y1}]
+        plot.moveTo [expr {$factor * [plot.x]}] [expr {$factor * [plot.y]}]
+        plot.set
     }
 
     set updateItemPositionSubmitted 0
     updateCanvas
+    set zoomInitiated 0
 }
 
 .menubar.ops.menu add command -label "Godley Table" -command {addNewGodleyItem [addGodleyTable 10 10]}
@@ -1185,8 +1198,4 @@ proc tout {args} {
 }
 
 # example debugging trace statements
-#trace add execution updateCanvas enterstep tout
-#trace add execution setOpVal enter tout
-#trace add execution setOpVal leave tout
-#trace add execution drawOperation enter tout
-#trace add execution drawOperation leave tout
+#trace add execution zoom enterstep tout
