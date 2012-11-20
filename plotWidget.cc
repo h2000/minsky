@@ -34,6 +34,13 @@ namespace
 
   Plots::Map& plots() {return minsky::minsky.plots.plots;}
 
+  // orientation of bounding box ports
+  const double orient[]={-0.4*M_PI, -0.6*M_PI, -0.2*M_PI, 0.2*M_PI};
+  // x coordinates of bounding box ports
+  const float boundX[]={-0.46,0.49,-0.49,-0.49};
+  // y coordinates of bounding box ports
+  const float boundY[]={0.49,0.49,0.47,-0.49};
+
   /// temporarily sets nTicks and fontScale, restoring them on scope exit
   struct SetTicksAndFontSize
   {
@@ -65,11 +72,18 @@ namespace
   {
     PlotWidget& pw;
     string image;
+    unsigned origWidth, origHeight;
     PlotItem(const std::string& image): 
-      CairoImage(image), pw(plots()[image]), image(image)  {
+      CairoImage(image), pw(plots()[image]), image(image), 
+      origWidth(0), origHeight(0)  {
       surfaces[image]=cairoSurface;
+      if (cairoSurface)
+        {
+          origWidth=cairoSurface->width();
+          origHeight=cairoSurface->height();
+        }
       if (cairoSurface && pw.images.empty())
-        {      
+        {
           pw.images.push_back(image);
           float w=cairoSurface->width(), h=cairoSurface->height();
           float x = -0.5*w, dx=w/numLines; // x location of ports
@@ -78,10 +92,10 @@ namespace
           pw.x=0; pw.y=0; // set up everything relative to pw centroid
 
           // xmin, xmax, ymin, ymax ports
-          pw.ports<<=portManager().addPort(Port(-0.46*w,0.49*h,true)); //xmin
-          pw.ports<<=portManager().addPort(Port(0.49*w,0.49*h,true));  //xmax
-          pw.ports<<=portManager().addPort(Port(-0.49*w,0.47*h,true)); //ymin
-          pw.ports<<=portManager().addPort(Port(-0.49*w,-0.49*h,true)); //ymax
+          pw.ports<<=portManager().addPort(Port(0,0,true)); //xmin
+          pw.ports<<=portManager().addPort(Port(0,0,true));  //xmax
+          pw.ports<<=portManager().addPort(Port(0,0,true)); //ymin
+          pw.ports<<=portManager().addPort(Port(0,0,true)); //ymax
 
           // y variable ports
           for (float y=0.5*(dy-h); y<0.5*h; y+=dy)
@@ -109,35 +123,55 @@ namespace
   {
     if (cairoSurface)
       {
-        cairoSurface->clear();
+        double w=origWidth*xScale, h=origHeight*yScale;
+
+        if (w!=cairoSurface->width() || h!=cairoSurface->height())
+          resize(w,h);
+        else
+         cairoSurface->clear();
         cairo_t* cairo=cairoSurface->cairo();
-        double w=cairoSurface->width(), h=cairoSurface->height();
 
-        //        cairo_save(cairo);
+        //initMatrix();
         cairo_identity_matrix(cairo);
-
+        //cairo_scale(cairo, xScale, yScale);
         cairo_reset_clip(cairo);
         cairo_new_path(cairo);
         cairo_rectangle(cairo,0,0,w,h);
         cairo_clip(cairo);
 
         // draw bounding box ports
-        static const double orient[]={-0.4*M_PI, -0.6*M_PI, -0.2*M_PI, 0.2*M_PI};
+        float x = -0.5*w, dx=w/numLines; // x location of ports
+        float y=0.5*h, dy = h/(numLines);
+
+        // draw bounds input ports
         for (size_t i=0; i<4; ++i)
-          drawTriangle(cairo, portManager().ports[pw.ports[i]].x-pw.x+0.5*w, 
-                       portManager().ports[pw.ports[i]].y-pw.y+0.5*h, 
-                       palette[(i/2)%paletteSz],
-                       orient[i]);
+          {
+            float x=boundX[i]*w, y=boundY[i]*h;
+            portManager().ports[pw.ports[i]].x = x + pw.x;
+            portManager().ports[pw.ports[i]].y = y + pw.y;
+            drawTriangle(cairo, x+0.5*w, y+0.5*h, palette[(i/2)%paletteSz], orient[i]);
+         
+          }
+        
+        // draw y data ports
+        for (size_t i=4; i<numLines+4; ++i)
+          {
+            float y=0.5*(dy-h) + (i-4)*dy;
+            portManager().ports[pw.ports[i]].x = x + pw.x;
+            portManager().ports[pw.ports[i]].y = y + pw.y;
+            drawTriangle(cairo, x+0.5*w, y+0.5*h, palette[(i-4)%paletteSz], 0);
+          }
 
-        // draw data ports
-        for (size_t i=4; i<pw.ports.size(); ++i)
-          drawTriangle(cairo, portManager().ports[pw.ports[i]].x-pw.x+0.5*w, 
-                       portManager().ports[pw.ports[i]].y-pw.y+0.5*h, 
-                       palette[((i-4)%numLines)%paletteSz],
-                       (i<numLines+4)? 0: -0.5*M_PI);
+        // draw x data ports
+        for (size_t i=numLines+4; i<2*numLines+4; ++i)
+          {
+            float x=0.5*(dx-w) + (i-numLines-4)*dx;
+            portManager().ports[pw.ports[i]].x = x + pw.x;
+            portManager().ports[pw.ports[i]].y = y + pw.y;
+            drawTriangle(cairo, x+0.5*w, y+0.5*h, palette[(i-numLines-4)%paletteSz], -0.5*M_PI);
+          }
 
-
-        SetTicksAndFontSize stf(pw, true, 3, 3, false);
+        SetTicksAndFontSize stf(pw, xScale<2.5, 3, 3, false);
         pw.scalePlot();
         pw.draw(*cairoSurface);
 

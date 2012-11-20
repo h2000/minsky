@@ -132,11 +132,16 @@ set zoomFactor 1
 set zoomInitiated 0
 proc zoom {factor} {
     global zoomFactor zoomInitiated
-    set zoomFactor [expr $zoomFactor*$factor]
-    if {!$zoomInitiated} {
-        after idle doZoom
-        set zoomInitiated 1
-    }
+
+    set x0 [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]]
+    set y0 [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]]
+    .wiring.canvas scale all $x0 $y0 $factor $factor
+
+#    set zoomFactor [expr $zoomFactor*$factor]
+#    if {!$zoomInitiated} {
+#        after idle doZoom
+#        set zoomInitiated 1
+#    }
 }
 
 proc doZoom {} {

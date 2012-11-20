@@ -30,9 +30,11 @@ namespace minsky
     const VariablePtr& var;
     cairo_t *cairo;
     float w, h;
+    double xScale, yScale;
   public:
     // render a variable to a given cairo context
-    RenderVariable(const VariablePtr& var, cairo_t* cairo=NULL);
+    RenderVariable(const VariablePtr& var, cairo_t* cairo=NULL, 
+                   double xScale=1, double yScale=1);
     /// render the cairo image
     void draw();
     /// half width of unrotated image

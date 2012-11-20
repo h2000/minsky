@@ -1,187 +1,133 @@
-aegis: project "Minsky.1.2.1": change 14: merging files from all baselines into
+aegis: project "Minsky.1.2.1": change 15: merging files from all baselines into
 	working directory according to directory style
-aegis: project "Minsky.1.2.1": change 14: user "rks" has begun development
-aegis: project "Minsky.1.2.1": change 14: file "Makefile" copied
-aegis: project "Minsky.1.2.1": change 14: file "Minsky.xmi" copied
-aegis: project "Minsky.1.2.1": change 14: file "MinskySchema.xmi" copied
-aegis: project "Minsky.1.2.1": change 14: file "XGLItem.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "XGLItem.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "aegis.conf" copied
-aegis: project "Minsky.1.2.1": change 14: file "cairoItems.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "cairoItems.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "classdesc_access.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "equations.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "equations.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "examples/1Free.mky" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"examples/4MonetaryMinskyModelLessUnstableStart.mky" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"examples/4MonetaryMinskyModelLessUnstableStart.xml" copied
-aegis: project "Minsky.1.2.1": change 14: file "examples/GoodwinLinear.mky"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file "examples/GoodwinLinear.xml"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file "examples/GoodwinLinear02.mky"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file "examples/Steve.mky" copied
-aegis: project "Minsky.1.2.1": change 14: file "examples/SteveTest028.mky"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file "examples/UWS05.mky" copied
-aegis: project "Minsky.1.2.1": change 14: file "examples/exponentialGrowth.mky"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"examples/exponentialGrowthWithExtraLabel.mky" copied
-aegis: project "Minsky.1.2.1": change 14: file "exportSchema.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: file "godley.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "godley.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "godley.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: file "godleyIcon.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "godleyIcon.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "godleyIconItem.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "group.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: file "groupIcon.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "groupIcon.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "help" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/Last.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/Pause.fig" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/Pause.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/Play.fig" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/Play.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/Rewind.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/Step.fig" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/add.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/bank.fig" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/bank.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/bank.xgl" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/bar.fig" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/const.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/divide.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/exp.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/group.odg" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/group.svg" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/group.xgl" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/icons.fig" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/integrate.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/multiply.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/plot.fig" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/plot.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/stop.fig" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/subtract.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/time.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "icons/var.gif" copied
-aegis: project "Minsky.1.2.1": change 14: file "init.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "install.bat" copied
-aegis: project "Minsky.1.2.1": change 14: file "library/Xecolab.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: file "library/Xecolab/connect.tcl"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file "library/Xecolab/display.tcl"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"library/Xecolab/filebrowser.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: file "library/Xecolab/histogram.tcl"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file "library/Xecolab/netgraph.tcl"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"library/Xecolab/obj-browser.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: file "library/Xecolab/plot.tcl"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file "library/init.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: file "library/tcl8/8.4/http-2.7.7.tm"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file "library/tcl8/8.4/http-2.7.tm"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"library/tcl8/8.4/platform-1.0.10.tm" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"library/tcl8/8.4/platform-1.0.3.tm" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"library/tcl8/8.4/platform/shell-1.1.3.tm" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"library/tcl8/8.4/platform/shell-1.1.4.tm" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"library/tcl8/8.5/msgcat-1.4.2.tm" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"library/tcl8/8.5/msgcat-1.4.4.tm" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"library/tcl8/8.5/tcltest-2.3.0.tm" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"library/tcl8/8.5/tcltest-2.3.3.tm" copied
-aegis: project "Minsky.1.2.1": change 14: file "library/tooltip.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: file "minsky.app/Contents/Info.plist"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file "minsky.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "minsky.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "minsky.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: file "operation.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "operation.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "plotWidget.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "plotWidget.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "plots.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: file "polyBase.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "port.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "port.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "portManager.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "portManager.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "schema/schema0.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "schema/schema0.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "schema/schema1.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "schema/schema1.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "schema/schemaHelper.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "tclmain.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/00/t0001a.sh" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/00/t0002a.sh" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/00/t0003a.sh" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/00/t0004a.sh" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/00/t0005a.sh" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/00/t0006a.sh" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/00/t0007a.sh" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/00/t0008a.sh" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/Makefile" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/assert.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/checkMissing.sh" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/main.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"test/oldSchema/schema0/1Free.mky" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"test/oldSchema/schema0/4MonetaryMinskyModelLessUnstableStart.mky"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"test/oldSchema/schema0/GoodwinLinear.mky" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"test/oldSchema/schema0/GoodwinLinear02.mky" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"test/oldSchema/schema0/Steve.mky" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"test/oldSchema/schema0/SteveTest028.mky" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"test/oldSchema/schema0/UWS05.mky" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"test/oldSchema/schema0/exponentialGrowth.mky" copied
-aegis: project "Minsky.1.2.1": change 14: file
-	"test/oldSchema/schema0/exponentialGrowthWithExtraLabel.mky" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/rewriteMky.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/runtests.sh" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/testEq.mky" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/testEq.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/testEqPrototype.tex"
-	copied
-aegis: project "Minsky.1.2.1": change 14: file "test/testMinsky.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "test/testtestEq.tex" copied
-aegis: project "Minsky.1.2.1": change 14: file "uninstall.bat" copied
-aegis: project "Minsky.1.2.1": change 14: file "variable.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "variable.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "variableManager.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "variableManager.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "variableValue.cc" copied
-aegis: project "Minsky.1.2.1": change 14: file "variableValue.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "windows/Shortcut.exe" copied
-aegis: project "Minsky.1.2.1": change 14: file "wire.h" copied
-aegis: project "Minsky.1.2.1": change 14: file "wiring.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: copied 140 files
-aegis: project "Minsky.1.2.1": change 14: file "wiring.tcl" no longer being
-	modified
-aegis: project "Minsky.1.2.1": change 14: merging files from all baselines into
-	working directory according to directory style
-aegis: project "Minsky.1.2.1": change 14: file "wiring.tcl" copied
-aegis: project "Minsky.1.2.1": change 14: copied 1 file
+aegis: project "Minsky.1.2.1": change 15: integration build started 16:30
+aegis: cd /home/aegis/Minsky/branch.1/branch.2/branch.1/delta22793.006
+aegis: user "aegis", group "users"
+aegis: make -j2 AEGIS=1 project=Minsky.1.2.1 change=15 version=1.2.1.D006
+ls: cannot access /home/aegis/usr/ecolab/include/ecolab.h: No such file or directory
+Makefile:42: warning: overriding commands for target `.h.cd'
+/usr/local/ecolab/include/Makefile:483: warning: ignoring old commands for target `.h.cd'
+gcc -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -MM -MG cairoItems.cc >cairoItems.d
+gcc -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -MM -MG plotWidget.cc >plotWidget.d
+ls: cannot access /home/aegis/usr/ecolab/include/ecolab.h: No such file or directory
+Makefile:42: warning: overriding commands for target `.h.cd'
+/usr/local/ecolab/include/Makefile:483: warning: ignoring old commands for target `.h.cd'
+rm -f minskyVersion.h
+echo '#define MINSKY_VERSION "'1.2.1.D006'"' >minskyVersion.h
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o tclmain.o tclmain.cc
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o godley.o godley.cc
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o portManager.o portManager.cc
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o variable.o variable.cc
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o variableManager.o variableManager.cc
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o variableValue.o variableValue.cc
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o operation.o operation.cc
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o plotWidget.o plotWidget.cc
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o cairoItems.o cairoItems.cc
+cairoItems.cc:374:14: warning: invalid access to non-static data member ‘<unnamed>::TkMinskyItem::id’  of NULL object
+cairoItems.cc:374:14: warning: (perhaps the ‘offsetof’ macro was used incorrectly)
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o XGLItem.o XGLItem.cc
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o godleyIcon.o godleyIcon.cc
+XGLItem.cc:127:12: warning: invalid access to non-static data member ‘<unnamed>::TkXGLItem::id’  of NULL object
+XGLItem.cc:127:12: warning: (perhaps the ‘offsetof’ macro was used incorrectly)
+XGLItem.cc:129:12: warning: invalid access to non-static data member ‘<unnamed>::TkXGLItem::xglRes’  of NULL object
+XGLItem.cc:129:12: warning: (perhaps the ‘offsetof’ macro was used incorrectly)
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o groupIcon.o groupIcon.cc
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o equations.o equations.cc
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o schema0.o schema/schema0.cc
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\" -O3 -o schema1.o schema/schema1.cc
+chmod a+x test/checkMissing.sh
+test/checkMissing.sh
+aels: stat *.sh: No such file or directory
+aels: stat *.pl: No such file or directory
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\"  minsky.cc
+g++ -O3 -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -DNDEBUG -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -Ischema -DTR1 -O3 -UECOLAB_LIB -DECOLAB_LIB=\"library\"  tclmain.o godley.o port.o portManager.o variable.o variableManager.o variableValue.o operation.o plotWidget.o cairoItems.o XGLItem.o godleyIcon.o groupIcon.o equations.o schema0.o schema1.o minsky.o -L/opt/local/lib/db48 -L. /usr/local/ecolab/lib/libecolab.a /usr/local/ecolab/lib/libgraphcode.a -ldl -L/usr/local/ecolab/lib -L/home/aegis/usr/lib -L/usr/local/lib -L/usr/X11R6/lib  -lunuran -lprng -lgsl -lgslcblas -lz -lreadline -lncurses -ldb -ligraph -lgmp -L/usr/local/lib -lcairo   -L/usr/X11/lib -L/usr/X11R6/lib64 -L/usr/X11R6/lib -ltkstub8.5 -ltclstub8.5 -ltk8.5 -ltcl8.5 -lX11  -lm -pthread -L/usr/local/lib -lpangocairo-1.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lglib-2.0   -lTktable2.11 -lgsl -lgslcblas -lxgl -lxlib -lcairo -lpng -lz -o minsky
+cd test; make
+minsky exportSchema.tcl
+ls: cannot access /home/aegis/usr/ecolab/include/ecolab.h: No such file or directory
+make[1]: Entering directory `/home/aegis/Minsky/branch.1/branch.2/branch.1/delta22793.006/test'
+g++ -c -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -I.. -g -o testMinsky.o testMinsky.cc
+g++ -I. -I/usr/local/ecolab/include -DHASH_TCL_hash -DHAVE_LONGLONG -DTR1 -I/usr/local/ecolab/include -I/home/aegis/usr/include -I/usr/local/include -I/usr/X11R6/include -I/usr/include/tcl -I/usr/include/tk -DUNURAN -DPRNG -DGNUSL -DZLIB -DXDR_PACK -DREADLINE -DBDB -DIGRAPH -DCAIRO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -DCONTIGUOUS -DTK -DECOLAB_LIB=\"/usr/local/ecolab/include\" -I/usr/local/ecolab/include -DPANGO -pthread -I/usr/local/include/cairo -I/usr/local/include/pixman-1 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12   -I..  -o unittests main.o testMinsky.o  ../cairoItems.o ../equations.o ../godleyIcon.o ../godley.o ../groupIcon.o ../minsky.o ../operation.o ../plotWidget.o ../portManager.o ../port.o ../schema0.o ../schema1.o ../variableManager.o ../variable.o ../variableValue.o ../XGLItem.o /usr/local/ecolab/lib/libecolab.a /usr/local/ecolab/lib/libgraphcode.a -ldl -L/usr/local/ecolab/lib -L/home/aegis/usr/lib -L/usr/local/lib -L/usr/X11R6/lib  -lunuran -lprng -lgsl -lgslcblas -lz -lreadline -lncurses -ldb -ligraph -lgmp -L/usr/local/lib -lcairo   -L/usr/X11/lib -L/usr/X11R6/lib64 -L/usr/X11R6/lib -ltk8.5 -ltcl8.5 -lX11  -lm -pthread -L/usr/local/lib -lpangocairo-1.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lglib-2.0   -lUnitTest++ -lgsl -lgslcblas  -lxgl -lxlib
+make[1]: Leaving directory `/home/aegis/Minsky/branch.1/branch.2/branch.1/delta22793.006/test'
+chmod -f a+x *.tcl *.sh *.pl
+make: [all] Error 1 (ignored)
+aegis: project "Minsky.1.2.1": change 15: integration build complete 16:31
+aegis: cd /home/aegis/Minsky/branch.1/branch.2/branch.1/delta22793.006
+aegis: user "aegis", group "users"
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/cairoItems.cc
+	/home/aegis/Minsky/branch.1/branch.2/branch.1/delta22793.006/
+	cairoItems.cc -o /home/aegis/Minsky/branch.1/branch.2/branch.1/
+	delta22793.006/cairoItems.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/cairoItems.h
+	/home/aegis/Minsky/branch.1/branch.2/branch.1/delta22793.006/
+	cairoItems.h -o /home/aegis/Minsky/branch.1/branch.2/branch.1/
+	delta22793.006/cairoItems.h,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/plotWidget.cc
+	/home/aegis/Minsky/branch.1/branch.2/branch.1/delta22793.006/
+	plotWidget.cc -o /home/aegis/Minsky/branch.1/branch.2/branch.1/
+	delta22793.006/plotWidget.cc,D
+aegis: fcomp -w /home/aegis/Minsky/branch.1/branch.2/baseline/wiring.tcl
+	/home/aegis/Minsky/branch.1/branch.2/branch.1/delta22793.006/wiring.tcl
+	-o /home/aegis/Minsky/branch.1/branch.2/branch.1/delta22793.006/wiring.
+	tcl,D
+aegis: project "Minsky.1.2.1": change 15: difference complete
+aegis: project "Minsky.1.2.1": change 15: adding another version to the history
+	of the "cairoItems.cc" file
+aegis: cd /home/aegis/Minsky/history
+aegis: user "aegis", group "users"
+aegis: ci -f -u -d -M -m15 /tmp/aegis-d4b864d8-e501-4798-b2a2-4d46a56e9748/
+	ce734e /home/aegis/Minsky/history/dd.uui/b5.uui/be731fb0.42d/ba3ddc40.
+	4d5/ce734e,v
+/home/aegis/Minsky/history/dd.uui/b5.uui/be731fb0.42d/ba3ddc40.4d5/ce734e,v  <--  /tmp/aegis-d4b864d8-e501-4798-b2a2-4d46a56e9748/ce734e
+new revision: 1.40; previous revision: 1.39
+done
+aegis: ( rlog -r /home/aegis/Minsky/history/dd.uui/b5.uui/be731fb0.42d/
+	ba3ddc40.4d5/ce734e,v | awk '/^head:/ {print $2}' ) >
+	/tmp/aegis-92a71ef5-3522-46ea-b032-4dfdb4e7ec4a
+aegis: project "Minsky.1.2.1": change 15: adding another version to the history
+	of the "cairoItems.h" file
+aegis: ci -f -u -d -M -m15 /tmp/aegis-d4b864d8-e501-4798-b2a2-4d46a56e9748/
+	3f5e2d /home/aegis/Minsky/history/8f.uui/0b.uui/1a2429cb.4d0/098caf7a.
+	d79/3f5e2d,v
+/home/aegis/Minsky/history/8f.uui/0b.uui/1a2429cb.4d0/098caf7a.d79/3f5e2d,v  <--  /tmp/aegis-d4b864d8-e501-4798-b2a2-4d46a56e9748/3f5e2d
+new revision: 1.5; previous revision: 1.4
+done
+aegis: ( rlog -r /home/aegis/Minsky/history/8f.uui/0b.uui/1a2429cb.4d0/
+	098caf7a.d79/3f5e2d,v | awk '/^head:/ {print $2}' ) >
+	/tmp/aegis-1ea643e4-eb57-4ee5-adc5-be32986c67b3
+aegis: project "Minsky.1.2.1": change 15: adding another version to the history
+	of the "plotWidget.cc" file
+aegis: ci -f -u -d -M -m15 /tmp/aegis-d4b864d8-e501-4798-b2a2-4d46a56e9748/
+	05f9cc /home/aegis/Minsky/history/b9.uui/31.uui/e85f0ebf.430/3b5efb1a.
+	db4/05f9cc,v
+/home/aegis/Minsky/history/b9.uui/31.uui/e85f0ebf.430/3b5efb1a.db4/05f9cc,v  <--  /tmp/aegis-d4b864d8-e501-4798-b2a2-4d46a56e9748/05f9cc
+new revision: 1.42; previous revision: 1.41
+done
+aegis: ( rlog -r /home/aegis/Minsky/history/b9.uui/31.uui/e85f0ebf.430/
+	3b5efb1a.db4/05f9cc,v | awk '/^head:/ {print $2}' ) >
+	/tmp/aegis-bb3c5423-0bca-4262-92e4-9cae3225a664
+aegis: project "Minsky.1.2.1": change 15: adding another version to the history
+	of the "wiring.tcl" file
+aegis: ci -f -u -d -M -m15 /tmp/aegis-d4b864d8-e501-4798-b2a2-4d46a56e9748/
+	c904fd /home/aegis/Minsky/history/82.uui/4a.uui/7b5578fc.448/7bcb4c20.
+	2e1/c904fd,v
+/home/aegis/Minsky/history/82.uui/4a.uui/7b5578fc.448/7bcb4c20.2e1/c904fd,v  <--  /tmp/aegis-d4b864d8-e501-4798-b2a2-4d46a56e9748/c904fd
+new revision: 1.107; previous revision: 1.106
+done
+aegis: ( rlog -r /home/aegis/Minsky/history/82.uui/4a.uui/7b5578fc.448/
+	7bcb4c20.2e1/c904fd,v | awk '/^head:/ {print $2}' ) >
+	/tmp/aegis-fb62a9ee-509c-4e4c-9e42-a4040c02e6bf
+aegis: project "Minsky.1.2.1": change 15: adding another version to the history
+	of the "minskyVersion.h" file
+aegis: ci -f -u -d -M -m15 /tmp/aegis-d4b864d8-e501-4798-b2a2-4d46a56e9748/
+	607b44 /home/aegis/Minsky/history/08.uui/6e.uui/e8bc168d.4fd/aa16ee50.
+	8c0/607b44,v
+/home/aegis/Minsky/history/08.uui/6e.uui/e8bc168d.4fd/aa16ee50.8c0/607b44,v  <--  /tmp/aegis-d4b864d8-e501-4798-b2a2-4d46a56e9748/607b44
+new revision: 1.138; previous revision: 1.137
+done
+aegis: ( rlog -r /home/aegis/Minsky/history/08.uui/6e.uui/e8bc168d.4fd/
+	aa16ee50.8c0/607b44,v | awk '/^head:/ {print $2}' ) >
+	/tmp/aegis-91051590-bd9f-4106-bd40-abf6b0cb7063
+aegis: project "Minsky.1.2.1": change 15: adjusting file modification times
+aegis: sleeping 18 seconds to allow file modifications times to be consistent
+aegis: project "Minsky.1.2.1": change 15: discarding old directories
+aegis: project "Minsky.1.2.1": change 15: integrate pass

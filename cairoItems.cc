@@ -84,9 +84,9 @@ namespace
     {
       cairo_move_to(cairo,-5,0);
       cairo_line_to(cairo,5,0);
-      cairo_move_to(cairo,0,3);
+      cairo_new_sub_path(cairo);
       cairo_arc(cairo,0,3,1,0,2*M_PI);
-      cairo_move_to(cairo,0,-3);
+      cairo_new_sub_path(cairo);
       cairo_arc(cairo,0,-3,1,0,2*M_PI);
       cairo_stroke(cairo);
     }
@@ -127,8 +127,7 @@ namespace
           cairo_select_font_face(cairo, "sans-serif", CAIRO_FONT_SLANT_ITALIC,
                                  CAIRO_FONT_WEIGHT_NORMAL);
           cairo_set_font_size(cairo,12);
-          cairo_translate(cairo,.5*cairoSurface->width(),
-                          0.5*cairoSurface->height());
+          initMatrix();
           cairo_set_line_width(cairo,1);
 
           // if rotation is in 1st or 3rd quadrant, rotate as
@@ -172,6 +171,7 @@ namespace
                 double x=w+2, y=0;
                 cairo_save(cairo);
                 cairo_identity_matrix(cairo);
+                cairo_scale(cairo, xScale, yScale);
                 cairo_rotate(cairo, angle);
                 cairo_user_to_device(cairo, &x, &y);
                 cairo_restore(cairo);
@@ -291,6 +291,7 @@ namespace
 
               cairo_save(cairo);
               cairo_identity_matrix(cairo);
+              cairo_scale(cairo,xScale,yScale);
               cairo_translate(cairo, op->x, op->y);
               cairo_rotate(cairo, angle);
               cairo_user_to_device(cairo, &x0, &y0);
@@ -335,11 +336,10 @@ namespace
 
           cairo_reset_clip(cairo);
           cairo_identity_matrix(cairo);
-          cairo_translate(cairo,.5*cairoSurface->width(), 
-                          0.5*cairoSurface->height());
           cairo_set_line_width(cairo,1);
+          initMatrix();
 
-          RenderVariable rv(var, cairo);
+          RenderVariable rv(var, cairo, xScale, yScale);
           rv.draw();
           redrawIfSurfaceTooSmall();
 
@@ -446,8 +446,9 @@ namespace
 //static int dum=registerItems();
 static int dum=(initVec().push_back(registerItems), 0);
 
-RenderVariable::RenderVariable(const VariablePtr& var, cairo_t* cairo):
-  var(var), cairo(cairo)
+RenderVariable::RenderVariable(const VariablePtr& var, cairo_t* cairo,
+                               double xScale, double yScale):
+  var(var), cairo(cairo), xScale(xScale), yScale(yScale)
 {
   cairo_t *lcairo=cairo;
   cairo_surface_t* surf=NULL;
@@ -504,15 +505,16 @@ void RenderVariable::draw()
       cairo_stroke(cairo);
   
       // calculate port coordinates in current rotation
-      double x0=w+2, y0=0, x1=-w+2, y1=0;
+      double x0=w, y0=0, x1=-w+2, y1=0;
       cairo_save(cairo);
       cairo_identity_matrix(cairo);
+      cairo_scale(cairo, xScale, yScale);
       cairo_rotate(cairo, angle);
       cairo_user_to_device(cairo, &x0, &y0);
       cairo_user_to_device(cairo, &x1, &y1);
       cairo_restore(cairo);
 
-      // set the ports coordinates
+     // set the ports coordinates
       portManager().movePortTo(var->outPort(), var->x+x0, var->y+y0);
       portManager().movePortTo(var->inPort(), var->x+x1, var->y+y1);
     }
