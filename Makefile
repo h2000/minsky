@@ -135,8 +135,7 @@ mac-dist:
 	cp -r icons $(MAC_DIST_DIR)
 
 checkMissing:
-	chmod a+x test/checkMissing.sh
-	test/checkMissing.sh
+	sh test/checkMissing.sh
 
 minsky.xsd: minsky
 	minsky exportSchema.tcl

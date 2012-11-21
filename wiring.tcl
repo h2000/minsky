@@ -16,7 +16,10 @@
 #  along with Minsky.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+set globals(default_rotation) 0
+
 # Wiring canvas
+
 
 proc createWire {coords} {
     .wiring.canvas create line $coords -tag wires -arrow last -smooth bezier
@@ -98,7 +101,7 @@ pack .wiring.menubar.godley .wiring.menubar.var .wiring.menubar.const .wiring.me
 pack .wiring.menubar.integrate .wiring.menubar.exp .wiring.menubar.add .wiring.menubar.subtract .wiring.menubar.multiply .wiring.menubar.divide .wiring.menubar.plot -side left
 pack .wiring.menubar -fill x
 
-canvas .wiring.canvas -height 600 -width 800 -scrollregion {0 0 10000 10000} \
+canvas .wiring.canvas -height $canvasHeight -width $canvasWidth -scrollregion {0 0 10000 10000} \
     -closeenough 2 -yscrollcommand ".vscroll set" -xscrollcommand ".hscroll set"
 pack .wiring.canvas -fill both -expand 1
 
@@ -128,81 +131,11 @@ bind .wiring.canvas <Button-5> {zoom [expr 1.0/1.1]}
 # mouse wheel bindings for pc and aqua
 bind .wiring.canvas <MouseWheel> { if {%D>=0} {zoom [expr 1+.1*%D]} {zoom [expr 1.0/(1+.1*-%D)]} }
 
-set zoomFactor 1
-set zoomInitiated 0
 proc zoom {factor} {
-    global zoomFactor zoomInitiated
 
     set x0 [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]]
     set y0 [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]]
     .wiring.canvas scale all $x0 $y0 $factor $factor
-
-#    set zoomFactor [expr $zoomFactor*$factor]
-#    if {!$zoomInitiated} {
-#        after idle doZoom
-#        set zoomInitiated 1
-#    }
-}
-
-proc doZoom {} {
-
- # normally you would just use the canvas "scale" command:
- # .wiring.canvas scale all [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]] [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]] $factor $factor
- # but it doesn't work because of the custom widgets
-
- # TODO set widget scale, similar to the way rotation is set
-
-    global zoomFactor zoomInitiated
-    set factor $zoomFactor
-    set zoomFactor 1
-
-    global updateItemPositionSubmitted
-    set updateItemPositionSubmitted 1
-
-    # move everything relative to the origin by $zoomFactor
-    foreach {item        set          prefix} {
-             var         variables    var
-             groupItem   groupItems   group
-             op          operations   op
-             godleyItem  godleyItems  godley} {
-
-	foreach id [$set.#keys] {
-	    $item.get $id
-            $item.moveTo [expr $factor*[$item.x]] [expr $factor*[$item.y]]
-            $item.set
-	}
-
-    }
-
-    # pan the canvas so we're still pointing at the same place
-    set x0 [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]]
-    set y0 [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]]
-    set nudge_x [expr {-int($factor * $x0 - $x0)}]
-    set nudge_y [expr {-int($factor * $y0 - $y0)}]
-    .wiring.canvas scan mark 0 0
-    .wiring.canvas scan dragto $nudge_x $nudge_y 1
-
-    # move wires
-    foreach id [visibleWires] {
-	wire.get $id
-	set coords {}
-	foreach {x y} [wire.coords] {
-	   lappend coords [expr {$factor * $x}] [expr {$factor * $y}]
-	}
-	wire.coords $coords
-	wire.set
-    }
-
-    # move plots
-    foreach im [plots.plots.#keys] {
-        plot.get $im
-        plot.moveTo [expr {$factor * [plot.x]}] [expr {$factor * [plot.y]}]
-        plot.set
-    }
-
-    set updateItemPositionSubmitted 0
-    updateCanvas
-    set zoomInitiated 0
 }
 
 .menubar.ops.menu add command -label "Godley Table" -command {addNewGodleyItem [addGodleyTable 10 10]}
@@ -225,13 +158,16 @@ proc placeNewVar {id} {
 }
 
 proc addVariablePostModal {} {
+    global globals
     global varInput
 
     set name [string trim $varInput(Name)]
     set varExists [variables.exists $name]
     set id [newVariable $name]
+    var.get $id
+    var.rotation $globals(default_rotation)
+    var.set
     if {!$varExists} {
-        var.get $id
         value.get $name
         setItem value init {set varInput(Value)}
         setItem var rotation {set varInput(Rotation)}
@@ -253,7 +189,11 @@ proc addVariable {} {
 }
 
 proc addOperation {op} {
+    global globals
     set id [minsky.addOperation $op]
+    op.get $id
+    op.rotation $globals(default_rotation)
+    op.set
     placeNewOp $id
     if {$op=="constant"} {editItem $id op$id}
 }
@@ -339,6 +279,7 @@ proc move {item id tag x y} {
 
 # create a new canvas item for var id
 proc newVar {id} {
+    global globals
     var.get $id
     if {[lsearch -exact [image name] varImage$id]!=-1} {
         image delete varImage$id
@@ -357,7 +298,6 @@ proc newVar {id} {
     # context menu
     .wiring.canvas bind var$id <<contextMenu>> "contextMenu var$id %X %Y"
     .wiring.canvas bind var$id <Double-Button-1> "doubleClick var$id %X %Y"
-    
 }
 
 proc addNewGodleyItem {id} {
@@ -760,7 +700,7 @@ proc contextMenu {item x y} {
 	    .wiring.context add command -label "Delete" -command "deleteItem $id $tag"
             .wiring.context add command -label "Edit" -command "editItem $id $tag"
             .wiring.context add command -label "Copy" -command "copyVar $id"
-            .wiring.context add command -label "Flip" -command "rotateVar $id 180"
+            .wiring.context add command -label "Flip" -command "rotateVar $id 180; flip_default"
         }
         "operations" {
             set tag [lindex $tags [lsearch -regexp $tags {op[0-9]+}]]
@@ -782,7 +722,7 @@ proc contextMenu {item x y} {
                     -variable "sliderCheck$id"
             }
             .wiring.context add command -label "Copy" -command "copyOp $id"
-            .wiring.context add command -label "Flip" -command "rotateOp $id 180"
+            .wiring.context add command -label "Flip" -command "rotateOp $id 180; flip_default"
             op.get $id
             if {[op.name]=="integrate"} {
                 .wiring.context add command -label "Toggle var binding" -command "toggleCoupled $id"
@@ -819,6 +759,11 @@ proc contextMenu {item x y} {
     tk_popup .wiring.context $x $y
 }
 
+proc flip_default {} {
+   global globals
+   set globals(default_rotation) [expr ($globals(default_rotation)+180)%360]
+}
+
 proc deleteItem {id tag} {
     .wiring.canvas delete $tag
     switch -regexp $tag {
@@ -842,11 +787,23 @@ proc deleteItem {id tag} {
 }
 
 proc copyVar {id} {
+    global globals
     set newId [copyVariable $id]
     newVar $newId
+    var.get $newId
+    var.rotation $globals(default_rotation)
+    var.set
     placeNewVar $newId
 }
-proc copyOp  {id} {placeNewOp [copyOperation $id]}
+
+proc copyOp  {id} {
+    global globals
+    set newId [copyOperation $id]
+    op.get $id
+    op.rotation $globals(default_rotation)
+    op.set
+    placeNewOp $newId 
+}
 
 proc rotateOp {id angle} {
     op.get $id

@@ -25,6 +25,11 @@ set minskyHome [file dirname [info nameofexecutable]]
 set fname ""
 set workDir [pwd]
 
+# default canvas size. Overridden by previously resized window size
+# saved in .minskyrc
+set canvasWidth 600
+set canvasHeight 800
+
 # read in .rc file, which differs on Windows and unix
 set rcfile ""
 if {$tcl_platform(platform)=="unix"} {
@@ -69,7 +74,6 @@ if {$argc>1} {
 	    source $argv(1)
 	} else {
 	    minsky.load $argv(1)
-            after 1000 updateCanvas
             setFname $argv(1)
 	}
 }
@@ -406,10 +410,12 @@ if {[llength [info commands afterMinskyStarted]]>0} {
 proc finishUp {} {
     # if we have a valid rc file location, write out the directory of
     # the last file loaded
-    global rcfile workDir
+    global rcfile workDir 
     if {$rcfile!=""} {
         set rc [open $rcfile w]
         puts $rc "set workDir \"$workDir\""
+        puts $rc "set canvasWidth [winfo width .wiring.canvas]"
+        puts $rc "set canvasHeight [winfo height .wiring.canvas]"
         close $rc
     }
     exit
@@ -422,4 +428,9 @@ proc setFname {name} {
         set workDir [file dirname $name]
         catch {wm title . "Minsky (prototype): $fname"}
     }
+}
+
+if {$argc>1 && ![string match "*.tcl" $argv(1)]} {
+# we have loaded a Minsky model, so must refresh the canvas
+    updateCanvas
 }
