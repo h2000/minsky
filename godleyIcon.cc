@@ -28,9 +28,9 @@
 #include <arrays.h>
 #include <cairo_base.h>
 #include <ctype.h>
+#include <ecolab_epilogue.h>
 using namespace ecolab::cairo;
 using namespace ecolab;
-using namespace ecolab::array_ns;
 using namespace std;
 using namespace minsky;
 

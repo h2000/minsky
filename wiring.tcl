@@ -105,7 +105,6 @@ canvas .wiring.canvas -height $canvasHeight -width $canvasWidth -scrollregion {0
     -closeenough 2 -yscrollcommand ".vscroll set" -xscrollcommand ".hscroll set"
 pack .wiring.canvas -fill both -expand 1
 
-
 ttk::sizegrip .sizegrip
 scrollbar .vscroll -orient vertical -command ".wiring.canvas yview"
 scrollbar .hscroll -orient horiz -command ".wiring.canvas xview"
@@ -135,7 +134,7 @@ proc zoom {factor} {
 
     set x0 [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]]
     set y0 [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]]
-    .wiring.canvas scale all $x0 $y0 $factor $factor
+    after idle .wiring.canvas scale all $x0 $y0 $factor $factor
 }
 
 .menubar.ops.menu add command -label "Godley Table" -command {addNewGodleyItem [addGodleyTable 10 10]}

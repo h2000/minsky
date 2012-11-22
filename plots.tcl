@@ -73,61 +73,66 @@ proc movePlot {image x y} {
     }
 }
 
-toplevel .plotWindowOptions
-frame .plotWindowOptions.xticks
-label .plotWindowOptions.xticks.label -text "Number of x ticks"
-entry  .plotWindowOptions.xticks.val -width 20
-pack .plotWindowOptions.xticks.label .plotWindowOptions.xticks.val  -side left
+toplevel .pltWindowOptions
+frame .pltWindowOptions.xticks
+label .pltWindowOptions.xticks.label -text "Number of x ticks"
+entry  .pltWindowOptions.xticks.val -width 20
+pack .pltWindowOptions.xticks.label .pltWindowOptions.xticks.val  -side left
 
-frame .plotWindowOptions.yticks
-label .plotWindowOptions.yticks.label -text "Number of y ticks"
-entry  .plotWindowOptions.yticks.val -width 20
-pack .plotWindowOptions.yticks.label .plotWindowOptions.yticks.val  -side left
+frame .pltWindowOptions.yticks
+label .pltWindowOptions.yticks.label -text "Number of y ticks"
+entry  .pltWindowOptions.yticks.val -width 20
+pack .pltWindowOptions.yticks.label .pltWindowOptions.yticks.val  -side left
 
-frame .plotWindowOptions.grid
-label .plotWindowOptions.grid.label -text "Grid"
-checkbutton .plotWindowOptions.grid.val -variable plotWindowOptions_grid -command {plot.grid $plotWindowOptions_grid}
-pack .plotWindowOptions.grid.label  .plotWindowOptions.grid.val  -side left
+frame .pltWindowOptions.grid
+label .pltWindowOptions.grid.label -text "Grid"
+label .pltWindowOptions.grid.sublabel -text "Subgrid"
+checkbutton .pltWindowOptions.grid.val -variable plotWindowOptions_grid -command {plot.grid $plotWindowOptions_grid}
+checkbutton .pltWindowOptions.grid.subval -variable plotWindowOptions_subgrid -command {plot.subgrid $plotWindowOptions_subgrid}
+pack .pltWindowOptions.grid.label  .pltWindowOptions.grid.val  .pltWindowOptions.grid.sublabel  .pltWindowOptions.grid.subval  -side left
 
-frame .plotWindowOptions.buttonBar
-button .plotWindowOptions.buttonBar.ok -text OK
-button .plotWindowOptions.buttonBar.cancel -text Cancel -command {
-    wm withdraw .plotWindowOptions
-    grab release .plotWindowOptions 
+frame .pltWindowOptions.buttonBar
+button .pltWindowOptions.buttonBar.ok -text OK
+button .pltWindowOptions.buttonBar.cancel -text Cancel -command {
+    wm withdraw .pltWindowOptions
+    grab release .pltWindowOptions 
 }
-pack .plotWindowOptions.buttonBar.ok .plotWindowOptions.buttonBar.cancel -side left
-pack .plotWindowOptions.buttonBar -side bottom
+pack .pltWindowOptions.buttonBar.ok .pltWindowOptions.buttonBar.cancel -side left
+pack .pltWindowOptions.buttonBar -side bottom
 
-pack .plotWindowOptions.xticks .plotWindowOptions.yticks .plotWindowOptions.grid
-wm withdraw .plotWindowOptions
+pack .pltWindowOptions.xticks .pltWindowOptions.yticks .pltWindowOptions.grid
+wm withdraw .pltWindowOptions
 set plotWindowOptions_grid
+set plotWindowOptions_subgrid
 
 proc setPlotOptions {image} {
-    global plotWindowOptions_grid
+    global plotWindowOptions_grid plotWindowOptions_subgrid
 # TODO this can lose data if sim is running. When plot becomes an actual reference, not a copy, this problem will be averted
     plot.get $image
     plot.grid $plotWindowOptions_grid
-    plot.nxTicks [.plotWindowOptions.xticks.val get]
-    plot.nyTicks [.plotWindowOptions.yticks.val get]
+    plot.subgrid $plotWindowOptions_subgrid
+    plot.nxTicks [.pltWindowOptions.xticks.val get]
+    plot.nyTicks [.pltWindowOptions.yticks.val get]
     plot.set
     plot.redraw
-    wm withdraw .plotWindowOptions 
-    grab release .plotWindowOptions 
+    wm withdraw .pltWindowOptions 
+    grab release .pltWindowOptions 
 }
 
 proc doPlotOptions {image} {
-    global plotWindowOptions_grid
+    global plotWindowOptions_grid plotWindowOptions_subgrid
     plot.get $image
     set plotWindowOptions_grid [plot.grid]
+    set plotWindowOptions_subgrid [plot.subgrid]
 
 
-    .plotWindowOptions.xticks.val delete 0 end
-    .plotWindowOptions.xticks.val insert 0 [plot.nxTicks]
-    .plotWindowOptions.yticks.val delete 0 end
-    .plotWindowOptions.yticks.val insert 0 [plot.nyTicks]
-    .plotWindowOptions.buttonBar.ok configure -command "setPlotOptions $image"
-    wm deiconify .plotWindowOptions
-    grab .plotWindowOptions
+    .pltWindowOptions.xticks.val delete 0 end
+    .pltWindowOptions.xticks.val insert 0 [plot.nxTicks]
+    .pltWindowOptions.yticks.val delete 0 end
+    .pltWindowOptions.yticks.val insert 0 [plot.nyTicks]
+    .pltWindowOptions.buttonBar.ok configure -command "setPlotOptions $image"
+    wm deiconify .pltWindowOptions
+    grab .pltWindowOptions
 }
 
 # w and h are requested window size, dw, dh are difference between

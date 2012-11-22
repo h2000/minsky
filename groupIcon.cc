@@ -25,6 +25,7 @@
 #include <xgl/xgl.h>
 #include <cairo_base.h>
 #include <plot.h>
+#include <ecolab_epilogue.h>
 using namespace ecolab::cairo;
 using namespace ecolab;
 //using namespace ecolab::array_ns;

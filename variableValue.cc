@@ -17,6 +17,7 @@
   along with Minsky.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "variableValue.h"
+#include <ecolab_epilogue.h>
 
 namespace minsky
 {
