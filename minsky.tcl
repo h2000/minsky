@@ -392,6 +392,10 @@ proc aboutMinsky {} {
 
 # delete subsidiary toplevel such as godleys and plots
 proc deleteSubsidiaryTopLevels {} {
+    global globals
+
+    set globals(default_rotation) 0
+
     foreach w [info commands .godley*] {destroy $w}
     foreach w [info commands .plot*] {destroy $w}
     .wiring.canvas delete all
