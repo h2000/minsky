@@ -153,10 +153,6 @@ namespace minsky
     Constant(const vector<int>& ports=vector<int>()):  
       Super(ports), value(0), sliderVisible(false), sliderBoundsSet(false), 
       sliderStepRel(false) {}
-
-    // clone has to be overridden, as default impl return object of
-    // type Operation<T>
-    Constant* clone() const {return new Constant(*this);}
   };
 
   class IntOp: public Operation<OperationType::integrate>
@@ -168,7 +164,7 @@ namespace minsky
     /// name of integration variable
     string m_description; 
     CLASSDESC_ACCESS(IntOp);
-    void addPorts(); // override. Also allocates new integral var if intVar==-1
+    void addPorts(); // override
     friend struct SchemaHelper;
   public:
     // offset for coupled integration variable, tr
@@ -178,15 +174,11 @@ namespace minsky
     IntOp(const vector<int>& ports);
 
     // ensure that copies create a new integral variable
-    IntOp(const IntOp& x): 
-      Super(x), intVar(-1), m_description(x.m_description)  {addPorts();}
-    const IntOp& operator=(const IntOp& x); 
+    IntOp(const IntOp& x): Super(x) {setDescription(x.getDescription());}
+    const IntOp& operator=(const IntOp& x)
+    {Super::operator=(x); setDescription(x.getDescription());}
 
     ~IntOp() {variableManager().erase(intVarID());}
-
-    // clone has to be overridden, as default impl return object of
-    // type Operation<T>
-    IntOp* clone() const {return new IntOp(*this);}
 
     /// set integration variable name
     void setDescription();

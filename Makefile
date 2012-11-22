@@ -32,7 +32,7 @@ MODELS=minsky
 # custom one that picks up its scripts from a relative library
 # directory
 MODLINK=$(LIBMODS:%=$(ECOLAB_HOME)/lib/%)
-OTHER_OBJS=tclmain.o godley.o portManager.o variable.o variableManager.o variableValue.o operation.o plotWidget.o cairoItems.o XGLItem.o godleyIcon.o groupIcon.o equations.o schema0.o schema1.o
+OTHER_OBJS=tclmain.o godley.o port.o portManager.o variable.o variableManager.o variableValue.o operation.o plotWidget.o cairoItems.o XGLItem.o godleyIcon.o groupIcon.o equations.o schema0.o schema1.o
 MODLINK+=$(OTHER_OBJS)
 FLAGS+=-Ischema -DTR1 $(OPT) -UECOLAB_LIB -DECOLAB_LIB=\"library\"
 

@@ -43,7 +43,8 @@ struct VariableType
 
 struct VariableBaseAttributes: public VariableType
 {
-  VariableBaseAttributes(): x(0), y(0), rotation(0), visible(true) {}
+  VariableBaseAttributes(): x(0), y(0), init(0), rotation(0), 
+                              visible(true) {}
 
   // tempFlow variables are temporary flow variable not visible on
   // the canvas.
@@ -51,6 +52,8 @@ struct VariableBaseAttributes: public VariableType
   // to implement integration
 
   float x, y; ///< position in canvas
+  // TODO init should not be in this class!
+  double init; ///< initial value of variable
   string name; ///< variable name
   double rotation; /// rotation if icon, in degrees
   
@@ -75,51 +78,44 @@ protected:
   friend struct minsky::SchemaHelper;
 private:
   int m_outPort, m_inPort; /// where wires connect to
-  CLASSDESC_ACCESS(VariableBase);
+    CLASSDESC_ACCESS(VariableBase);
  
-public:
-  /// variable is in a Godley table
+  public:
+    /// variable is in a Godley table
     bool m_godley;
-  
-  int outPort() const {return m_outPort;}
-  int inPort() const {return m_inPort;}
-  virtual int numPorts() const=0;
-  array<int> ports() const; 
-  static VariableBase* create(Type type); ///factory method
-  
-  double Init() const; /// < return initial value for this variable
-  double Init(double); /// < set the initial value for this variable
-  double init(TCL_args args) {
-    if (args.count) return Init(args);
-    else return Init();
-  }
 
-  /// variable is on left hand side of flow calculation
-  bool lhs() const {return type()!=stock && type()!=integral;} 
-  /// variable is temporary
-  bool temp() const {return type()==tempFlow || type()==undefined;}
-  //TODO: remove leading m_
-  virtual Type type() const=0;
-  virtual VariableBase* clone() const=0;
+    int outPort() const {return m_outPort;}
+    int inPort() const {return m_inPort;}
+    virtual int numPorts() const=0;
+    array<int> ports() const; 
+    static VariableBase* create(Type type); ///factory method
   
-  VariableBase(const string& name=""): 
-    m_outPort(-1), m_inPort(-1), m_godley(false) {
-    this->name=name;
-  }
-  VariableBase(const VariableBase& x): 
-    classdesc::PolyBase<VariableType::Type>(x),
-    VariableBaseAttributes(x), m_outPort(-1), m_inPort(-1), m_godley(false) {}
-  virtual ~VariableBase() {}
-  
-  void move(float dx, float dy); ///< relative move
-  void MoveTo(float x1, float y1); ///< absolute move
-  void moveTo(TCL_args args) {MoveTo(args[0], args[1]);}
-  
-  /// adds inPort for integral case (not relevant elsewhere) if one
-  /// not allocated, removes it if one allocated
-  void toggleInPort();
-  
-};
+    /// variable is on left hand side of flow calculation
+    bool lhs() const {return type()!=stock && type()!=integral;} 
+    /// variable is temporary
+    bool temp() const {return type()==tempFlow || type()==undefined;}
+    //TODO: remove leading m_
+    virtual Type type() const=0;
+    virtual VariableBase* clone() const=0;
+
+    VariableBase(const string& name=""): 
+      m_outPort(-1), m_inPort(-1), m_godley(false) {
+      this->name=name;
+    }
+    VariableBase(const VariableBase& x): 
+      classdesc::PolyBase<VariableType::Type>(x),
+      VariableBaseAttributes(x), m_outPort(-1), m_inPort(-1), m_godley(false) {}
+    virtual ~VariableBase() {}
+
+    void move(float dx, float dy); ///< relative move
+    void MoveTo(float x1, float y1); ///< absolute move
+    void moveTo(TCL_args args) {MoveTo(args[0], args[1]);}
+
+    /// adds inPort for integral case (not relevant elsewhere) if one
+    /// not allocated, removes it if one allocated
+    void toggleInPort();
+
+  };
 
 namespace minsky
 {

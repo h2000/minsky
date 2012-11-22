@@ -19,7 +19,6 @@
 #include "variableManager.h"
 #include "portManager.h"
 #include "minsky.h"
-#include <ecolab_epilogue.h>
 
 #include <set>
 using namespace std;

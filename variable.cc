@@ -18,7 +18,6 @@
 */
 #include "portManager.h"
 #include "variable.h"
-#include "variableManager.h"
 #include "ecolab_epilogue.h"
 using namespace classdesc;
 
@@ -64,16 +63,6 @@ VariableBase* VariableBase::create(VariableType::Type type)
     default: assert( false && "invalid variable type");
       return NULL;
     }
-}
-
-double VariableBase::Init() const
-{
-  return variableManager().getVariableValue(name).init;
-}
-
-double VariableBase::Init(double x)
-{
-  return variableManager().getVariableValue(name).init=x;
 }
 
 namespace minsky

@@ -43,17 +43,11 @@ namespace minsky
 
     /// variable ports specifying plot size
     VariableValue xminVar, xmaxVar, yminVar, ymaxVar;
-    /// number of ticks to show in canvas item
-    unsigned displayNTicks;
-    double displayFontSize;
-
+  
     std::vector<string> images;
  
     // we could put in an explicit pointer to the memory location here...
     float x,y;
-
-    PlotWidget(): displayNTicks(3), displayFontSize(3) {grid=true;}
-
     void MoveTo(float x, float y);
     void moveTo(TCL_args args) {MoveTo(args[0],args[1]);}
     void addPlotPt(double t); ///< add another plot point

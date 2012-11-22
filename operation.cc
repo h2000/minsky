@@ -51,7 +51,6 @@ void OperationBase::MoveTo(float x1, float y1)
 
 void OperationBase::addPorts()
 {
-  m_ports.clear();
   switch (type())
     {
       // zero input port case
@@ -87,17 +86,8 @@ IntOp::IntOp(const vector<int>& ports): Super(ports), intVar(-1)
     }
 }
 
-const IntOp& IntOp::operator=(const IntOp& x)
-{
-  Super::operator=(x); 
-  intVar=-1;  // cause a new integral variable to be created
-  m_description=x.m_description; 
-  addPorts();
-}
-
 void IntOp::addPorts()
 {
-  m_ports.clear();
   setDescription();
   m_ports.push_back(portManager().addPort(Port(0,0,true)));
 }

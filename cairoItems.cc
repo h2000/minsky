@@ -24,7 +24,6 @@
 #include "cairoItems.h"
 #include <cairo_base.h>
 #include <arrays.h>
-#include <ecolab_epilogue.h>
 using namespace ecolab::cairo;
 using namespace ecolab;
 //using namespace ecolab::array_ns;
@@ -123,10 +122,7 @@ namespace
           const float l=op->l, h=op->h, r=op->r;
 
           cairo_reset_clip(cairo);
-<<<<<<< baseline
-=======
           //          cairo_save(cairo);
->>>>>>> /home/rks/Minsky.1.2.1.C017/cairoItems.cc,B
           cairo_identity_matrix(cairo);
           cairo_select_font_face(cairo, "sans-serif", CAIRO_FONT_SLANT_ITALIC,
                                  CAIRO_FONT_WEIGHT_NORMAL);
@@ -259,22 +255,21 @@ namespace
               cairo_line_to(cairo,r,0);
               
               cairo_close_path(cairo);
+              //              cairo_clip_preserve(cairo);
 
               cairo_save(cairo);
               cairo_set_source_rgb(cairo,0,0,1);
               cairo_stroke_preserve(cairo);
-              cairo_restore(cairo);
               if (IntOp* i=dynamic_cast<IntOp*>(op.get()))
                 if (i->coupled())
                   {
                     // we need to add some additional clip region to
                     // cover the variable
-                    cairo_new_path(cairo);
                     cairo_rectangle
-                      (cairo,l,-intVarHeight, i->intVarOffset+2*intVarWidth+2+r-l, 
+                      (cairo,r,-intVarHeight, i->intVarOffset+2*intVarWidth+2, 
                        2*intVarHeight);
                   }
-              cairo_stroke_preserve(cairo);
+              cairo_restore(cairo);
               cairo_clip(cairo);
 
               // compute port coordinates relative to the icon's
@@ -314,28 +309,16 @@ namespace
           redrawIfSurfaceTooSmall();
           array<double> bbox=boundingBox();
 
-<<<<<<< baseline
-          assert(bbox[0]>=0);
-          assert(bbox[1]>=0);
-          assert(bbox[2]-bbox[0]<=cairoSurface->width());
-          assert(bbox[3]-bbox[1]<=cairoSurface->height());
-
-=======
           assert(bbox[0]+0.5*cairoSurface->width()>=0);
           assert(bbox[1]+0.5*cairoSurface->height()>=0);
           assert(bbox[2]-bbox[0]<=cairoSurface->width());
           assert(bbox[3]-bbox[1]<=cairoSurface->height());
 
->>>>>>> /home/rks/Minsky.1.2.1.C017/cairoItems.cc,B
           cairoSurface->blit
-<<<<<<< baseline
-            (bbox[0], bbox[1], bbox[2]-bbox[0], bbox[3]-bbox[1]);
-=======
             (bbox[0]+0.5*cairoSurface->width(), 
              bbox[1]+0.5*cairoSurface->height(), 
              bbox[2]-bbox[0], bbox[3]-bbox[1]);
           //          cairo_restore(cairo);
->>>>>>> /home/rks/Minsky.1.2.1.C017/cairoItems.cc,B
         }
     }
   };
@@ -359,15 +342,15 @@ namespace
           RenderVariable rv(var, cairo, xScale, yScale);
           rv.draw();
           redrawIfSurfaceTooSmall();
-          array<double> bbox=boundingBox();
 
-          assert(bbox[0]>=0);
-          assert(bbox[1]>=0);
-          assert(bbox[2]-bbox[0]<=cairoSurface->width());
-          assert(bbox[3]-bbox[1]<=cairoSurface->height());
+          array<double> clipBox=boundingBox();
 
+          double x=clipBox[0]+0.5*cairoSurface->width();
+          if (x<0 || x>=cairoSurface->width()) x=0;
+          double y=clipBox[1]+0.5*cairoSurface->height();
+          if (y<0 || y>=cairoSurface->height()) y=0;
           cairoSurface->blit
-            (bbox[0], bbox[1], bbox[2]-bbox[0], bbox[3]-bbox[1]);
+            (x, y, clipBox[2]-clipBox[0], clipBox[3]-clipBox[1]);
         }
     }
   };

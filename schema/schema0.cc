@@ -77,7 +77,7 @@ namespace schema0
     minsky::VariablePtr v(m_type, name);
     v->x=x;
     v->y=y;
-    v->Init(init);
+    v->init=init;
     v->rotation=rotation;
     v->visible=visible;
     minsky::SchemaHelper::setPrivates(*v, m_outPort, m_inPort);

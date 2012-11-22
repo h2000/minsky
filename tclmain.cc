@@ -11,8 +11,6 @@
 #include "pack_stream.h"
 
 #include "init.h"
-
-#include <ecolab_epilogue.h>
 #include <fstream>
 //#include <signal.h>
 extern "C" 

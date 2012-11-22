@@ -19,7 +19,6 @@
 #include "portManager.h"
 #include "minsky.h"
 #include <tcl++.h>
-#include <ecolab_epilogue.h>
 
 using namespace std;
 using namespace minsky;
