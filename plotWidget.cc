@@ -21,6 +21,7 @@
 #include "init.h"
 #include "cairoItems.h"
 #include "minsky.h"
+#include <ecolab_epilogue.h>
 using namespace ecolab::cairo;
 using namespace ecolab;
 using namespace std;
@@ -46,17 +47,17 @@ namespace
   {
     int nxTicks, nyTicks;
     double fontScale;
-    bool grid;
+    bool subgrid;
     PlotWidget& p;
     SetTicksAndFontSize(PlotWidget& p, bool override, int n, double f, bool g):
       p(p), nxTicks(p.nxTicks), nyTicks(p.nyTicks), 
-      fontScale(p.fontScale), grid(p.grid) 
+      fontScale(p.fontScale), subgrid(p.subgrid) 
     {
       if (override)
         {
           p.nxTicks=p.nyTicks=n;
           p.fontScale=f;
-          p.grid=g;
+          p.subgrid=g;
         }
     }
     ~SetTicksAndFontSize()
@@ -64,7 +65,7 @@ namespace
       p.nxTicks=nxTicks;
       p.nyTicks=nyTicks;
       p.fontScale=fontScale;
-      p.grid=grid;
+      p.subgrid=subgrid;
     }
   };
 
@@ -145,6 +146,38 @@ namespace
 
         // draw bounds input ports
         for (size_t i=0; i<4; ++i)
+<<<<<<< baseline
+          {
+            float x=boundX[i]*w, y=boundY[i]*h;
+            portManager().ports[pw.ports[i]].x = x + pw.x;
+            portManager().ports[pw.ports[i]].y = y + pw.y;
+            drawTriangle(cairo, x+0.5*w, y+0.5*h, palette[(i/2)%paletteSz], orient[i]);
+         
+          }
+        
+        // draw y data ports
+        for (size_t i=4; i<numLines+4; ++i)
+          {
+            float y=0.5*(dy-h) + (i-4)*dy;
+            portManager().ports[pw.ports[i]].x = x + pw.x;
+            portManager().ports[pw.ports[i]].y = y + pw.y;
+            drawTriangle(cairo, x+0.5*w, y+0.5*h, palette[(i-4)%paletteSz], 0);
+          }
+
+        // draw x data ports
+        for (size_t i=numLines+4; i<2*numLines+4; ++i)
+          {
+            float x=0.5*(dx-w) + (i-numLines-4)*dx;
+            portManager().ports[pw.ports[i]].x = x + pw.x;
+            portManager().ports[pw.ports[i]].y = y + pw.y;
+            drawTriangle(cairo, x+0.5*w, y+0.5*h, palette[(i-numLines-4)%paletteSz], -0.5*M_PI);
+          }
+
+        pw.displayNTicks = min(10.0, 3*xScale);
+        pw.displayFontSize = 9.0/pw.displayNTicks;
+        SetTicksAndFontSize stf
+          (pw, true, pw.displayNTicks, pw.displayFontSize, false);
+=======
           {
             float x=boundX[i]*w, y=boundY[i]*h;
             portManager().ports[pw.ports[i]].x = x + pw.x;
@@ -172,6 +205,7 @@ namespace
           }
 
         SetTicksAndFontSize stf(pw, xScale<2.5, 3, 3, false);
+>>>>>>> /home/rks/Minsky.1.2.1.C017/plotWidget.cc,B
         pw.scalePlot();
         pw.draw(*cairoSurface);
 
@@ -241,7 +275,8 @@ void PlotWidget::redraw()
         surfaces.find(images[i]);
       if (surf!=surfaces.end())
         {
-          SetTicksAndFontSize stf(*this, i==0, 3, 3, false);
+          SetTicksAndFontSize stf
+            (*this, i==0, displayNTicks, displayFontSize, false);
           surf->second->clear();
           draw(*surf->second);
           surf->second->blit();
@@ -259,7 +294,8 @@ void PlotWidget::addPlotPt(double t)
         surfaces.find(images[i]);
       if (surf!=surfaces.end())
         {
-          SetTicksAndFontSize stf(*this, i==0, 3, 3, false);
+          SetTicksAndFontSize stf
+            (*this, i==0, displayNTicks, displayFontSize, false);
           double x[yvars.size()], y[yvars.size()];
           for (size_t pen=0; pen<yvars.size(); ++pen)
             if (yvars[pen].idx()>=0)

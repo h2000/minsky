@@ -19,7 +19,7 @@
 
 #include "schema1.h"
 #include "schemaHelper.h"
-#include <classdesc_epilogue.h>
+#include <ecolab_epilogue.h>
 
 namespace schema1
 {
@@ -152,7 +152,7 @@ namespace schema1
       if (li!=layout.end())
         {
           const UnionLayout& l=li->second;
-          v->init=v1.init;
+          v->Init(v1.init);
           v->name=v1.name;
           v->rotation=l.rotation;
           v->visible=l.visible;

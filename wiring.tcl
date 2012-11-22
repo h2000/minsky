@@ -105,6 +105,41 @@ canvas .wiring.canvas -height $canvasHeight -width $canvasWidth -scrollregion {0
     -closeenough 2 -yscrollcommand ".vscroll set" -xscrollcommand ".hscroll set"
 pack .wiring.canvas -fill both -expand 1
 
+<<<<<<< baseline
+
+ttk::sizegrip .sizegrip
+scrollbar .vscroll -orient vertical -command ".wiring.canvas yview"
+scrollbar .hscroll -orient horiz -command ".wiring.canvas xview"
+
+grid .sizegrip -row 999 -column 999
+grid .vscroll -column 999 -row 10 -rowspan 989 -sticky ns
+grid .hscroll -row 999 -column 0 -columnspan 999 -sticky ew
+
+proc get_pointer_x {c} {
+  return [expr {[winfo pointerx $c] - [winfo rootx $c]}]
+}
+
+proc get_pointer_y {c} {
+  return [expr {[winfo pointery $c] - [winfo rooty $c]}]
+}
+
+bind . <Key-plus> {zoom 1.1}
+bind . <Key-equal> {zoom 1.1}
+bind . <Key-minus> {zoom [expr 1.0/1.1]}
+# mouse wheel bindings for X11
+bind .wiring.canvas <Button-4> {zoom 1.1}
+bind .wiring.canvas <Button-5> {zoom [expr 1.0/1.1]}
+# mouse wheel bindings for pc and aqua
+bind .wiring.canvas <MouseWheel> { if {%D>=0} {zoom [expr 1+.1*%D]} {zoom [expr 1.0/(1+.1*-%D)]} }
+
+proc zoom {factor} {
+
+    set x0 [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]]
+    set y0 [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]]
+    after idle .wiring.canvas scale all $x0 $y0 $factor $factor
+}
+
+=======
 
 ttk::sizegrip .sizegrip
 scrollbar .vscroll -orient vertical -command ".wiring.canvas yview"
@@ -138,6 +173,7 @@ proc zoom {factor} {
     .wiring.canvas scale all $x0 $y0 $factor $factor
 }
 
+>>>>>>> /home/rks/Minsky.1.2.1.C017/wiring.tcl,B
 .menubar.ops.menu add command -label "Godley Table" -command {addNewGodleyItem [addGodleyTable 10 10]}
 
 .menubar.ops.menu add command -label "Variable" -command "addVariable" 

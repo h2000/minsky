@@ -56,6 +56,7 @@ namespace minsky
     }
 
     /// class of each column (used in DE compliant mode)
+    const vector<AssetClass>& _assetClass() const {return m_assetClass;}
     AssetClass _assetClass(int col) const;
     AssetClass _assetClass(int col, AssetClass cls);
 

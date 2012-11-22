@@ -74,7 +74,7 @@ namespace schema1
     string name;
     Variable(): type(VariableType::undefined), init(0) {}
     Variable(int id, const minsky::VariablePtr& v): 
-      Item(id), type(v->type()), ports(toVector(v->ports())), 
+      Item(id), type(v->type()), init(v->Init()), ports(toVector(v->ports())), 
       name(v->name) {}
   };
 
@@ -107,7 +107,8 @@ namespace schema1
     Godley(int id, const minsky::GodleyIcon& g):
       Item(id), ports(toVector(g.ports())), 
       doubleEntryCompliant(g.table.doubleEntryCompliant),
-      name(g.table.title), data(g.table.getData()) {}
+      name(g.table.title), data(g.table.getData()), 
+      assetClasses(g.table._assetClass()) {}
   };
 
   template <class T> 

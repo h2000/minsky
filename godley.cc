@@ -19,6 +19,7 @@
 #include "godley.h"
 #include "port.h"
 #include "variableManager.h"
+#include <ecolab_epilogue.h>
 using namespace minsky;
 
 const char* GodleyTable::initialConditions="Initial Conditions";
@@ -112,6 +113,7 @@ GodleyTable::AssetClass GodleyTable::_assetClass
 {
   if (col>=m_assetClass.size())
     m_assetClass.resize(cols(), noAssetClass);
+  assert(cols()>col);
   m_assetClass[col]=cls;
   return _assetClass(col);
 }

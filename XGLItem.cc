@@ -24,6 +24,7 @@
 #include <xgl/xgl.h>
 #include <cairo_base.h>
 #include <arrays.h>
+#include <ecolab_epilogue.h>
 using namespace ecolab::cairo;
 using namespace ecolab;
 using namespace std;
@@ -109,9 +110,7 @@ void XGLItem::draw()
       drawing.render();
       array<double> bbox=boundingBox();
       cairoSurface->blit
-        (bbox[0]+0.5*cairoSurface->width(), 
-         bbox[1]+0.5*cairoSurface->height(), 
-         bbox[2]-bbox[0], bbox[3]-bbox[1]);
+        (bbox[0], bbox[1], bbox[2]-bbox[0], bbox[3]-bbox[1]);
     }
 }
 
