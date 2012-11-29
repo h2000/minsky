@@ -157,10 +157,21 @@ if {$classicMode} {
         tooltip .menubar.step "Step simulation"
 }
 
+menubutton .menubar.options -menu .menubar.options.menu -text Options -underline 0
+menu .menubar.options.menu
+.menubar.options.menu add command -label "Prefrences" -command {
+    foreach {var text} $preferencesVars { set preferences_input($var) $preferences($var) }
+    wm deiconify .preferencesForm
+    update idletasks
+    ::tk::TabToWindow $preferences(initial_focus)
+    grab .preferencesForm
+}
+
 
 # placement of menu items in menubar
 pack .menubar.file -side left
 pack .menubar.ops -side left
+pack .menubar.options -side left
 pack .menubar.rkData -side left
 
 pack .menubar.run .menubar.reset .menubar.step -side left
@@ -344,6 +355,10 @@ set rkVars {
 }
 
 set row 0
+
+grid [label .rkDataForm.label$row -text "Runge-Kutta parameters"] -column 1 -columnspan 999 -pady 10
+incr row 10
+
 foreach {var text} $rkVars {
     set rowdict($text) $row
     grid [label .rkDataForm.label$row -text $text] -column 10 -row $row -sticky e
@@ -379,6 +394,62 @@ proc closeRKDataForm {} {
 proc setRKparms {} {
     global rkVars rkVarInput
     foreach {var text} $rkVars { $var $rkVarInput($var) }
+}
+
+
+set preferences(godleyDisplayStyle) DRCR
+set preferences(godleyDisplay) 1
+
+toplevel .preferencesForm
+wm resizable .preferencesForm 0 0
+
+set preferencesVars {
+          godleyDisplayStyle   "Godley Table Output Style"
+          godleyDisplay "Godley Table Show Values"
+}
+
+set row 0
+
+grid [label .preferencesForm.label$row -text "Preferences"] -column 1 -columnspan 999 -pady 10
+incr row 10
+
+foreach {var text} $preferencesVars {
+    set rowdict($text) $row
+    grid [label .preferencesForm.label$row -text $text] -column 10 -row $row -sticky e
+    grid [entry  .preferencesForm.text$row -width 20 -textvariable preferences_input($var)] -column 20 -row $row -sticky ew -columnspan 999
+    incr row 10
+}
+
+set row "$rowdict(Godley Table Output Style)"
+grid forget .preferencesForm.text$row
+grid [radiobutton .preferencesForm.rb1-$row -text "DR/CR" -variable preferences_input(godleyDisplayStyle) -value DRCR] -row $row -column 20
+grid [radiobutton .preferencesForm.rb2-$row -text "+/-" -variable preferences_input(godleyDisplayStyle) -value sign] -row $row -column 25 -padx 10
+
+set row "$rowdict(Godley Table Show Values)"
+grid forget .preferencesForm.text$row
+grid [checkbutton .preferencesForm.rb1-$row -variable preferences_input(godleyDisplay)] -row $row -column 20 -sticky w
+
+set preferences(initial_focus) ".preferencesForm.rb1-$rowdict(Godley Table Output Style)"
+
+frame .preferencesForm.buttonBar
+button .preferencesForm.buttonBar.ok -text OK -command {setPreferenceParms; closePreferencesForm}
+button .preferencesForm.buttonBar.cancel -text cancel -command {closePreferencesForm}
+pack .preferencesForm.buttonBar.ok [label .preferencesForm.buttonBar.spacer -width 2] .preferencesForm.buttonBar.cancel -side left -pady 10
+grid .preferencesForm.buttonBar -column 1 -row 999 -columnspan 999
+
+bind .preferencesForm <Key-Return> {invokeOKorCancel .preferencesForm.buttonBar}
+
+wm title .preferencesForm "Preferences"
+wm withdraw .preferencesForm 
+
+proc closePreferencesForm {} {
+    grab release .preferencesForm
+    wm withdraw .preferencesForm
+}
+
+proc setPreferenceParms {} {
+    global preferencesVars preferences preferences_input
+    foreach {var text} $preferencesVars { set preferences($var) $preferences_input($var) }
 }
 
 toplevel .aboutMinsky

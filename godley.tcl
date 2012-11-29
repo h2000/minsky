@@ -41,11 +41,14 @@ proc createGodleyWindow {id} {
         -xscrollcommand ".godley$id.sx set" \
         -coltagcommand colorize \
         -flashmode off \
-        -selectmode extended \
+        -selectmode single \
         -ellipsis on \
         -width 20 -height 20 \
         -colstretch all \
-        -rowstretch all 
+        -rowstretch all \
+        -multiline 0 
+
+    bind $t <Return> {%W activate {}}
 
     #make column 0 narrower
     $t width 0 15
@@ -53,7 +56,10 @@ proc createGodleyWindow {id} {
     # make column 1 wider
     $t width 1 30
 
-    $t configure -usecommand 1 -command "setGetCell $id %r %c %i %s" 
+    $t configure -usecommand 1 -command "setGetCell $id %r %c %i %s %W" 
+
+    $t tag configure negative -foreground black
+    $t tag configure positive -foreground red
 
     # required to make this behave on Windows.            
     $t tag configure active -foreground black    
@@ -96,7 +102,9 @@ proc updateGodleyTitle {id} {
     }
 }
 
-proc setGetCell {id r c i s} {
+proc setGetCell {id r c i s w} {
+    global preferences
+
     if {$r>0 && $c>0} {
         minsky.godleyItem.get $id
         set row [expr $r-1]
@@ -116,16 +124,51 @@ proc setGetCell {id r c i s} {
             }
         }
         if {$i && $id>=0} {
-            minsky.godleyItem.table.setCell $row $col "$s"
+	    set negative [string match "*CR*" $s]
+	    set key [string trimleft [string trimleft [string trim $s] "DR"] "CR"]
+	    set key [lindex [split $key "="] 0]
+	    if $negative { set key "-$key" }
+            minsky.godleyItem.table.setCell $row $col $key
             minsky.godleyItem.set $id
             updateGodley $id
         } else {
             set s [minsky.godleyItem.table.getCell $row $col]
             if [string length $s] {
                  if {[t]>0 && $row>0 && $col>0} {
-                    set val ""
-                    catch { value.get [string trimleft $s " -"]; set val "= [value.value]" }
-             	    return "$s $val"
+		    set show ""
+		    set val ""
+		    set key [string trimright [string trimleft $s " -"]];
+		    set negative [string match "*-*" $s]
+		    if $negative {
+		       $w tag cell negative "$r,$c"
+		    } else {
+		       $w tag cell positive "$r,$c"
+		    }
+		    value.get $key
+		    if $preferences(godleyDisplay) {
+		       set val "= [value.value]"
+		    }
+		    switch $preferences(godleyDisplayStyle) {
+			"DRCR" {
+			    if $negative {
+				set show "CR $key $val"
+			    } else {
+				set show "DR $key $val"
+			    }
+			}
+			"sign" {
+			    if $negative {
+				if $preferences(godleyDisplay) {
+				    set val "= [expr -([value.value])]"
+				}
+				set show "$s $val"
+			    } else {
+				set show "$s $val"
+			    }
+			}
+			default { error "unknown display style $preferences(godleyDisplayStyle)"}
+		    }
+		    return $show
  		 } else {
                     return $s
  		 }
