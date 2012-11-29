@@ -68,26 +68,33 @@ namespace
       if (cairoSurface && id>=0)
         {
           GroupIcon& g=minsky::minsky.groupItems[id];
+          
+          // zooming is stuffed! arrrgh!
+          //xScale=1; yScale=1;
+          unsigned width=xScale*g.width, height=yScale*g.height;
+          if (width!=cairoSurface->width() || height!=cairoSurface->height())
+            resize(width,height);
+          cairoSurface->clear();
+
           CairoRenderer renderer(cairoSurface->surface());
           cairo_save(renderer.cairo());
-          
-          
-          cairo_translate(renderer.cairo(), 0.5*cairoSurface->width(), 
-                          0.5*cairoSurface->height());
+
+          cairo_translate(renderer.cairo(), 0.5*width, 0.5*height);
 
 
           double angle=g.rotation * M_PI / 180.0;
           cairo_rotate(renderer.cairo(), angle);
-          cairo_translate(renderer.cairo(), -0.5*cairoSurface->width(), 
-                          -0.5*cairoSurface->height());
+          cairo_translate(renderer.cairo(), -0.5*width, -0.5*height);
 
-          double scalex=double(cairoSurface->width()-2*portOffset)/
-            cairoSurface->width();
+          double scalex=double(width-2*portOffset*xScale)/width;
           cairo_scale(renderer.cairo(), scalex, 1);
-          cairo_translate(renderer.cairo(), portOffset, 0);
+          cairo_translate(renderer.cairo(), portOffset*xScale, 0);
           xgl drawing(renderer);
           drawing.load(xglRes.c_str());
+          // something buggy here, so replace with a box
           drawing.render();
+          //cairo_rectangle(renderer.cairo(),0,0,width,height);
+          //cairo_stroke(renderer.cairo());
           cairo_restore(renderer.cairo());
 
           cairo_t* cairo=cairoSurface->cairo();
@@ -96,13 +103,11 @@ namespace
           if (!g.name.empty())
             {
               cairo_save(cairo);
-              cairo_identity_matrix(cairo);
+              initMatrix();
               cairo_select_font_face
                 (cairo, "sans-serif", CAIRO_FONT_SLANT_ITALIC, 
                  CAIRO_FONT_WEIGHT_NORMAL);
               cairo_set_font_size(cairo,12);
-              cairo_translate(cairo,.5*cairoSurface->width(),
-                              0.5*cairoSurface->height());
               
               // extract the bounding box of the text
               cairo_text_extents_t bbox;
@@ -131,9 +136,7 @@ namespace
             }
 
           // draw the ports
-          cairo_identity_matrix(cairo);
-          cairo_translate(cairo, 0.5*cairoSurface->width(), 
-                          0.5*cairoSurface->height());
+          initMatrix();
           cairo_rotate(cairo, angle);
           array<float> pLoc=g.updatePortLocation();
           assert(pLoc.size() == 2*g.numPorts());
