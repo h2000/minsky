@@ -185,6 +185,14 @@ proc updateGodleys {} {
   
 }
 
+proc updateGodleysDisplay {} {
+  global globals
+  foreach id $globals(godley_tables) {
+    updateGodleyDisplay $id
+  }
+  
+}
+
 # sets a when-idle job to update the godley table, to prevent the table being updated too often during rapid fire requests
 proc updateGodley {id} {
     global globals
@@ -277,4 +285,17 @@ proc whenIdleUpdateGodley {id} {
     update
 }
 
+
+proc updateGodleyDisplay {id} {
+    global globals
+    if {$id < 0 || ![winfo exists .godley$id]} {return}
+    if {!$globals(updateGodleyLaunched$id)} {
+        set $globals(updateGodleyLaunched$id) 1
+        after idle whenIdleUpdateGodleyDisplay $id
+    }
+}
+
+proc whenIdleUpdateGodleyDisplay {id} {
+    .godley$id.table clear cache
+}
 
