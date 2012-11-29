@@ -432,7 +432,7 @@ grid [checkbutton .preferencesForm.rb1-$row -variable preferences_input(godleyDi
 set preferences(initial_focus) ".preferencesForm.rb1-$rowdict(Godley Table Output Style)"
 
 frame .preferencesForm.buttonBar
-button .preferencesForm.buttonBar.ok -text OK -command {setPreferenceParms; closePreferencesForm}
+button .preferencesForm.buttonBar.ok -text OK -command {setPreferenceParms; closePreferencesForm;updateGodleysDisplay}
 button .preferencesForm.buttonBar.cancel -text cancel -command {closePreferencesForm}
 pack .preferencesForm.buttonBar.ok [label .preferencesForm.buttonBar.spacer -width 2] .preferencesForm.buttonBar.cancel -side left -pady 10
 grid .preferencesForm.buttonBar -column 1 -row 999 -columnspan 999

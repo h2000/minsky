@@ -41,7 +41,7 @@ proc createGodleyWindow {id} {
         -xscrollcommand ".godley$id.sx set" \
         -coltagcommand colorize \
         -flashmode off \
-        -selectmode single \
+        -selectmode extended \
         -ellipsis on \
         -width 20 -height 20 \
         -colstretch all \
@@ -134,7 +134,7 @@ proc setGetCell {id r c i s w} {
         } else {
             set s [minsky.godleyItem.table.getCell $row $col]
             if [string length $s] {
-                 if {[t]>0 && $row>0 && $col>0} {
+                 if {$row>0 && $col>0} {
 		    set show ""
 		    set val ""
 		    set key [string trimright [string trimleft $s " -"]];
@@ -145,7 +145,7 @@ proc setGetCell {id r c i s w} {
 		       $w tag cell positive "$r,$c"
 		    }
 		    value.get $key
-		    if $preferences(godleyDisplay) {
+		    if {[t]>0 && $preferences(godleyDisplay)} {
 		       set val "= [value.value]"
 		    }
 		    switch $preferences(godleyDisplayStyle) {
@@ -158,7 +158,7 @@ proc setGetCell {id r c i s w} {
 			}
 			"sign" {
 			    if $negative {
-				if $preferences(godleyDisplay) {
+				if {[t]>0 && $preferences(godleyDisplay)} {
 				    set val "= [expr -([value.value])]"
 				}
 				set show "$s $val"
