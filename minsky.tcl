@@ -244,7 +244,7 @@ proc step {} {
 proc simulate {} {
     uplevel #0 {
       if {$running} {
-            after $delay {step; simulate}
+          after $delay {step; simulate; update}
         }
     }
 }

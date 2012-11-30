@@ -19,6 +19,7 @@
 #include "portManager.h"
 #include "variable.h"
 #include "variableManager.h"
+#include "minsky.h"
 #include "ecolab_epilogue.h"
 using namespace classdesc;
 
@@ -27,9 +28,9 @@ using namespace minsky;
 void VariableBase::addPorts()
 {
   if (numPorts()>0)
-    m_outPort = portManager().addPort(Port(x,y,false));
+    m_outPort = portManager().addPort(Port(x(),y(),false));
   if (numPorts()>1)
-    m_inPort = portManager().addPort(Port(x,y,true));
+    m_inPort = portManager().addPort(Port(x(),y(),true));
 }
 
 void VariableBase::delPorts()
@@ -43,7 +44,7 @@ void VariableBase::toggleInPort()
 {
   if (type()==integral)
     if (m_inPort==-1)
-      m_inPort = portManager().addPort(Port(x,y,true));
+      m_inPort = portManager().addPort(Port(x(),y(),true));
     else 
       {
         portManager().delPort(m_inPort);
@@ -88,16 +89,33 @@ template <> int Variable<VariableBase::integral>::numPorts() const
 }
 }
 
+float VariableBase::x() const
+{
+  if (group>=0)
+    return m_x + minsky::minsky.groupItems[group].x();
+  else
+    return m_x;
+}
+
+float VariableBase::y() const
+{
+  if (group>=0)
+    return m_y + minsky::minsky.groupItems[group].y();
+  else
+    return m_y;
+}
+
+
 void VariableBase::MoveTo(float x1, float y1) 
 {
-  float dx=x1-x, dy=y1-y;
+  float dx=x1-x(), dy=y1-y();
   move(dx, dy);
-  x=x1; y=y1;
 }
 
 void VariableBase::move(float dx, float dy) 
 {
-  x+=dx; y+=dy;
+  m_x+=dx; 
+  m_y+=dy;
   if (m_outPort!=-1)
     portManager().movePort(m_outPort, dx, dy);
   if (m_inPort!=-1)

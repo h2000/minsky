@@ -39,10 +39,10 @@ int PortManager::addWire(Wire w)
     w.coords.resize(4);
   const Port& to=ports[w.to];
   const Port& from=ports[w.from];
-  w.coords[0]=from.x;
-  w.coords[1]=from.y;
-  w.coords[w.coords.size()-2]=to.x;
-  w.coords[w.coords.size()-1]=to.y;
+  w.coords[0]=from.x();
+  w.coords[1]=from.y();
+  w.coords[w.coords.size()-2]=to.x();
+  w.coords[w.coords.size()-1]=to.y();
 
   int nextId=wires.empty()? 0: wires.rbegin()->first+1;
   wires.insert(Wires::value_type(nextId, w));
@@ -56,7 +56,7 @@ void PortManager::movePortTo(int port, float x, float y)
   if (ports.count(port))
     {
       Port& p=ports[port];
-      p.x=x; p.y=y;
+      p.m_x=x; p.m_y=y;
       array<int> attachedWires=WiresAttachedToPort(port);
       for (array<int>::iterator i=attachedWires.begin(); 
            i!=attachedWires.end(); ++i)
@@ -66,13 +66,13 @@ void PortManager::movePortTo(int port, float x, float y)
           assert(w.coords.size()>=4);
           if (w.from==port)
             {
-              w.coords[0]=p.x;
-              w.coords[1]=p.y;
+              w.coords[0]=p.x();
+              w.coords[1]=p.y();
             }
           else if (w.to==port)
             {
-              w.coords[w.coords.size()-2]=p.x;
-              w.coords[w.coords.size()-1]=p.y;
+              w.coords[w.coords.size()-2]=p.x();
+              w.coords[w.coords.size()-1]=p.y();
             }
         }
     }
@@ -87,7 +87,7 @@ int PortManager::closestPortImpl(float x, float y)
     if (C::eval(i->second))
     {
       const Port& p=i->second;
-      float r=(x-p.x)*(x-p.x) + (y-p.y)*(y-p.y);
+      float r=(x-p.x())*(x-p.x()) + (y-p.y())*(y-p.y());
       if (r<minr)
         {
           minr=r;

@@ -90,11 +90,7 @@ namespace schema1
     {
       Layouts::const_iterator l=layout.find(pp.id);
       if (l!=layout.end())
-        {
-          p.x = l->second.x;
-          p.y = l->second.y;
-          p.input = pp.input;
-        }
+        p=minsky::Port(l->second.x, l->second.y, pp.input);
       return p;
     }
 
@@ -193,8 +189,7 @@ namespace schema1
 //            (g, g1.operations, g1.variables, g1.wires, g1.ports);
           g.name=g1.name;
           // moveTo needs to called later as well
-          g.x=l.x;
-          g.y=l.y;
+          g.MoveTo(l.x, l.y);
           g.width=l.width;
           g.height=l.height;
           g.rotation=l.rotation;
@@ -356,7 +351,9 @@ namespace schema1
             vars.push_back(*item);
         minsky::GroupIcon& gi=m.groupItems[g->id];
         SchemaHelper::setPrivates(gi, ops, vars, wires, ports);
-        gi.MoveTo(gi.x, gi.y);
+        for (vector<int>::const_iterator o=ops.begin(); o!=ops.end(); ++o)
+          m.operations[*o]->group=g->id;
+        //        gi.MoveTo(gi.x(), gi.y());
       }
 
     c.populate(m.plots, model.plots);

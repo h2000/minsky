@@ -1,1 +1,1 @@
-#define MINSKY_VERSION ""
+#define MINSKY_VERSION "1.2.1.C019"

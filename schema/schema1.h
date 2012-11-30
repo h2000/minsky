@@ -34,6 +34,7 @@ but any renamed attributes require bumping the schema number.
 
 namespace schema1
 {
+  using minsky::SchemaHelper;
   using namespace std;
   struct Item
   {
@@ -130,7 +131,7 @@ namespace schema1
 
     PositionLayout(): x(0), y(0) {}
     template <class T> PositionLayout(int id, const T& item): 
-      Layout(id), x(item.x), y(item.y) {}
+      Layout(id), x(SchemaHelper::x(item)), y(SchemaHelper::y(item)) {}
     void xml_pack(xml_pack_t& x, const string& d) const
     {xml_pack_layout(x,d,*this);}
   };

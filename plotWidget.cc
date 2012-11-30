@@ -90,7 +90,7 @@ namespace
           float x = -0.5*w, dx=w/numLines; // x location of ports
           float y=0.5*h, dy = h/(numLines);
 
-          pw.x=0; pw.y=0; // set up everything relative to pw centroid
+          pw.MoveTo(0,0); // set up everything relative to pw centroid
 
           // xmin, xmax, ymin, ymax ports
           pw.ports<<=portManager().addPort(Port(0,0,true)); //xmin
@@ -148,8 +148,7 @@ namespace
         for (size_t i=0; i<4; ++i)
           {
             float x=boundX[i]*w, y=boundY[i]*h;
-            portManager().ports[pw.ports[i]].x = x + pw.x;
-            portManager().ports[pw.ports[i]].y = y + pw.y;
+            portManager().ports[pw.ports[i]]=Port(x + pw.x(), y + pw.y(), true);
             drawTriangle(cairo, x+0.5*w, y+0.5*h, palette[(i/2)%paletteSz], orient[i]);
          
           }
@@ -158,8 +157,7 @@ namespace
         for (size_t i=4; i<numLines+4; ++i)
           {
             float y=0.5*(dy-h) + (i-4)*dy;
-            portManager().ports[pw.ports[i]].x = x + pw.x;
-            portManager().ports[pw.ports[i]].y = y + pw.y;
+            portManager().ports[pw.ports[i]]=Port(x + pw.x(), y + pw.y(), true);
             drawTriangle(cairo, x+0.5*w, y+0.5*h, palette[(i-4)%paletteSz], 0);
           }
 
@@ -167,8 +165,7 @@ namespace
         for (size_t i=numLines+4; i<2*numLines+4; ++i)
           {
             float x=0.5*(dx-w) + (i-numLines-4)*dx;
-            portManager().ports[pw.ports[i]].x = x + pw.x;
-            portManager().ports[pw.ports[i]].y = y + pw.y;
+            portManager().ports[pw.ports[i]]=Port(x + pw.x(), y + pw.y(), true);
             drawTriangle(cairo, x+0.5*w, y+0.5*h, palette[(i-numLines-4)%paletteSz], -0.5*M_PI);
           }
 
@@ -219,8 +216,8 @@ void PlotWidget::deletePorts()
 void PlotWidget::MoveTo(float x1, float y1)
 {
   float w=width(), h=height();
-  float dx=x1-x, dy=y1-y;
-  x=x1; y=y1;
+  float dx=x1-x(), dy=y1-y();
+  m_x=x1; m_y=y1;
   for (size_t i=0; i<ports.size(); ++i)
     portManager().movePort(ports[i], dx, dy);
 }

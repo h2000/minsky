@@ -46,8 +46,8 @@ namespace schema0
   Operation::operator minsky::OperationPtr() const 
   {
     minsky::OperationPtr op(m_type, m_ports);
-    op->x=x;
-    op->y=y;
+    op->m_x=x;
+    op->m_y=y;
     // handle a previous schema change
     string desc=m_description.empty()? description: m_description;
     if (minsky::Constant* c=dynamic_cast<minsky::Constant*>(op.get()))
@@ -75,8 +75,7 @@ namespace schema0
   VariablePtr::operator minsky::VariablePtr() const
   {
     minsky::VariablePtr v(m_type, name);
-    v->x=x;
-    v->y=y;
+    v->MoveTo(x,y);
     v->Init(init);
     v->rotation=rotation;
     v->visible=visible;
@@ -115,8 +114,7 @@ namespace schema0
     minsky::GodleyIcon g;
     g.adjustHoriz=adjustHoriz;
     g.adjustVert=adjustVert;
-    g.x=x;
-    g.y=y;
+    g.MoveTo(x, y);
     g.scale=scale;
     asg(g.flowVars, flowVars);
     asg(g.stockVars, stockVars);
@@ -127,10 +125,9 @@ namespace schema0
   GroupIcon::operator minsky::GroupIcon() const
   {
     minsky::GroupIcon g;
+    g.MoveTo(x,y);
     minsky::SchemaHelper::setPrivates(g, operations, variables, wires, m_ports);
     g.name=name;
-    g.x=x;
-    g.y=y;
     g.width=width;
     g.height=height;
     g.rotation=rotation;
@@ -163,8 +160,7 @@ namespace schema0
     pw.yminVar=yminVar;
     pw.ymaxVar=ymaxVar;
     pw.images=images;
-    pw.x=x;
-    pw.y=y;
+    pw.MoveTo(x,y);
     return pw;
   }
 

@@ -41,12 +41,33 @@ string OperationBase::name() const
 string OperationBase::OpName(int op) 
 {return enumKey<Type>(op);}
 
+float OperationBase::x() const
+{
+  if (group>=0)
+    return m_x + minsky::minsky.groupItems[group].x();
+  else
+    return m_x;
+}
+
+float OperationBase::y() const
+{
+  if (group>=0)
+    return m_y + minsky::minsky.groupItems[group].y();
+  else
+    return m_y;
+}
+
 void OperationBase::MoveTo(float x1, float y1)
 {
-  float dx=x1-x, dy=y1-y;
-  x=x1; y=y1;
+  float dx=x1-x(), dy=y1-y();
+  move(dx,dy);
+}
+
+void OperationBase::move(float x1, float y1)
+{
+  m_x+=x1; m_y+=y1;
   for (size_t i=0; i<m_ports.size(); ++i)
-    portManager().movePort(m_ports[i], dx, dy);
+    portManager().movePort(m_ports[i], x1, y1);
 }
 
 void OperationBase::addPorts()
@@ -371,13 +392,13 @@ bool IntOp::toggleCoupled()
     {
       // we are coupled, decouple variable
       assert(v->inPort()>=0);
-      m_ports[0]=portManager().addPort(Port(x,y,false));
+      m_ports[0]=portManager().addPort(Port(x(),y(),false));
       portManager().addWire(Wire(m_ports[0],v->inPort()));
       v->visible=true;
       v->rotation=rotation;
       float angle=rotation*M_PI/180;
       float xoffs=r+intVarOffset+RenderVariable(v).width();
-      v->MoveTo(x+xoffs*cos(angle), y+xoffs*sin(angle));
+      v->MoveTo(x()+xoffs*cos(angle), y()+xoffs*sin(angle));
     }
   else
     {

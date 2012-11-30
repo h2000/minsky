@@ -57,20 +57,6 @@ namespace
 namespace minsky
 {
 
-  string str(long x)
-  {
-    ostringstream o;
-    o<<x;
-    return o.str();
-  }
-
-  string str(double x)
-  {
-    ostringstream o;
-    o<<x;
-    return o.str();
-  }
-
   struct RKdata
   {
     gsl_odeiv2_system sys;
@@ -128,16 +114,6 @@ void Minsky::clearAll()
 
 
 const char* Minsky::minskyVersion=MINSKY_VERSION;
-
-array<float> Minsky::portCoords(TCL_args args)
-{
-  int id=args;
-  assert(ports.count(id));
-  Port& p=ports[id];
-  if (args.count)
-    args >> p.x >> p.y;
-  return array<float>()<<p.x<<p.y;
-}
 
 bool Minsky::portInput(TCL_args args)
 {
@@ -248,7 +224,7 @@ void Minsky::DeleteOperation(int opid)
 int Minsky::group(TCL_args args)
 {
   int id=groupItems.empty()? 0: groupItems.rbegin()->first+1;
-  groupItems[id].group(args[0], args[1], args[2], args[3]);
+  groupItems[id].group(args[0], args[1], args[2], args[3], id);
   return id;
 }
 

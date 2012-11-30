@@ -21,16 +21,24 @@
 
 #include "variable.h"
 #include "godley.h"
+#include "classdesc_access.h"
 #include <map>
 
 namespace minsky
 {
   class Minsky;
 
-  struct GodleyIcon
+  class GodleyIcon
   {
+    float m_x, m_y; ///< position of Godley icon
+    CLASSDESC_ACCESS(GodleyIcon);
+    friend class SchemaHelper;
+  public:
     float adjustHoriz, adjustVert; // difference between where variables are displayed and screen coordinates
-    float x, y; ///< position of Godley icon
+    /// @{ position of Godley icon
+    float x() const {return m_x;}
+    float y() const {return m_y;}
+    /// @}
     float scale; ///< scale factor of the XGL image
     typedef std::vector<VariablePtr> Variables;
     Variables flowVars, stockVars;

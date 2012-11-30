@@ -43,10 +43,6 @@ using namespace classdesc;
 
 namespace minsky
 {
-  /// utility function to create a string representation of a numeric type
-  string str(long x);
-  string str(double x);
-
 
   // An integral is an additional stock variable, that integrates its flow variable
   struct Integral
@@ -208,7 +204,6 @@ namespace minsky
     using PortManager::closestOutPort;
     using PortManager::closestInPort;
 
-    array<float> portCoords(TCL_args);
     bool portInput(TCL_args);
 
     /// add a new wire connecting \a from port to \a to port with \a coordinates

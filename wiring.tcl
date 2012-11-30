@@ -44,6 +44,16 @@ radiobutton .wiring.menubar.movemode -value 2 -variable interactionMode -command
 radiobutton .wiring.menubar.panmode -value 3 -variable interactionMode -command setInteractionMode -text pan
 radiobutton .wiring.menubar.lassomode -value 4 -variable interactionMode -command setInteractionMode -text lasso
 
+image create photo zoomOutImg -file $minskyHome/icons/zoomOut.gif
+button .wiring.menubar.zoomOut -image zoomOutImg -height 24 -width 37 \
+    -command {zoom 0.91}
+tooltip .wiring.menubar.zoomOut "Zoom Out"
+
+image create photo zoomInImg -file $minskyHome/icons/zoomIn.gif
+button .wiring.menubar.zoomIn -image zoomInImg -height 24 -width 37 \
+    -command {zoom 1.1}
+tooltip .wiring.menubar.zoomIn "Zoom In"
+
 image create photo godleyImg -file $minskyHome/icons/bank.gif
 button .wiring.menubar.godley -image godleyImg -height 24 -width 37 \
     -command {addNewGodleyItem [addGodleyTable 10 10]}
@@ -97,11 +107,11 @@ button .wiring.menubar.plot -image plotImg -height 24 -width 37 \
 tooltip .wiring.menubar.plot "Plot"
 
 pack .wiring.menubar.wiringmode .wiring.menubar.movemode .wiring.menubar.panmode .wiring.menubar.lassomode -side left
-pack .wiring.menubar.godley .wiring.menubar.var .wiring.menubar.const .wiring.menubar.time -side left
+pack .wiring.menubar.zoomOut .wiring.menubar.zoomIn .wiring.menubar.godley .wiring.menubar.var .wiring.menubar.const .wiring.menubar.time -side left
 pack .wiring.menubar.integrate .wiring.menubar.exp .wiring.menubar.add .wiring.menubar.subtract .wiring.menubar.multiply .wiring.menubar.divide .wiring.menubar.plot -side left
 pack .wiring.menubar -fill x
 
-canvas .wiring.canvas -height $canvasHeight -width $canvasWidth -scrollregion {0 0 10000 10000} \
+canvas .wiring.canvas -height $canvasHeight -width $canvasWidth -scrollregion {-10000 -10000 10000 10000} \
     -closeenough 2 -yscrollcommand ".vscroll set" -xscrollcommand ".hscroll set"
 pack .wiring.canvas -fill both -expand 1
 
@@ -130,8 +140,11 @@ bind .wiring.canvas <Button-5> {zoom [expr 1.0/1.1]}
 # mouse wheel bindings for pc and aqua
 bind .wiring.canvas <MouseWheel> { if {%D>=0} {zoom [expr 1+.1*%D]} {zoom [expr 1.0/(1+.1*-%D)]} }
 
+set zoomFactor 1
 proc zoom {factor} {
+    global zoomFactor
 
+    set zoomFactor [expr $zoomFactor*$factor]
     set x0 [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]]
     set y0 [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]]
     after idle .wiring.canvas scale all $x0 $y0 $factor $factor
@@ -478,8 +491,8 @@ namespace eval wires {
                     variable y0 
                     set portId [closestInPort $x $y]
                     if {$portId>=0} {
-#                        set port [ports.@elem $portId]
-                        eval .wiring.canvas coords $wire $x0 $y0 [portCoords $portId]
+                        port.get $portId
+                        eval .wiring.canvas coords $wire $x0 $y0 [port.x] [port.y]
                         set wireid [addWire $fromPort $portId \
                                         [.wiring.canvas coords $wire]]
                         if {$wireid == -1} {
@@ -499,9 +512,9 @@ namespace eval wires {
             set [set id]::wire [createWire "$x $y $x $y"]
 #            set port [ports.@elem $portId]
             set [set id]::fromPort $portId
-            set portCoords [portCoords $portId]
-            set [set id]::x0 [lindex $portCoords 0]
-            set [set id]::y0 [lindex $portCoords 1]
+            port.get $portId
+            set [set id]::x0 [port.x]
+            set [set id]::y0 [port.y]
         }
 #        [set id]::startConnect $x $y
     }        
@@ -605,9 +618,10 @@ proc setInteractionMode {args} {
 
 proc updateCanvas {} {
     global fname showPorts
-#    wm title .wiring "Wiring diagram: $fname (Prototype)"
-#    .wiring.canvas delete variables operations wires handles plots
     .wiring.canvas delete all
+# centre canvas
+    .wiring.canvas xview moveto 0.5
+    .wiring.canvas yview moveto 0.5
     foreach var [variables.visibleVariables] {
         newVar $var
 
@@ -620,7 +634,7 @@ proc updateCanvas {} {
         newGroupItem $g
     }
 
-    # TODO add operations
+    # add operations
     foreach o [operations.visibleOperations] {
         op.get $o
         drawOperation $o
@@ -1159,4 +1173,4 @@ proc tout {args} {
 }
 
 # example debugging trace statements
-#trace add execution zoom enterstep tout
+trace add execution drawOperation enter tout

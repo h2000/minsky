@@ -51,7 +51,7 @@ namespace minsky
     void movePortTo(int port, float x, float y);
     /// move port by an increment
     void movePort(int port, float dx, float dy) {
-      if (ports.count(port)) movePortTo(port, ports[port].x+dx, ports[port].y+dy);
+      if (ports.count(port)) movePortTo(port, ports[port].x()+dx, ports[port].y()+dy);
     } 
 
     int ClosestPort(float x, float y);

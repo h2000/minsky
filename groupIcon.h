@@ -40,11 +40,11 @@ namespace minsky
     std::vector<int> m_variables;
     std::vector<int> m_wires;
     array<int> m_ports;
+    float m_x, m_y; //icon position
 
     friend struct SchemaHelper;
   public:
     std::string name;
-    float x,y; //icon position
     float width, height; // size of icon
     float rotation; // orientation of icon
     const array<int>& ports() const {return m_ports;}
@@ -53,11 +53,16 @@ namespace minsky
     const std::vector<int>& operations() const {return m_operations;}
     const std::vector<int>& variables() const {return m_variables;}
     const std::vector<int>& wires() const {return m_wires;}
+    
+    /// @{ coordinates of this icon on canvas
+    float x() const {return m_x;}
+    float y() const {return m_y;}
+    /// @}
 
     GroupIcon(): width(100), height(100), rotation(0) {}
 
     /// group all icons in rectangle bounded by (x0,y0):(x1,y1)
-    void group(float x0, float y0, float x1, float y1);
+    void group(float x0, float y0, float x1, float y1, int groupId);
     /// ungroup all icons
     void ungroup();
 
@@ -72,6 +77,10 @@ namespace minsky
 
     void MoveTo(float x1, float y1); ///< absolute move
     void moveTo(TCL_args args) {MoveTo(args[0], args[1]);}
+
+    /// return bounding box coordinates for all variables, operators
+    /// etc in this group
+    void contentBounds(float& x0, float& y0, float& x1, float& y1) const;
 
   };
 }

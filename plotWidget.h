@@ -32,8 +32,12 @@ using namespace ecolab;
 namespace minsky
 {
   // a container item for a plot widget
-  struct PlotWidget: public ecolab::Plot
+  class PlotWidget: public ecolab::Plot
   {
+    float m_x, m_y;
+    CLASSDESC_ACCESS(PlotWidget);
+    friend class SchemaHelper;
+  public:
     array<int> ports;
     void deletePorts();
 
@@ -49,8 +53,10 @@ namespace minsky
 
     std::vector<string> images;
  
-    // we could put in an explicit pointer to the memory location here...
-    float x,y;
+    /// @{ coordinates of this plot widget on the canvas
+    float x() const {return m_x;}
+    float y() const {return m_y;}
+    /// @}
 
     PlotWidget(): displayNTicks(3), displayFontSize(3) {grid=true;}
 

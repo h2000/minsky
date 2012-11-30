@@ -56,13 +56,16 @@ namespace minsky
     // triangle parameters - l: xcoord of lhs, r; xcoord of apex, h: height of base
     static const float l=-8, h=12, r=12;
 
-    float x, y;
+    float m_x, m_y;
     // operator dependent data
     double rotation; /// rotation if icon, in degrees
 
     bool visible; ///< whether operation is visible on Canvas 
-
-    OpAttributes(): x(10), y(10), rotation(0), visible(true) {}
+    /// contains group ID if this is a group item, -1
+    /// otherwise. Coordinates are taken relative to group centre, if
+    /// this is a group item
+    int group;
+    OpAttributes(): m_x(10), m_y(10), rotation(0), visible(true), group(-1) {}
   };
 
   class OperationBase: public classdesc::PolyBase<OperationType::Type>,
@@ -92,6 +95,13 @@ namespace minsky
     /// return the symbolic name of \a type
     static string opName(TCL_args args) {return OpName(args);}
 
+    /// override of coordinate attributes, allowing group offsets to
+    /// be converted to canvas coordinates
+    float x() const;
+    float y() const;
+
+    // relative move
+    void move(float dx, float dy); 
     /// move whole operation object to canvas location x,y
     void MoveTo(float x, float y); 
     void moveTo(TCL_args args) {MoveTo(args[0], args[1]);}

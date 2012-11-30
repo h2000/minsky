@@ -43,16 +43,18 @@ struct VariableType
 
 struct VariableBaseAttributes: public VariableType
 {
-  VariableBaseAttributes(): x(0), y(0), rotation(0), visible(true) {}
+  VariableBaseAttributes(): m_x(0), m_y(0), rotation(0), 
+                            group(-1), visible(true) {}
 
   // tempFlow variables are temporary flow variable not visible on
   // the canvas.
   // integral variables are temporary stock variables used
   // to implement integration
 
-  float x, y; ///< position in canvas
+  float m_x, m_y; ///< position in canvas
   string name; ///< variable name
   double rotation; /// rotation if icon, in degrees
+  int group;
   
   /**
      whether variable is visible on Canvas (note godley variables are
@@ -86,6 +88,11 @@ public:
   virtual int numPorts() const=0;
   array<int> ports() const; 
   static VariableBase* create(Type type); ///factory method
+
+  /// @{ position of this icon on the canvas
+  float x() const;
+  float y() const;
+  /// @}
   
   double Init() const; /// < return initial value for this variable
   double Init(double); /// < set the initial value for this variable

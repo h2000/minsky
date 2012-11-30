@@ -53,65 +53,9 @@ namespace
   struct OperationItem: public MinskyItemImage
   {
     OperationItem(const std::string& image): MinskyItemImage(image) {}
-    shared_ptr<OperationBase> op;    
+    OperationPtr op;    
     cairo_t * cairo;
 
-    void drawPlus()
-    {
-      cairo_move_to(cairo,0,-5);
-      cairo_line_to(cairo,0,5);
-      cairo_move_to(cairo,-5,0);
-      cairo_line_to(cairo,5,0);
-      cairo_stroke(cairo);
-    }
-
-    void drawMinus()
-    {
-      cairo_move_to(cairo,-5,0);
-      cairo_line_to(cairo,5,0);
-      cairo_stroke(cairo);
-    }
-
-    void drawMultiply()
-    {
-      cairo_move_to(cairo,-5,-5);
-      cairo_line_to(cairo,5,5);
-      cairo_move_to(cairo,-5,5);
-      cairo_line_to(cairo,5,-5);
-      cairo_stroke(cairo);
-    }
-
-    void drawDivide()
-    {
-      cairo_move_to(cairo,-5,0);
-      cairo_line_to(cairo,5,0);
-      cairo_new_sub_path(cairo);
-      cairo_arc(cairo,0,3,1,0,2*M_PI);
-      cairo_new_sub_path(cairo);
-      cairo_arc(cairo,0,-3,1,0,2*M_PI);
-      cairo_stroke(cairo);
-    }
-
-    // puts a small symbol to identify port
-    // x, y = position of symbol
-    void drawPort(void (OperationItem::*symbol)(), float x, float y) 
-    {
-      cairo_save(cairo);
-        
-      double angle=op->rotation * M_PI / 180.0;
-      double fm=std::fmod(op->rotation,360);
-      if (!(fm>-90 && fm<90 || fm>270 || fm<-270))
-        y=-y;
-      cairo_rotate(cairo, angle);
-
-      cairo_translate(cairo,0.7*x,0.6*y);
-      cairo_scale(cairo,0.5,0.5);
-
-      // and counter-rotate
-      cairo_rotate(cairo, -angle);
-      (this->*symbol)();
-      cairo_restore(cairo);
-    }
 
     void draw()
     {
@@ -120,203 +64,34 @@ namespace
           cairoSurface->clear();
           cairo=cairoSurface->cairo();
           string label;
-          const float l=op->l, h=op->h, r=op->r;
-
           cairo_reset_clip(cairo);
-          cairo_identity_matrix(cairo);
+          initMatrix();
           cairo_select_font_face(cairo, "sans-serif", CAIRO_FONT_SLANT_ITALIC,
                                  CAIRO_FONT_WEIGHT_NORMAL);
           cairo_set_font_size(cairo,12);
-          initMatrix();
           cairo_set_line_width(cairo,1);
 
-          // if rotation is in 1st or 3rd quadrant, rotate as
-          // normal, otherwise flip the text so it reads L->R
-          double angle=op->rotation * M_PI / 180.0;
-          double fm=std::fmod(op->rotation,360);
-          bool textFlipped=!(fm>-90 && fm<90 || fm>270 || fm<-270);
 
-          switch (op->type())
-            {
-            case OperationType::constant:
-              {
-                cairo_text_extents_t bbox;
-                Constant *c=dynamic_cast<Constant*>(op.get());
-                assert(c);
-                cairo_text_extents(cairo,c->description.c_str(),&bbox);
-                float w=0.5*bbox.width+2; 
-                float h=0.5*bbox.height+2;
-                cairo_save(cairo);
-                cairo_rotate(cairo, angle + (textFlipped? M_PI: 0));
-
-                cairo_move_to(cairo,-w+1,h-4);
-                cairo_show_text(cairo,c->description.c_str());
-                cairo_restore(cairo);
-                cairo_rotate(cairo, angle);
-               
-                cairo_set_source_rgb(cairo,0,0,1);
-                cairo_move_to(cairo,-w,-h);
-                cairo_line_to(cairo,-w,h);
-                cairo_line_to(cairo,w,h);
-                cairo_line_to(cairo,w+2,0);
-                cairo_line_to(cairo,w,-h);
-                cairo_close_path(cairo);
-                cairo_clip_preserve(cairo);
-                cairo_stroke(cairo);
-                //                cairo_restore(cairo);
-
-                // set the output ports coordinates
-                // compute port coordinates relative to the icon's
-                // point of reference
-                double x=w+2, y=0;
-                cairo_save(cairo);
-                cairo_identity_matrix(cairo);
-                cairo_scale(cairo, xScale, yScale);
-                cairo_rotate(cairo, angle);
-                cairo_user_to_device(cairo, &x, &y);
-                cairo_restore(cairo);
-
-                portManager().movePortTo
-                  (op->ports()[0], op->x+x, op->y+y);
-                break;
-              }
-            case OperationType::time:
-              cairo_move_to(cairo,-4,2);
-              cairo_show_text(cairo,"t");
-              break;
-            case OperationType::copy:
-              cairo_move_to(cairo,-4,2);
-              cairo_show_text(cairo,"=");
-              break;
-            case OperationType::integrate:
-              cairo_move_to(cairo,-7,4.5);
-              cairo_show_text(cairo,"\xE2\x88\xAB");
-              cairo_show_text(cairo,"dx");
-             break;
-            case OperationType::exp:
-              cairo_move_to(cairo,-9,3);
-              cairo_show_text(cairo,"e");
-              cairo_rel_move_to(cairo,0,-2);
-              cairo_show_text(cairo,"x");
-              break;
-            case OperationType::add:
-              drawPlus();
-              drawPort(&OperationItem::drawPlus, l, h);
-              drawPort(&OperationItem::drawPlus, l, -h);
-              break;
-            case OperationType::subtract:
-              //label="\xA2\x80\x92"; //doesn't display
-              drawMinus();
-              drawPort(&OperationItem::drawPlus, l, -h);
-              drawPort(&OperationItem::drawMinus, l, h);
-              break;
-            case OperationType::multiply:
-              //label="\xE0\x83\x97";
-              drawMultiply();
-              drawPort(&OperationItem::drawMultiply, l, h);
-              drawPort(&OperationItem::drawMultiply, l, -h);
-              break;
-            case OperationType::divide:
-              //              label="\xE0\x83\xB7";
-              drawDivide();
-              drawPort(&OperationItem::drawMultiply, l, -h);
-              drawPort(&OperationItem::drawDivide, l, h);
-              break;
-            }
-          int intVarWidth=0, intVarHeight=0;
-          if (op->type()!=OperationType::constant)
-            {
-              double angle=op->rotation * M_PI / 180.0;
-              cairo_rotate(cairo, angle);
-              if (IntOp* i=dynamic_cast<IntOp*>(op.get()))
-                if (i->coupled())
-                  {
-                    cairo_move_to(cairo,r,0);
-                    cairo_line_to(cairo,r+10,0);
-                    cairo_stroke(cairo);
-                    // display an integration variable next to it
-                    RenderVariable rv(i->getIntVar(),cairo);
-                    // save the render width for later use in setting the clip
-                    intVarWidth=rv.width(); intVarHeight=2*rv.height();
-                    // set the port location...
-                    i->getIntVar()->MoveTo(i->x+i->intVarOffset, i->y);
-
-                    cairo_save(cairo);
-                    cairo_translate(cairo,r+i->intVarOffset+intVarWidth,0);
-                    // to get text to render correctly, we need to set
-                    // the var's rotation, then antirotate it
-                    i->getIntVar()->rotation=i->rotation;
-                    cairo_rotate(cairo, -M_PI*i->rotation/180.0);
-                    rv.draw();
-                    cairo_restore(cairo);
-                  }
-              cairo_move_to(cairo,l,h);
-              cairo_line_to(cairo,l,-h);
-              cairo_line_to(cairo,r,0);
-              
-              cairo_close_path(cairo);
-
-              cairo_save(cairo);
-              cairo_set_source_rgb(cairo,0,0,1);
-              cairo_stroke_preserve(cairo);
-              cairo_restore(cairo);
-              if (IntOp* i=dynamic_cast<IntOp*>(op.get()))
-                if (i->coupled())
-                  {
-                    // we need to add some additional clip region to
-                    // cover the variable
-                    cairo_new_path(cairo);
-                    cairo_rectangle
-                      (cairo,l,-intVarHeight, i->intVarOffset+2*intVarWidth+2+r-l, 
-                       2*intVarHeight);
-                  }
-              cairo_stroke_preserve(cairo);
-              cairo_clip(cairo);
-
-              // compute port coordinates relative to the icon's
-              // point of reference
-              double x0=r, y0=0, x1=l, y1=op->numPorts() > 2? -h+3: 0, 
-                x2=l, y2=h-3;
-                  
-              if (textFlipped) swap(y1,y2);
-
-              // adjust for integration variable
-              if (IntOp* i=dynamic_cast<IntOp*>(op.get()))
-                if (i->coupled())
-                  x0+=i->intVarOffset+2*intVarWidth;
-              // adjust so that 0 is in centre
-              float dx=0.5*(x0+l);
-              x0-=dx;
-              x1-=dx;
-              x2-=dx;
-
-              cairo_save(cairo);
-              cairo_identity_matrix(cairo);
-              cairo_scale(cairo,xScale,yScale);
-              cairo_translate(cairo, op->x, op->y);
-              cairo_rotate(cairo, angle);
-              cairo_user_to_device(cairo, &x0, &y0);
-              cairo_user_to_device(cairo, &x1, &y1);
-              cairo_user_to_device(cairo, &x2, &y2);
-              cairo_restore(cairo);
-
-              portManager().movePortTo(op->ports()[0], x0, y0);
-              if (op->numPorts()>1) 
-                portManager().movePortTo(op->ports()[1], x1, y1);
-              if (op->numPorts()>2)
-                portManager().movePortTo(op->ports()[2], x2, y2);
-            }
+          RenderOperation(op,cairo,xScale,yScale).draw();
 
           redrawIfSurfaceTooSmall();
-          array<double> bbox=boundingBox();
 
-          assert(bbox[0]>=0);
-          assert(bbox[1]>=0);
-          assert(bbox[2]-bbox[0]<=cairoSurface->width());
-          assert(bbox[3]-bbox[1]<=cairoSurface->height());
+          {
+            array<double> bbox=boundingBox();
 
-          cairoSurface->blit
-            (bbox[0], bbox[1], bbox[2]-bbox[0], bbox[3]-bbox[1]);
+            // not sure why we need to do this
+            double w=bbox[2]-bbox[0], h=bbox[3]-bbox[1];
+            if (bbox[0]<0) bbox[0]=0;
+            if (bbox[1]<0) bbox[1]=0;
+
+         //   assert(bbox[0]>=0);
+         //   assert(bbox[1]>=0);
+            assert(w<=cairoSurface->width());
+            assert(h<=cairoSurface->height());
+
+            cairoSurface->blit
+              (bbox[0], bbox[1], w, h);
+          }
         }
     }
   };
@@ -333,23 +108,29 @@ namespace
           cairo_t *cairo=cairoSurface->cairo();
 
           cairo_reset_clip(cairo);
-          cairo_identity_matrix(cairo);
-          cairo_set_line_width(cairo,1);
           initMatrix();
+          cairo_set_line_width(cairo,1);
 
           RenderVariable rv(var, cairo, xScale, yScale);
           rv.draw();
           redrawIfSurfaceTooSmall();
-          array<double> bbox=boundingBox();
+          {
+            array<double> bbox=boundingBox();
 
-          assert(bbox[0]>=0);
-          assert(bbox[1]>=0);
-          assert(bbox[2]-bbox[0]<=cairoSurface->width());
-          assert(bbox[3]-bbox[1]<=cairoSurface->height());
+            // not sure why we need to do this
+            double w=bbox[2]-bbox[0], h=bbox[3]-bbox[1];
+            if (bbox[0]<0) bbox[0]=0;
+            if (bbox[1]<0) bbox[1]=0;
 
-          cairoSurface->blit
-            (bbox[0], bbox[1], bbox[2]-bbox[0], bbox[3]-bbox[1]);
-        }
+         //   assert(bbox[0]>=0);
+         //   assert(bbox[1]>=0);
+            assert(w<=cairoSurface->width());
+            assert(h<=cairoSurface->height());
+
+            cairoSurface->blit
+              (bbox[0], bbox[1], w, h);
+          }
+       }
     }
   };
 
@@ -444,6 +225,286 @@ namespace
 //static int dum=registerItems();
 static int dum=(initVec().push_back(registerItems), 0);
 
+RenderOperation::RenderOperation(const OperationPtr& op, cairo_t* cairo,
+                               double xScale, double yScale):
+  op(op), cairo(cairo), xScale(xScale), yScale(yScale)
+{
+  cairo_t *lcairo=cairo;
+  cairo_surface_t* surf=NULL;
+  if (!lcairo)
+    {
+      surf = cairo_image_surface_create(CAIRO_FORMAT_A1, 100,100);
+      lcairo = cairo_create(surf);
+    }
+
+  assert(op);
+  const float l=op->l, r=op->r;
+  w=0.5*(-l+r);
+  h=op->h;
+
+  switch (op->type())
+    {
+    case OperationType::constant:
+      {
+        cairo_text_extents_t bbox;
+        Constant *c=dynamic_cast<Constant*>(op.get());
+        assert(c);
+        cairo_text_extents(lcairo,c->description.c_str(),&bbox);
+        w=0.5*bbox.width+2; 
+        h=0.5*bbox.height+2;
+        break;
+      }
+    case OperationType::integrate:
+      {
+        IntOp* i=dynamic_cast<IntOp*>(op.get());
+        assert(i);
+        if (i->coupled())
+          {
+            RenderVariable rv(i->getIntVar(),cairo);
+            w+=i->intVarOffset+rv.width(); 
+            h=max(h, rv.height());
+          }
+        break;
+      }
+    }
+ if (surf) //cleanup temporary surface
+    {
+      cairo_destroy(lcairo);
+      cairo_surface_destroy(surf);
+    }
+}
+
+void RenderOperation::drawPlus() const
+{
+  cairo_move_to(cairo,0,-5);
+  cairo_line_to(cairo,0,5);
+  cairo_move_to(cairo,-5,0);
+  cairo_line_to(cairo,5,0);
+  cairo_stroke(cairo);
+}
+
+void RenderOperation::drawMinus() const
+{
+  cairo_move_to(cairo,-5,0);
+  cairo_line_to(cairo,5,0);
+  cairo_stroke(cairo);
+}
+
+void RenderOperation::drawMultiply() const
+{
+  cairo_move_to(cairo,-5,-5);
+  cairo_line_to(cairo,5,5);
+  cairo_move_to(cairo,-5,5);
+  cairo_line_to(cairo,5,-5);
+  cairo_stroke(cairo);
+}
+
+void RenderOperation::drawDivide() const
+{
+  cairo_move_to(cairo,-5,0);
+  cairo_line_to(cairo,5,0);
+  cairo_new_sub_path(cairo);
+  cairo_arc(cairo,0,3,1,0,2*M_PI);
+  cairo_new_sub_path(cairo);
+  cairo_arc(cairo,0,-3,1,0,2*M_PI);
+  cairo_stroke(cairo);
+}
+
+// puts a small symbol to identify port
+// x, y = position of symbol
+void RenderOperation::drawPort(void (RenderOperation::*symbol)() const, float x, float y)  const
+{
+  cairo_save(cairo);
+        
+  double angle=op->rotation * M_PI / 180.0;
+  double fm=std::fmod(op->rotation,360);
+  if (!(fm>-90 && fm<90 || fm>270 || fm<-270))
+    y=-y;
+  cairo_rotate(cairo, angle);
+
+  cairo_translate(cairo,0.7*x,0.6*y);
+  cairo_scale(cairo,0.5,0.5);
+
+  // and counter-rotate
+  cairo_rotate(cairo, -angle);
+  (this->*symbol)();
+  cairo_restore(cairo);
+}
+
+void RenderOperation::draw()
+{
+  const float l=op->l, r=op->r;
+  // if rotation is in 1st or 3rd quadrant, rotate as
+  // normal, otherwise flip the text so it reads L->R
+  double angle=op->rotation * M_PI / 180.0;
+  double fm=std::fmod(op->rotation,360);
+  bool textFlipped=!(fm>-90 && fm<90 || fm>270 || fm<-270);
+  switch (op->type())
+    {
+    case OperationType::constant:
+      {
+        Constant *c=dynamic_cast<Constant*>(op.get());
+        assert(c);
+        cairo_save(cairo);
+        cairo_rotate(cairo, angle + (textFlipped? M_PI: 0));
+        
+        cairo_move_to(cairo,-w+1,h-4);
+        cairo_show_text(cairo,c->description.c_str());
+        cairo_restore(cairo);
+        cairo_rotate(cairo, angle);
+               
+        cairo_set_source_rgb(cairo,0,0,1);
+        cairo_move_to(cairo,-w,-h);
+        cairo_line_to(cairo,-w,h);
+        cairo_line_to(cairo,w,h);        //                cairo_restore(cairo);
+
+        cairo_line_to(cairo,w+2,0);
+        cairo_line_to(cairo,w,-h);
+        cairo_close_path(cairo);
+        cairo_clip_preserve(cairo);
+        cairo_stroke(cairo);
+
+        // set the output ports coordinates
+        // compute port coordinates relative to the icon's
+        // point of reference
+        double x=w+2, y=0;
+        cairo_save(cairo);
+        cairo_identity_matrix(cairo);
+        cairo_scale(cairo, xScale, yScale);
+        cairo_rotate(cairo, angle);
+        cairo_user_to_device(cairo, &x, &y);
+        cairo_restore(cairo);
+
+        portManager().movePortTo
+          (op->ports()[0], op->x()+x, op->y()+y);
+        return;
+      }
+    case OperationType::time:
+      cairo_move_to(cairo,-4,2);
+      cairo_show_text(cairo,"t");
+      break;
+    case OperationType::copy:
+      cairo_move_to(cairo,-4,2);
+      cairo_show_text(cairo,"=");
+      break;
+    case OperationType::integrate:
+      cairo_move_to(cairo,-7,4.5);
+      cairo_show_text(cairo,"\xE2\x88\xAB");
+      cairo_show_text(cairo,"dx");
+      break;
+    case OperationType::exp:
+      cairo_move_to(cairo,-9,3);
+      cairo_show_text(cairo,"e");
+      cairo_rel_move_to(cairo,0,-2);
+      cairo_show_text(cairo,"x");
+      break;
+    case OperationType::add:
+      drawPlus();
+      drawPort(&RenderOperation::drawPlus, l, h);
+      drawPort(&RenderOperation::drawPlus, l, -h);
+      break;
+    case OperationType::subtract:
+      //label="\xA2\x80\x92"; //doesn't display
+      drawMinus();
+      drawPort(&RenderOperation::drawPlus, l, -h);
+      drawPort(&RenderOperation::drawMinus, l, h);
+      break;
+    case OperationType::multiply:
+      //label="\xE0\x83\x97";
+      drawMultiply();
+      drawPort(&RenderOperation::drawMultiply, l, h);
+      drawPort(&RenderOperation::drawMultiply, l, -h);
+      break;
+    case OperationType::divide:
+      //              label="\xE0\x83\xB7";
+      drawDivide();
+      drawPort(&RenderOperation::drawMultiply, l, -h);
+      drawPort(&RenderOperation::drawDivide, l, h);
+      break;
+    }
+  int intVarWidth=0, intVarHeight=0;
+  cairo_rotate(cairo, angle);
+  if (IntOp* i=dynamic_cast<IntOp*>(op.get()))
+    if (i->coupled())
+      {
+        cairo_move_to(cairo,r,0);
+        cairo_line_to(cairo,r+10,0);
+        cairo_stroke(cairo);
+        // display an integration variable next to it
+        RenderVariable rv(i->getIntVar(),cairo);
+        // save the render width for later use in setting the clip
+        intVarWidth=rv.width(); intVarHeight=2*rv.height();
+        // set the port location...
+        i->getIntVar()->MoveTo(i->x()+i->intVarOffset, i->y());
+            
+        cairo_save(cairo);
+        cairo_translate(cairo,r+i->intVarOffset+intVarWidth,0);
+        // to get text to render correctly, we need to set
+        // the var's rotation, then antirotate it
+        i->getIntVar()->rotation=i->rotation;
+        cairo_rotate(cairo, -M_PI*i->rotation/180.0);
+        rv.draw();
+        cairo_restore(cairo);
+      }
+  cairo_move_to(cairo,l,h);
+  cairo_line_to(cairo,l,-h);
+  cairo_line_to(cairo,r,0);
+              
+  cairo_close_path(cairo);
+
+  cairo_save(cairo);
+  cairo_set_source_rgb(cairo,0,0,1);
+  cairo_stroke_preserve(cairo);
+  cairo_restore(cairo);
+  if (IntOp* i=dynamic_cast<IntOp*>(op.get()))
+    if (i->coupled())
+      {
+        // we need to add some additional clip region to
+        // cover the variable
+        cairo_new_path(cairo);
+        cairo_rectangle
+          (cairo,l,-intVarHeight, i->intVarOffset+2*intVarWidth+2+r-l, 
+           2*intVarHeight);
+      }
+  cairo_clip(cairo);
+
+  // compute port coordinates relative to the icon's
+  // point of reference
+  double x0=r, y0=0, x1=l, y1=op->numPorts() > 2? -h+3: 0, 
+    x2=l, y2=h-3;
+                  
+  if (textFlipped) swap(y1,y2);
+
+  // adjust for integration variable
+  if (IntOp* i=dynamic_cast<IntOp*>(op.get()))
+    if (i->coupled())
+      x0+=i->intVarOffset+2*intVarWidth;
+  // adjust so that 0 is in centre
+  float dx=0.5*(x0+l);
+  x0-=dx;
+  x1-=dx;
+  x2-=dx;
+
+  cairo_save(cairo);
+  cairo_identity_matrix(cairo);
+  cairo_scale(cairo,xScale,yScale);
+  cairo_translate(cairo, op->x(), op->y());
+  cairo_rotate(cairo, angle);
+  cairo_user_to_device(cairo, &x0, &y0);
+  cairo_user_to_device(cairo, &x1, &y1);
+  cairo_user_to_device(cairo, &x2, &y2);
+  cairo_restore(cairo);
+
+  if (op->numPorts()>0) 
+    portManager().movePortTo(op->ports()[0], x0, y0);
+  if (op->numPorts()>1) 
+    portManager().movePortTo(op->ports()[1], x1, y1);
+  if (op->numPorts()>2)
+    portManager().movePortTo(op->ports()[2], x2, y2);
+ 
+}
+
+
 RenderVariable::RenderVariable(const VariablePtr& var, cairo_t* cairo,
                                double xScale, double yScale):
   var(var), cairo(cairo), xScale(xScale), yScale(yScale)
@@ -513,14 +574,14 @@ void RenderVariable::draw()
       cairo_restore(cairo);
 
      // set the ports coordinates
-      portManager().movePortTo(var->outPort(), var->x+x0, var->y+y0);
-      portManager().movePortTo(var->inPort(), var->x+x1, var->y+y1);
+      portManager().movePortTo(var->outPort(), var->x()+x0, var->y()+y0);
+      portManager().movePortTo(var->inPort(), var->x()+x1, var->y()+y1);
     }
 }
 
 bool RenderVariable::inImage(float x, float y)
 {
-  float dx=x-var->x, dy=y-var->y;
+  float dx=x-var->x(), dy=y-var->y();
   float rx=dx*cos(var->rotation*M_PI/180)-dy*sin(var->rotation*M_PI/180);
   float ry=dy*cos(var->rotation*M_PI/180)+dx*sin(var->rotation*M_PI/180);
   return rx>=-w && rx<=w && ry>=-h && ry <= h;

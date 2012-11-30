@@ -53,17 +53,26 @@ namespace
     {
       if (cairoSurface && id>=0)
         {
-          cairoSurface->clear();
           GodleyIcon& gIcon=_minsky->godleyItems[id];
 
+          // scale icon so that gIcon.scale = 1 => 200x200 pixels
+          const double nominal_width=200, imgFactor=2;
+          unsigned width=imgFactor*nominal_width*m_scale*xScale,
+            height=imgFactor*nominal_width*m_scale*yScale;
+          if (width!=cairoSurface->width() || height!=cairoSurface->height())
+            resize(width, height);
+
+          cairoSurface->clear();
           cairo_t *cairo=cairoSurface->cairo();
+
           CairoRenderer renderer(cairoSurface->surface());
           // centre coordinate
+          double xScaleFactor=gIcon.scale*m_scale*xScale,
+            yScaleFactor=gIcon.scale*m_scale*yScale;
+
           cairo_translate(renderer.cairo(), 0.5*cairoSurface->width(), 
                           0.5*cairoSurface->height());
-          cairo_scale(renderer.cairo(), gIcon.scale, gIcon.scale);
-          // scale icon so that gIcon.scale = 1 => 200x200 pixels
-          const double nominal_width=200;
+          cairo_scale(renderer.cairo(), xScaleFactor, yScaleFactor);
           cairo_scale(renderer.cairo(), nominal_width/cairoSurface->width(),
                       nominal_width/cairoSurface->height());
           // origin is at top left of icon
@@ -76,8 +85,9 @@ namespace
           if (!gIcon.table.title.empty())
             {
               cairo_save(cairo);
+              //cairo_identity_matrix(cairo);
+              initMatrix();
               cairo_move_to(cairo,0,0);
-              cairo_identity_matrix(cairo);
               cairo_select_font_face
                 (cairo, "sans-serif", CAIRO_FONT_SLANT_ITALIC, 
                  CAIRO_FONT_WEIGHT_NORMAL);
@@ -94,10 +104,8 @@ namespace
           
 
           // render the variables
-          cairo_identity_matrix(cairo);
-          cairo_translate(cairo, 0.5*cairoSurface->width(), 
-                          0.5*cairoSurface->height());
-          DrawVars drawVars(cairo, gIcon.x, gIcon.y);
+          initMatrix();
+          DrawVars drawVars(cairo, gIcon.x(), gIcon.y());
           drawVars.left = -0.6*gIcon.scale*nominal_width;
           drawVars.right = -drawVars.left;
           drawVars.top = -0.55*gIcon.scale*nominal_width;
@@ -105,10 +113,10 @@ namespace
           drawVars(gIcon.flowVars); 
           drawVars(gIcon.stockVars); 
 
-          double width=drawVars.right-drawVars.left;
-          double height=drawVars.bottom-drawVars.top;
-          double x=0.5*cairoSurface->width()+drawVars.left;
-          double y=0.5*cairoSurface->height()+drawVars.top;
+          width=xScale*m_scale*(drawVars.right-drawVars.left);
+          height=yScale*m_scale*(drawVars.bottom-drawVars.top);
+          double x=0.5*cairoSurface->width()+xScale*m_scale*drawVars.left;
+          double y=0.5*cairoSurface->height()+xScale*m_scale*drawVars.top;
           
           if (x+width>cairoSurface->width() || 
               y+height>cairoSurface->height() ||
@@ -145,13 +153,13 @@ namespace
             cairo_save(cairo);
             const VariableBase& vv=**v;
             // coordinates of variable within the cairo context
-            cairo_translate(cairo, vv.x-x, vv.y-y);
+            cairo_translate(cairo, vv.x()-x, vv.y()-y);
             RenderVariable rv(*v, cairo);
             rv.draw();
             cairo_restore(cairo);
             // adjust bounding box
-            float varLeft=vv.x-x-rv.width()-3; 
-            float varBottom=vv.y-y+rv.width()+3; 
+            float varLeft=vv.x()-x-rv.width()-3; 
+            float varBottom=vv.y()-y+rv.width()+3; 
             if (varLeft<left) left=varLeft;
             if (varBottom>bottom) bottom=varBottom;
 
@@ -316,8 +324,8 @@ void GodleyIcon::update()
   accumulateWidthHeight(flowVars, height, flowVarWidth);
 
   scale=max(0.5f, height/60);
-  float x=-80*scale + this->x;
-  float y=-36*scale + this->y;
+  float x=-80*scale + this->x();
+  float y=-36*scale + this->y();
   for (Variables::iterator v=flowVars.begin(); v!=flowVars.end(); ++v)
     {
       // right justification
@@ -325,8 +333,8 @@ void GodleyIcon::update()
       const_cast<VariablePtr&>(*v)->MoveTo(x-rv.width(),y);
       y+=2*RenderVariable(*v).height();
     }
-  x=-80*scale + this->x;
-  y=90*scale + this->y;
+  x=-80*scale + this->x();
+  y=90*scale + this->y();
   for (Variables::iterator v=stockVars.begin(); v!=stockVars.end(); ++v)
     {
       // top justification at bottom of icon
@@ -361,8 +369,8 @@ array<int> GodleyIcon::ports() const
 
 void GodleyIcon::MoveTo(float x1, float y1)
 {
-  float dx=x1-x, dy=y1-y;
-  x=x1; y=y1;
+  float dx=x1-x(), dy=y1-y();
+  m_x=x1; m_y=y1;
   //const_cast OK below because location doesn't affect ordering
    for (Variables::iterator v=flowVars.begin(); v!=flowVars.end(); ++v)
      const_cast<VariableBase&>(**v).move(dx, dy); 

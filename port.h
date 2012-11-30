@@ -18,17 +18,25 @@
 */
 #ifndef PORT_H
 #define PORT_H
+#include "classdesc_access.h"
 
 namespace minsky
 {
-  struct Port
+  class Port
   {
+    float m_x, m_y;
+    CLASSDESC_ACCESS(Port);
+    friend class PortManager;
+    friend class SchemaHelper;
+  public:
+
     bool input; //true if input port
-    float x,y;
-    Port(float x=0, float y=0, bool input=false): x(x), y(y), input(input) {}
+    float x() const {return m_x;}
+    float y() const {return m_y;}
+    Port(float x=0, float y=0, bool input=false): m_x(x), m_y(y), input(input) {}
 
     /// move port by a relative distance
-    void move(float dx, float dy) {x+=dx; y+=dy;}
+    void move(float dx, float dy) {m_x+=dx; m_y+=dy;}
   };
 }
 
