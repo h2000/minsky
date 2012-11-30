@@ -135,7 +135,7 @@ proc setGetCell {id r c i s w} {
             set s [minsky.godleyItem.table.getCell $row $col]
             if [string length $s] {
                  if {$row>0 && $col>0} {
-		    set show ""
+		    set show $s
 		    set val ""
 		    set key [string trimright [string trimleft $s " -"]];
 		    set negative [string match "*-*" $s]
@@ -144,29 +144,31 @@ proc setGetCell {id r c i s w} {
 		    } else {
 		       $w tag cell positive "$r,$c"
 		    }
-		    value.get $key
-		    if {[t]>0 && $preferences(godleyDisplay)} {
-		       set val "= [value.value]"
-		    }
-		    switch $preferences(godleyDisplayStyle) {
-			"DRCR" {
-			    if $negative {
-				set show "CR $key $val"
-			    } else {
-				set show "DR $key $val"
-			    }
+		    catch {
+			value.get $key
+			if {[t]>0 && $preferences(godleyDisplay)} {
+			   set val "= [value.value]"
 			}
-			"sign" {
-			    if $negative {
-				if {[t]>0 && $preferences(godleyDisplay)} {
-				    set val "= [expr -([value.value])]"
+			switch $preferences(godleyDisplayStyle) {
+			    "DRCR" {
+				if $negative {
+				    set show "CR $key $val"
+				} else {
+				    set show "DR $key $val"
 				}
-				set show "$s $val"
-			    } else {
-				set show "$s $val"
 			    }
+			    "sign" {
+				if $negative {
+				    if {[t]>0 && $preferences(godleyDisplay)} {
+					set val "= [expr -([value.value])]"
+				    }
+				    set show "$s $val"
+				} else {
+				    set show "$s $val"
+				}
+			    }
+			    default { error "unknown display style $preferences(godleyDisplayStyle)"}
 			}
-			default { error "unknown display style $preferences(godleyDisplayStyle)"}
 		    }
 		    return $show
  		 } else {
