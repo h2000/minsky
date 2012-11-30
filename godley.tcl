@@ -144,6 +144,7 @@ proc setGetCell {id r c i s w} {
 		    } else {
 		       $w tag cell positive "$r,$c"
 		    }
+		    # catch if $s is not a value key (a number, for example)
 		    catch {
 			value.get $key
 			if {[t]>0 && $preferences(godleyDisplay)} {
