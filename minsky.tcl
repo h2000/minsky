@@ -240,6 +240,7 @@ proc step {} {
     updateGodleysDisplay
 }
 
+
 proc simulate {} {
     uplevel #0 {
       if {$running} {
@@ -260,28 +261,6 @@ proc reset {} {
     set oplist [opOrder]
     updateCanvas
     updateGodleysDisplay
-}
-
-proc simulate {} {
-    uplevel #0 {
-      if {$running} {
-            after $delay {step; simulate}
-        }
-    }
-}
-
-proc reset {} {
-    global running 
-    set running 0
-    set tstep 0
-    minsky.reset
-    .menubar.statusbar configure -text "t: 0 dt: 0"
-    .menubar.run configure -image runButton
-
-    global oplist lastOp
-    set oplist [opOrder]
-    updateCanvas
-    updateGodleys
     set lastOp -1
 }
 

@@ -1,183 +1,185 @@
-aegis: project "Minsky.1.2.1": change 18: merging files from all baselines into
+aegis: project "Minsky.1.2.1": change 19: merging files from all baselines into
 	working directory according to directory style
-aegis: project "Minsky.1.2.1": change 18: user "rks" has begun development
-aegis: project "Minsky.1.2.1": change 18: file "Makefile" copied
-aegis: project "Minsky.1.2.1": change 18: file "Minsky.xmi" copied
-aegis: project "Minsky.1.2.1": change 18: file "MinskySchema.xmi" copied
-aegis: project "Minsky.1.2.1": change 18: file "XGLItem.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "XGLItem.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "aegis.conf" copied
-aegis: project "Minsky.1.2.1": change 18: file "cairoItems.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "cairoItems.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "classdesc_access.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "equations.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "equations.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "examples/1Free.mky" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: user "rks" has begun development
+aegis: project "Minsky.1.2.1": file "," is unknown
+aegis: project "Minsky.1.2.1": change 19: found 1 fatal error, no files copied
+aegis: project "Minsky.1.2.1": change 19: file "Makefile" copied
+aegis: project "Minsky.1.2.1": change 19: file "Minsky.xmi" copied
+aegis: project "Minsky.1.2.1": change 19: file "MinskySchema.xmi" copied
+aegis: project "Minsky.1.2.1": change 19: file "XGLItem.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "XGLItem.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "aegis.conf" copied
+aegis: project "Minsky.1.2.1": change 19: file "cairoItems.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "cairoItems.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "classdesc_access.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "equations.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "equations.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "examples/1Free.mky" copied
+aegis: project "Minsky.1.2.1": change 19: file
 	"examples/4MonetaryMinskyModelLessUnstableStart.mky" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"examples/4MonetaryMinskyModelLessUnstableStart.xml" copied
-aegis: project "Minsky.1.2.1": change 18: file "examples/GoodwinLinear.mky"
+aegis: project "Minsky.1.2.1": change 19: file "examples/GoodwinLinear.mky"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file "examples/GoodwinLinear.xml"
+aegis: project "Minsky.1.2.1": change 19: file "examples/GoodwinLinear.xml"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file "examples/GoodwinLinear02.mky"
+aegis: project "Minsky.1.2.1": change 19: file "examples/GoodwinLinear02.mky"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file "examples/Steve.mky" copied
-aegis: project "Minsky.1.2.1": change 18: file "examples/SteveTest028.mky"
+aegis: project "Minsky.1.2.1": change 19: file "examples/Steve.mky" copied
+aegis: project "Minsky.1.2.1": change 19: file "examples/SteveTest028.mky"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file "examples/UWS05.mky" copied
-aegis: project "Minsky.1.2.1": change 18: file "examples/exponentialGrowth.mky"
+aegis: project "Minsky.1.2.1": change 19: file "examples/UWS05.mky" copied
+aegis: project "Minsky.1.2.1": change 19: file "examples/exponentialGrowth.mky"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"examples/exponentialGrowthWithExtraLabel.mky" copied
-aegis: project "Minsky.1.2.1": change 18: file "exportSchema.tcl" copied
-aegis: project "Minsky.1.2.1": change 18: file "godley.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "godley.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "godley.tcl" copied
-aegis: project "Minsky.1.2.1": change 18: file "godleyIcon.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "godleyIcon.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "group.tcl" copied
-aegis: project "Minsky.1.2.1": change 18: file "groupIcon.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "groupIcon.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "help" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/Last.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/Pause.fig" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/Pause.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/Play.fig" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/Play.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/Rewind.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/Step.fig" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/add.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/bank.fig" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/bank.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/bank.xgl" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/bar.fig" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/const.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/divide.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/exp.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/group.odg" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/group.svg" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/group.xgl" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/icons.fig" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/integrate.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/multiply.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/plot.fig" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/plot.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/stop.fig" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/subtract.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/time.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/var.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/zoomIn.fig" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/zoomIn.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/zoomOut.fig" copied
-aegis: project "Minsky.1.2.1": change 18: file "icons/zoomOut.gif" copied
-aegis: project "Minsky.1.2.1": change 18: file "init.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "install.bat" copied
-aegis: project "Minsky.1.2.1": change 18: file "library/Xecolab.tcl" copied
-aegis: project "Minsky.1.2.1": change 18: file "library/Xecolab/connect.tcl"
+aegis: project "Minsky.1.2.1": change 19: file "exportSchema.tcl" copied
+aegis: project "Minsky.1.2.1": change 19: file "godley.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "godley.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "godley.tcl" copied
+aegis: project "Minsky.1.2.1": change 19: file "godleyIcon.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "godleyIcon.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "group.tcl" copied
+aegis: project "Minsky.1.2.1": change 19: file "groupIcon.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "groupIcon.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "help" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/Last.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/Pause.fig" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/Pause.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/Play.fig" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/Play.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/Rewind.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/Step.fig" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/add.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/bank.fig" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/bank.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/bank.xgl" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/bar.fig" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/const.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/divide.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/exp.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/group.odg" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/group.svg" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/group.xgl" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/icons.fig" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/integrate.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/multiply.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/plot.fig" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/plot.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/stop.fig" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/subtract.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/time.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/var.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/zoomIn.fig" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/zoomIn.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/zoomOut.fig" copied
+aegis: project "Minsky.1.2.1": change 19: file "icons/zoomOut.gif" copied
+aegis: project "Minsky.1.2.1": change 19: file "init.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "install.bat" copied
+aegis: project "Minsky.1.2.1": change 19: file "library/Xecolab.tcl" copied
+aegis: project "Minsky.1.2.1": change 19: file "library/Xecolab/connect.tcl"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file "library/Xecolab/display.tcl"
+aegis: project "Minsky.1.2.1": change 19: file "library/Xecolab/display.tcl"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"library/Xecolab/filebrowser.tcl" copied
-aegis: project "Minsky.1.2.1": change 18: file "library/Xecolab/histogram.tcl"
+aegis: project "Minsky.1.2.1": change 19: file "library/Xecolab/histogram.tcl"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file "library/Xecolab/netgraph.tcl"
+aegis: project "Minsky.1.2.1": change 19: file "library/Xecolab/netgraph.tcl"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"library/Xecolab/obj-browser.tcl" copied
-aegis: project "Minsky.1.2.1": change 18: file "library/Xecolab/plot.tcl"
+aegis: project "Minsky.1.2.1": change 19: file "library/Xecolab/plot.tcl"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file "library/init.tcl" copied
-aegis: project "Minsky.1.2.1": change 18: file "library/tcl8/8.4/http-2.7.7.tm"
+aegis: project "Minsky.1.2.1": change 19: file "library/init.tcl" copied
+aegis: project "Minsky.1.2.1": change 19: file "library/tcl8/8.4/http-2.7.7.tm"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file "library/tcl8/8.4/http-2.7.tm"
+aegis: project "Minsky.1.2.1": change 19: file "library/tcl8/8.4/http-2.7.tm"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"library/tcl8/8.4/platform-1.0.10.tm" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"library/tcl8/8.4/platform-1.0.3.tm" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"library/tcl8/8.4/platform/shell-1.1.3.tm" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"library/tcl8/8.4/platform/shell-1.1.4.tm" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"library/tcl8/8.5/msgcat-1.4.2.tm" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"library/tcl8/8.5/msgcat-1.4.4.tm" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"library/tcl8/8.5/tcltest-2.3.0.tm" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"library/tcl8/8.5/tcltest-2.3.3.tm" copied
-aegis: project "Minsky.1.2.1": change 18: file "library/tooltip.tcl" copied
-aegis: project "Minsky.1.2.1": change 18: file "minsky.app/Contents/Info.plist"
+aegis: project "Minsky.1.2.1": change 19: file "library/tooltip.tcl" copied
+aegis: project "Minsky.1.2.1": change 19: file "minsky.app/Contents/Info.plist"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file "minsky.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "minsky.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "minsky.tcl" copied
-aegis: project "Minsky.1.2.1": change 18: file "operation.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "operation.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "plotWidget.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "plotWidget.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "plots.tcl" copied
-aegis: project "Minsky.1.2.1": change 18: file "polyBase.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "port.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "portManager.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "portManager.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "schema/schema0.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "schema/schema0.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "schema/schema1.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "schema/schema1.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "schema/schemaHelper.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "tclmain.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/00/t0001a.sh" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/00/t0002a.sh" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/00/t0003a.sh" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/00/t0004a.sh" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/00/t0005a.sh" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/00/t0006a.sh" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/00/t0007a.sh" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/00/t0008a.sh" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/Makefile" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/assert.tcl" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/checkMissing.sh" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/main.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file "minsky.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "minsky.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "minsky.tcl" copied
+aegis: project "Minsky.1.2.1": change 19: file "operation.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "operation.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "plotWidget.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "plotWidget.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "plots.tcl" copied
+aegis: project "Minsky.1.2.1": change 19: file "polyBase.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "port.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "portManager.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "portManager.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "schema/schema0.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "schema/schema0.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "schema/schema1.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "schema/schema1.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "schema/schemaHelper.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "tclmain.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/00/t0001a.sh" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/00/t0002a.sh" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/00/t0003a.sh" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/00/t0004a.sh" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/00/t0005a.sh" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/00/t0006a.sh" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/00/t0007a.sh" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/00/t0008a.sh" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/Makefile" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/assert.tcl" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/checkMissing.sh" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/main.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file
 	"test/oldSchema/schema0/1Free.mky" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"test/oldSchema/schema0/4MonetaryMinskyModelLessUnstableStart.mky"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"test/oldSchema/schema0/GoodwinLinear.mky" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"test/oldSchema/schema0/GoodwinLinear02.mky" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"test/oldSchema/schema0/Steve.mky" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"test/oldSchema/schema0/SteveTest028.mky" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"test/oldSchema/schema0/UWS05.mky" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"test/oldSchema/schema0/exponentialGrowth.mky" copied
-aegis: project "Minsky.1.2.1": change 18: file
+aegis: project "Minsky.1.2.1": change 19: file
 	"test/oldSchema/schema0/exponentialGrowthWithExtraLabel.mky" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/rewriteMky.tcl" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/runtests.sh" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/testEq.mky" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/testEq.tcl" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/testEqPrototype.tex"
+aegis: project "Minsky.1.2.1": change 19: file "test/rewriteMky.tcl" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/runtests.sh" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/testEq.mky" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/testEq.tcl" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/testEqPrototype.tex"
 	copied
-aegis: project "Minsky.1.2.1": change 18: file "test/testMinsky.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "test/testtestEq.tex" copied
-aegis: project "Minsky.1.2.1": change 18: file "uninstall.bat" copied
-aegis: project "Minsky.1.2.1": change 18: file "variable.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "variable.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "variableManager.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "variableManager.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "variableValue.cc" copied
-aegis: project "Minsky.1.2.1": change 18: file "variableValue.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "windows/Shortcut.exe" copied
-aegis: project "Minsky.1.2.1": change 18: file "wire.h" copied
-aegis: project "Minsky.1.2.1": change 18: file "wiring.tcl" copied
-aegis: project "Minsky.1.2.1": change 18: copied 142 files
+aegis: project "Minsky.1.2.1": change 19: file "test/testMinsky.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "test/testtestEq.tex" copied
+aegis: project "Minsky.1.2.1": change 19: file "uninstall.bat" copied
+aegis: project "Minsky.1.2.1": change 19: file "variable.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "variable.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "variableManager.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "variableManager.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "variableValue.cc" copied
+aegis: project "Minsky.1.2.1": change 19: file "variableValue.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "windows/Shortcut.exe" copied
+aegis: project "Minsky.1.2.1": change 19: file "wire.h" copied
+aegis: project "Minsky.1.2.1": change 19: file "wiring.tcl" copied
+aegis: project "Minsky.1.2.1": change 19: copied 142 files
