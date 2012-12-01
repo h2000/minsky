@@ -185,23 +185,29 @@ proc setGetCell {id r c i s w} {
 		} else {
 		    set account_type "SingleEntry"
 		}
-		set prefix [string toupper [string range [string trim $s] 0 1]]
+
+
+	# regexp accepts input of the form "?DR|CR|-? VarName"
+	# where VarName cannot begin with DR or CR
+	# eg   "var"   "-var"    "dr var"   "DR var"
+
+		if {![regexp {^\s*(([cCdD][rR])?|\s*(-)?)(?:-)*\s*(?![cCdD][rR])\m([[:alnum:]]+)} $s matchstr prefix drcr sign varName]} {return}
+
+		set prefix [string toupper $prefix]
 		switch $prefix {
+		   "" {}
 		   CR - DR {
-		       set key [string trim [string trimleft [string trim [string range [string trim $s] 2 end]] "-"]]
 		       if {"-" == [accountingRules $account_type $prefix]} {
-			    set key "-$key"
+			    set varName "-$varName"
 		       }
 		   }
-		   default {
-			if {"-" == [string range [string trim $s] 0 0]} {
-			   set key -[string trim [string trimleft [string trim $s] "-" ]]
-			}
+		   - {
+			    set varName "-$varName"
 		   }
+		   default { error "invalid prefix $prefix" }
 		}
-	       set key [lindex [split $key "="] 0]
 	    }
-            minsky.godleyItem.table.setCell $row $col [string trim $key]
+            minsky.godleyItem.table.setCell $row $col $varName
             minsky.godleyItem.set $id
             updateGodley $id
         } else {
