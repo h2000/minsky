@@ -188,7 +188,7 @@ proc setGetCell {id r c i s w} {
 		set prefix [string toupper [string range [string trim $s] 0 1]]
 		switch $prefix {
 		   CR - DR {
-		       set key [string trim [string range [string trim $s] 2 end]]
+		       set key [string trim [string trimleft [string trim [string range [string trim $s] 2 end]] "-"]]
 		       if {"-" == [accountingRules $account_type $prefix]} {
 			    set key "-$key"
 		       }
