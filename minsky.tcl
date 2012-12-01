@@ -117,6 +117,10 @@ if {[tk windowingsystem] == "aqua"} {
 
 use_namespace minsky
 
+proc deiconify {widget} {
+    wm deiconify $widget
+    after idle "wm deiconify $widget; raise $widget; focus -force $widget"
+}
 
 labelframe .menubar -relief raised
 menubutton .menubar.file -menu .menubar.file.menu -text File  -underline 0
@@ -124,10 +128,9 @@ menu .menubar.file.menu
 
 button .menubar.rkData -text "Runge Kutta" -relief flat -command {
     foreach {var text} $rkVars { set rkVarInput($var) [$var] }
-    wm deiconify .rkDataForm
+    deiconify .rkDataForm
     update idletasks
     ::tk::TabToWindow $rkVarInput(initial_focus)
-    grab .rkDataForm
 } -underline 0 
 tooltip .menubar.rkData "Set Runge Kutta parameters"
 
@@ -161,7 +164,7 @@ menubutton .menubar.options -menu .menubar.options.menu -text Options -underline
 menu .menubar.options.menu
 .menubar.options.menu add command -label "Prefrences" -command {
     foreach {var text} $preferencesVars { set preferences_input($var) $preferences($var) }
-    wm deiconify .preferencesForm
+    deiconify .preferencesForm
     update idletasks
     ::tk::TabToWindow $preferences(initial_focus)
     grab .preferencesForm
@@ -453,7 +456,7 @@ proc aboutMinsky {} {
    GNU General Public License. It comes with ABSOLUTELY NO WARRANTY. 
    See http://www.gnu.org/licenses/ for details
    " 
-    wm deiconify .aboutMinsky 
+    deiconify .aboutMinsky 
 
     # wierd trick to resize toplevel windows:
     update idletasks

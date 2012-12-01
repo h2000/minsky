@@ -16,10 +16,62 @@
 #  along with Minsky.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 # Godley table
 
-
 set globals(godley_tables) {}
+		    
+
+# define accounting rules
+set accountingRules {
+
+
+	    asset
+     --------------------
+       DR     +    black
+       CR     -     red
+
+
+
+          liability
+     --------------------
+       CR     +    black
+       DR     -     red
+
+
+
+            equity
+     --------------------
+       CR     +    black
+       DR     -     red
+
+
+
+          SingleEntry
+     --------------------
+       CR     +    black
+       DR     -     red
+
+}
+
+
+# set up accounting rules (and their inverse)
+foreach {account_type line rule1DRCR rule1sign rule1color rule2DRCR rule2sign rule2color} $accountingRules {
+    array set $account_type [list $rule1sign $rule1DRCR $rule2sign $rule2DRCR $rule1DRCR $rule1sign $rule2DRCR $rule2sign]
+    array set color${account_type} [list $rule1sign $rule1color $rule2sign $rule2color $rule1DRCR $rule1color $rule2DRCR $rule2color]
+}
+
+proc accountingRules {accountType prefix} {
+    if {$accountType == "noAssetClass"} { set accountType "SingleEntry" }
+    upvar #0 $accountType account_type
+    return $account_type($prefix)
+}
+
+proc accountingColor {accountType prefix} {
+    if {$accountType == "noAssetClass"} { set accountType "SingleEntry" }
+    upvar #0 color$accountType account_type
+    return $account_type($prefix)
+}
 
 proc createGodleyWindow {id} {
     global globals
@@ -46,7 +98,7 @@ proc createGodleyWindow {id} {
         -width 20 -height 20 \
         -colstretch all \
         -rowstretch all \
-        -multiline 0 
+        -multiline 0
 
     bind $t <Return> {%W activate {}}
 
@@ -58,8 +110,8 @@ proc createGodleyWindow {id} {
 
     $t configure -usecommand 1 -command "setGetCell $id %r %c %i %s %W" 
 
-    $t tag configure negative -foreground black
-    $t tag configure positive -foreground red
+    $t tag configure black -foreground black
+    $t tag configure red -foreground red
 
     # required to make this behave on Windows.            
     $t tag configure active -foreground black    
@@ -109,7 +161,8 @@ proc setGetCell {id r c i s w} {
         minsky.godleyItem.get $id
         set row [expr $r-1]
         set col [expr $c-1]
-        if [minsky.godleyItem.table.doubleEntryCompliant] {
+	set doubleEntryMode [minsky.godleyItem.table.doubleEntryCompliant]
+        if $doubleEntryMode {
             # allow for asset class row
             incr row -1
             if {$row==-1} return "";
@@ -124,68 +177,108 @@ proc setGetCell {id r c i s w} {
             }
         }
         if {$i && $id>=0} {
-	    set negative [string match "*CR*" $s]
-	    set key [string trimleft [string trimleft [string trim $s] "DR"] "CR"]
-	    set key [lindex [split $key "="] 0]
-	    if $negative { set key "-$key" }
-            minsky.godleyItem.table.setCell $row $col $key
+	    set key $s
+	    if {$row>0 && $col>0} {
+		if {$doubleEntryMode} {
+		    set account_type [godleyItem.table.assetClass $col]
+		    if {$account_type == "noAssetClass"} return
+		} else {
+		    set account_type "SingleEntry"
+		}
+		set prefix [string toupper [string range [string trim $s] 0 1]]
+		switch $prefix {
+		   CR - DR {
+		       set key [string trim [string range [string trim $s] 2 end]]
+		       if {"-" == [accountingRules $account_type $prefix]} {
+			    set key "-$key"
+		       }
+		   }
+		   default {
+			if {"-" == [string range [string trim $s] 0 0]} {
+			   set key -[string trim [string trimleft [string trim $s] "-" ]]
+			}
+		   }
+		}
+	       set key [lindex [split $key "="] 0]
+	    }
+            minsky.godleyItem.table.setCell $row $col [string trim $key]
             minsky.godleyItem.set $id
             updateGodley $id
         } else {
             set s [minsky.godleyItem.table.getCell $row $col]
-            if [string length $s] {
-                 if {$row>0 && $col>0} {
-		    set show $s
-		    set val ""
-		    set key [string trimright [string trimleft $s " -"]];
-		    set negative [string match "*-*" $s]
-		    if $negative {
-		       $w tag cell negative "$r,$c"
-		    } else {
-		       $w tag cell positive "$r,$c"
+	    if {$row>0 && $col>0} {
+		if $doubleEntryMode {
+		    set account_type [godleyItem.table.assetClass $col]
+		    if {$account_type == "noAssetClass"} {
+			return "Asset Class Not Set"
 		    }
-		    # catch if $s is not a value key (a number, for example)
-		    catch {
-			value.get $key
-			if {[t]>0 && $preferences(godleyDisplay)} {
-			   set val "= [value.value]"
+		} else {
+		    set account_type "SingleEntry"
+		}
+		if [string length $s] {
+			set account_type [godleyItem.table.assetClass $col]
+			set show $s
+			set key [string trimleft [string trim $s] "-"];
+			set prefix [string range [string trim $s] 0 0]
+			if {$prefix == "-"} {
+			   set sign -
+			} else {
+			   set sign +
 			}
-			switch $preferences(godleyDisplayStyle) {
-			    "DRCR" {
-				if $negative {
-				    set show "CR $key $val"
-				} else {
-				    set show "DR $key $val"
-				}
-			    }
-			    "sign" {
-				if $negative {
+			$w tag cell [accountingColor $account_type $sign] "$r,$c"
+			# if $key is a number, just pass it on
+			# otherwise apply accounting format
+			if {![string is double $key]} {
+			    set val ""
+			    switch $preferences(godleyDisplayStyle) {
+				"DRCR" {
 				    if {[t]>0 && $preferences(godleyDisplay)} {
-					set val "= [expr -([value.value])]"
+				       set val ""
+				       catch {
+					   value.get $key
+					   set val [value.value]
+				       }
+				       set val " = $val"
+				    }
+				    set DRCR [accountingRules $account_type $sign]
+				    set show "$DRCR $key$val"
+				}
+				"sign" {
+				    if {[t]>0 && $preferences(godleyDisplay)} {
+				       set val ""
+				       catch {
+					   value.get $key
+					   set val [value.value]
+				       }
+					switch $sign {
+					    - { if {[catch {
+						    set val "= [expr -($val)]"
+						}]} {
+						    set val "= $val"
+						}
+					       }
+					    default {set val "= $val"}
+					}
 				    }
 				    set show "$s $val"
-				} else {
-				    set show "$s $val"
 				}
+				default { error "unknown display style $preferences(godleyDisplayStyle)"}
 			    }
-			    default { error "unknown display style $preferences(godleyDisplayStyle)"}
 			}
-		    }
-		    return $show
- 		 } else {
-                    return $s
- 		 }
-            } else {
-                return " "
-            }
+			return $show
+		     } else {
+			return " "
+		     }
+		} else {
+		    return $s
+		}
         }
     }
 }
 
 proc openGodley {id} {
     if {![winfo exists .godley$id]} {createGodleyWindow $id}
-
-    wm deiconify .godley$id
+    deiconify .godley$id
     raise .godley$id .
     updateGodley $id
 }
