@@ -44,15 +44,15 @@ radiobutton .wiring.menubar.movemode -value 2 -variable interactionMode -command
 radiobutton .wiring.menubar.panmode -value 3 -variable interactionMode -command setInteractionMode -text pan
 radiobutton .wiring.menubar.lassomode -value 4 -variable interactionMode -command setInteractionMode -text lasso
 
-image create photo zoomOutImg -file $minskyHome/icons/zoomOut.gif
-button .wiring.menubar.zoomOut -image zoomOutImg -height 24 -width 37 \
-    -command {zoom 0.91}
-tooltip .wiring.menubar.zoomOut "Zoom Out"
-
-image create photo zoomInImg -file $minskyHome/icons/zoomIn.gif
-button .wiring.menubar.zoomIn -image zoomInImg -height 24 -width 37 \
-    -command {zoom 1.1}
-tooltip .wiring.menubar.zoomIn "Zoom In"
+#image create photo zoomOutImg -file $minskyHome/icons/zoomOut.gif
+#button .wiring.menubar.zoomOut -image zoomOutImg -height 24 -width 37 \
+#    -command {zoom 0.91}
+#tooltip .wiring.menubar.zoomOut "Zoom Out"
+#
+#image create photo zoomInImg -file $minskyHome/icons/zoomIn.gif
+#button .wiring.menubar.zoomIn -image zoomInImg -height 24 -width 37 \
+#    -command {zoom 1.1}
+#tooltip .wiring.menubar.zoomIn "Zoom In"
 
 image create photo godleyImg -file $minskyHome/icons/bank.gif
 button .wiring.menubar.godley -image godleyImg -height 24 -width 37 \
@@ -107,7 +107,10 @@ button .wiring.menubar.plot -image plotImg -height 24 -width 37 \
 tooltip .wiring.menubar.plot "Plot"
 
 pack .wiring.menubar.wiringmode .wiring.menubar.movemode .wiring.menubar.panmode .wiring.menubar.lassomode -side left
-pack .wiring.menubar.zoomOut .wiring.menubar.zoomIn .wiring.menubar.godley .wiring.menubar.var .wiring.menubar.const .wiring.menubar.time -side left
+
+# pack .wiring.menubar.zoomOut .wiring.menubar.zoomIn .wiring.menubar.godley .wiring.menubar.var .wiring.menubar.const .wiring.menubar.time -side left
+pack .wiring.menubar.godley .wiring.menubar.var .wiring.menubar.const .wiring.menubar.time -side left
+
 pack .wiring.menubar.integrate .wiring.menubar.exp .wiring.menubar.add .wiring.menubar.subtract .wiring.menubar.multiply .wiring.menubar.divide .wiring.menubar.plot -side left
 pack .wiring.menubar -fill x
 
