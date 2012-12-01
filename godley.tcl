@@ -145,6 +145,21 @@ proc setDEmode {id} {
     updateGodley $id
 }
 
+# regexp accepts input of the form "?DR|CR|-? VarName"
+# where VarName cannot begin with DR or CR
+# eg   "var"   "-var"    "dr var"   "DR var"
+
+proc parse_input {input p v} {
+    upvar $p prefix
+    upvar $v varName
+
+    set retval [regexp {^\s*(([cCdD][rR])?|\s*(-)?)(?:-)*\s*(?![cCdD][rR])\m([[:alnum:]]+)} $input matchstr prefix drcr sign varName]
+
+    if {$retval} {set prefix [string toupper $prefix]}
+
+    return $retval
+}
+
 proc updateGodleyTitle {id} {
     godleyItem.get $id
     if {[godleyItem.table.title]!=[.godley$id.topbar get]} {
@@ -186,14 +201,12 @@ proc setGetCell {id r c i s w} {
 		    set account_type "SingleEntry"
 		}
 
-
-	# regexp accepts input of the form "?DR|CR|-? VarName"
+	# parse_input accepts input of the form "?DR|CR|-? VarName"
 	# where VarName cannot begin with DR or CR
 	# eg   "var"   "-var"    "dr var"   "DR var"
 
-		if {![regexp {^\s*(([cCdD][rR])?|\s*(-)?)(?:-)*\s*(?![cCdD][rR])\m([[:alnum:]]+)} $s matchstr prefix drcr sign varName]} {return}
+		if {![parse_input $s prefix varName]} {return}
 
-		set prefix [string toupper $prefix]
 		switch $prefix {
 		   "" {}
 		   CR - DR {
@@ -224,8 +237,10 @@ proc setGetCell {id r c i s w} {
 		if [string length $s] {
 			set account_type [godleyItem.table.assetClass $col]
 			set show $s
-			set key [string trimleft [string trim $s] "-"];
-			set prefix [string range [string trim $s] 0 0]
+
+			# use parse_input to format output for consistency
+			parse_input $s prefix key
+
 			if {$prefix == "-"} {
 			   set sign -
 			} else {
