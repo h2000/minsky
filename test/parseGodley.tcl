@@ -124,7 +124,7 @@ proc runtest {} {
 	set failed 1
 	}
     }
-    if {!$failed} {puts stdout passed}
+    if {!$failed} {puts stdout passed} else {exit $failed}
 }
 
 proc runtest2 {} {
@@ -134,7 +134,7 @@ proc runtest2 {} {
     foreach {l} $::testset {
 	incr failed [chainingCheck $l]
     }
-    if {!$failed} {puts stdout passed}
+    if {!$failed} {puts stdout passed} else {exit $failed}
 }
 
 proc chainingCheck {l} {
@@ -170,7 +170,7 @@ proc runtest3 {} {
 	    }
         if {$j>100000} {puts -nonewline stdout "\b"; break}
     }
-    if {!$failed} {puts stdout passed}
+    if {!$failed} {puts stdout passed} else {exit $failed}
 }
 
 #genTestResults
@@ -180,3 +180,4 @@ runtest3
 
 #:! tclsh %
 
+exit 0

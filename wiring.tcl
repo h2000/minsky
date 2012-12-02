@@ -1189,4 +1189,4 @@ proc tout {args} {
 }
 
 # example debugging trace statements
-trace add execution drawOperation enter tout
+#trace add execution drawOperation enter tout
