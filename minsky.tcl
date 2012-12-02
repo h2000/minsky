@@ -20,6 +20,9 @@
 #  along with Minsky.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+# disable tear-off menus
+option add *Menu.tearOff 0
+
 
 set minskyHome [file dirname [info nameofexecutable]]
 set fname ""
