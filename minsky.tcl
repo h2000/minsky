@@ -134,6 +134,9 @@ button .menubar.rkData -text "Runge Kutta" -relief flat -command {
     deiconify .rkDataForm
     update idletasks
     ::tk::TabToWindow $rkVarInput(initial_focus)
+    tkwait visibility .rkDataForm
+    grab set .rkDataForm
+    wm transient .rkDataForm .
 } -underline 0 
 tooltip .menubar.rkData "Set Runge Kutta parameters"
 
@@ -170,7 +173,9 @@ menu .menubar.options.menu
     deiconify .preferencesForm
     update idletasks
     ::tk::TabToWindow $preferences(initial_focus)
-    grab .preferencesForm
+    tkwait visibility .preferencesForm
+    grab set .preferencesForm
+    wm transient .preferencesForm .
 }
 
 
@@ -465,7 +470,9 @@ proc aboutMinsky {} {
     update idletasks
     wm geometry .aboutMinsky
 
-    grab .aboutMinsky 
+    tkwait visibility .aboutMinsky
+    grab set .aboutMinsky
+    wm transient .aboutMinsky .
 }
 
 # delete subsidiary toplevel such as godleys and plots

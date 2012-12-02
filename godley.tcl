@@ -155,7 +155,16 @@ proc parse_input {input p v} {
 
     set retval [regexp {^\s*(([cCdD][rR])?|\s*(-)?)(?:-)*\s*(?![cCdD][rR])\m([[:alnum:]]+)} $input matchstr prefix drcr sign varName]
 
-    if {$retval} {set prefix [string toupper $prefix]}
+    # attempt to re-parse the output and make sure it's unchanged
+    if {$retval} {
+	set retval2 [regexp {^\s*(([cCdD][rR])?|\s*(-)?)(?:-)*\s*(?![cCdD][rR])\m([[:alnum:]]+)} "$prefix $varName" matchstr2 prefix2 drcr2 sign2 varName2]
+	if {!$retval2 || $prefix!=$prefix2 || $varName!=$varName2} {
+	    return 0;
+	}
+        
+    }
+
+    if {$retval} { set prefix [string toupper $prefix] }
 
     return $retval
 }

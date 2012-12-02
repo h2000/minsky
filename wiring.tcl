@@ -201,6 +201,10 @@ proc addVariable {} {
     wm deiconify .wiring.initVar
     ::tk::TabToWindow $varInput(initial_focus);
     grab .wiring.initVar
+    tkwait visibility .wiring.initVar
+    grab set .wiring.initVar
+    wm transient .wiring.initVar
+
 }
 
 proc addOperation {op} {
@@ -1027,6 +1031,9 @@ proc editItem {id tag} {
             set editVarInput(title) "[var.name]: Value=[value.value]"
             wm deiconify .wiring.editVar
             grab .wiring.editVar
+	    tkwait visibility .wiring.editVar
+	    grab set .wiring.editVar
+	    wm transient .wiring.editVar
         }
         "^op" {
             op.get $id
@@ -1070,6 +1077,9 @@ proc editItem {id tag} {
                 wm deiconify .wiring.editConstant
 		::tk::TabToWindow $constInput(initial_focus);
                 grab .wiring.editConstant
+		tkwait visibility .wiring.editConstant
+		grab set .wiring.editConstant
+		wm transient .wiring.editConstant
 
             } else {
                 set opInput(title) [op.name]
@@ -1077,6 +1087,9 @@ proc editItem {id tag} {
                 wm deiconify .wiring.editOperation
 		::tk::TabToWindow $opInput(initial_focus);
                 grab .wiring.editOperation
+		tkwait visibility .wiring.editOperation
+		grab set .wiring.editOperation
+		wm transient .wiring.editOperation
             }
         }
         "^group" {groupEdit $id}
