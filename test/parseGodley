@@ -112,7 +112,7 @@ proc genTestResults {} {
 }
 
 proc runtest {} {
-    puts -nonewline stdout "testing resultset......."
+    puts -nonewline stdout "testing resultset......"
     flush stdout
     set failed 0
     foreach {l r} $::resultset {
@@ -129,29 +129,29 @@ proc runtest {} {
 
 proc runtest2 {} {
     set failed 0
-    puts -nonewline stdout "testset recursion......."
+    puts -nonewline stdout "testset chaining......."
     flush stdout
     foreach {l} $::testset {
-	incr failed [recursionCheck $l]
+	incr failed [chainingCheck $l]
     }
     if {!$failed} {puts stdout passed}
 }
 
-proc recursionCheck {l} {
+proc chainingCheck {l} {
     set failed 0
     set res [lindex [a $l] 1]
     foreach {ret prefix var} $res {}
     set res2 [lindex [a [concat $prefix $var]] 1]
     foreach {ret2 prefix2 var2} $res2 {}
     foreach {v1 v2} {ret ret2 prefix prefix2 var var2} {
-	if {[set $v1] != [set $v2]} { incr failed 1; puts stdout "FAIL recursion for \"$l\" \"[set $v1]\" != \"[set $v2]\""}
+	if {[set $v1] != [set $v2]} { incr failed 1; puts stdout "FAIL chaining for \"$l\" \"[set $v1]\" != \"[set $v2]\""}
     }
     return $failed
 }
 
 proc runtest3 {} {
     set failed 0
-    puts -nonewline stdout "random test recursion...."
+    puts -nonewline stdout "random test chaining...."
     flush stdout
     set tokens {dr CR variable drvar - -- " " = "!@#~$%^&*()_+{}[]:'\"\\,<.>?/"}
     set i 0
@@ -162,7 +162,7 @@ proc runtest3 {} {
 	foreach {ii} {1 2 3 4 5 6 7 8 9 10} {
 	   set l [concat $l " " [lindex $tokens [expr int(rand()*9)]]]
 	}
-	incr failed [recursionCheck $l]
+	incr failed [chainingCheck $l]
 	if  {![expr $j%100]} {
 	    incr i
 	    puts -nonewline stdout [lindex {"\b|" "\b\\" "\b-" "\b/"} [expr $i%4]]
