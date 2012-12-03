@@ -387,7 +387,7 @@ proc setRKparms {} {
 }
 
 
-set preferences(godleyDisplayStyle) DRCR
+set preferences(godleyDisplayStyle) sign
 set preferences(godleyDisplay) 1
 
 toplevel .preferencesForm
