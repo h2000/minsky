@@ -21,39 +21,9 @@
 
 set globals(godley_tables) {}
 		    
-
-# define accounting rules
-set accountingRules {
-
-
-	    asset
-     --------------------
-       DR     +    black
-       CR     -     red
-
-
-
-          liability
-     --------------------
-       CR     +    black
-       DR     -     red
-
-
-
-            equity
-     --------------------
-       CR     +    black
-       DR     -     red
-
-
-
-          SingleEntry
-     --------------------
-       CR     +    black
-       DR     -     red
-
-}
-
+set fp [open "accountingRules" r]
+set accountingRules [read $fp]
+close $fp
 
 # set up accounting rules (and their inverse)
 foreach {account_type line rule1DRCR rule1sign rule1color rule2DRCR rule2sign rule2color} $accountingRules {
