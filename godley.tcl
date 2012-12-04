@@ -171,7 +171,7 @@ proc setGetCell {id r c i s w} {
             }
         }
         if {$i && $id>=0} {
-	    set key $s
+	    set varName $s
 	    if {$row>0 && $col>0} {
 		if {$doubleEntryMode} {
 		    set account_type [godleyItem.table.assetClass $col]
@@ -218,6 +218,8 @@ proc setGetCell {id r c i s w} {
 			set show $s
 
 			# use parse_input to format output for consistency
+			set key $s
+			set prefix ""
 			parse_input $s prefix key
 
 			if {$prefix == "-"} {
