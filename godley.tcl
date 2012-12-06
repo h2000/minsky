@@ -44,7 +44,7 @@ proc accountingColor {accountType prefix} {
 }
 
 proc createGodleyWindow {id} {
-    global globals
+    global globals preferences
     toplevel .godley$id 
     wm title .godley$id "Godley Table"
     wm withdraw .godley$id
@@ -93,35 +93,39 @@ proc createGodleyWindow {id} {
     scrollbar .godley$id.sy -command [list $t yview]
     scrollbar .godley$id.sx -command [list $t xview] -orient horizontal
 
-    checkbutton .godley$id.doubleEntryMode -text "Double Entry" -variable DEmode$id \
-        -command "setDEmode $id"
+    updateDEmode
+    checkbutton .godley$id.doubleEntryMode -text "Double Entry" -variable preferences(godleyDE)
+
     # default checkbox mode is deselected - select if model variable is set
-    if [godleyItem.table.doubleEntryCompliant] {
-        .godley$id.doubleEntryMode select
-    }
+    #if [godleyItem.table.doubleEntryCompliant] {
+    #    .godley$id.doubleEntryMode select
+    #}
     pack .godley$id.topbar -fill x
     pack .godley$id.sy -side right -fill y
     pack .godley$id.table -fill both 
     pack .godley$id.sx -fill x
-
 }
 
 
-proc setDEmode {id} {
-    global DEmode$id
+trace add variable preferences(godleyDE) write {updateDEmode}
+
+proc updateDEmode args {
+  global globals preferences
+  foreach id $globals(godley_tables) {
     godleyItem.get $id
-    godleyItem.table.setDEmode [set DEmode$id]
+    godleyItem.table.setDEmode $preferences(godleyDE)
     godleyItem.set
     updateGodley $id
+  }
 }
-
-# regexp accepts input of the form "?DR|CR|-? VarName"
-# where VarName cannot begin with DR or CR
-# eg   "var"   "-var"    "dr var"   "DR var"
-
+  
 proc parse_input {input p v} {
     upvar $p prefix
     upvar $v varName
+
+    # regexp accepts input of the form "?DR|CR|-? VarName"
+    # where VarName cannot begin with DR or CR
+    # eg   "var"   "-var"    "dr var"   "DR var"
 
     set retval [regexp {^\s*(([cCdD][rR])?|\s*(-)?)(?:-)*\s*(?![cCdD][rR])\m([[:alnum:]]+)} $input matchstr prefix drcr sign varName]
 
@@ -366,9 +370,6 @@ proc whenIdleUpdateGodley {id} {
     }
     .godley$id.table configure -rows $nrows -cols $ncols
 
-    global DEmode$id
-    set DEmode$id [godleyItem.table.doubleEntryCompliant]
-    
     # delete row/col buttons
     foreach c [info commands .godley$id.???Buttons{*}] {destroy $c}
     # delete asset class dropdowns

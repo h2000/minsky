@@ -169,7 +169,9 @@ if {$classicMode} {
 menubutton .menubar.options -menu .menubar.options.menu -text Options -underline 0
 menu .menubar.options.menu
 .menubar.options.menu add command -label "Prefrences" -command {
-    foreach {var text} $preferencesVars { set preferences_input($var) $preferences($var) }
+    foreach var [array names preferences_input] {
+	set preferences_input($var) $preferences($var)
+    }
     deiconify .preferencesForm
     update idletasks
     ::tk::TabToWindow $preferences(initial_focus)
@@ -278,7 +280,7 @@ proc reset {} {
 # load/save 
 
 proc openFile {} {
-    global fname workDir
+    global fname workDir preferences
     set ofname [tk_getOpenFile -multiple 1 -filetypes {
 	    {Minsky {.mky}} {XML {.xml}} {All {.*}}} -initialdir $workDir]
     if [string length $ofname] {
@@ -289,6 +291,10 @@ proc openFile {} {
         .wiring.canvas delete variables operations wires handles plots
         minsky.load $fname
         updateCanvas
+	foreach g [godleyItems.#keys] {
+	    godleyItem.get $g
+	    set preferences(godleyDE) [godleyItem.table.doubleEntryCompliant]
+	}
     }
 }
 
@@ -386,40 +392,70 @@ proc setRKparms {} {
     foreach {var text} $rkVars { $var $rkVarInput($var) }
 }
 
-
-set preferences(godleyDisplayStyle) sign
-set preferences(godleyDisplay) 1
-
 toplevel .preferencesForm
 wm resizable .preferencesForm 0 0
-
-set preferencesVars {
-          godleyDisplayStyle   "Godley Table Output Style"
-          godleyDisplay "Godley Table Show Values"
-}
 
 set row 0
 
 grid [label .preferencesForm.label$row -text "Preferences"] -column 1 -columnspan 999 -pady 10
 incr row 10
 
-foreach {var text} $preferencesVars {
+# pad the left and right
+grid [frame .preferencesForm.f1] -column 1 -row 1 -rowspan 999 -padx 10
+grid [frame .preferencesForm.f2] -column 999 -row 1 -rowspan 999 -padx 10
+
+
+# add rows to this table to add new preferences
+
+# valid types are "text", "bool" and "{ enum label1 val1 label2 val2 ... }"
+
+#   varName              Label                    DefaultVal    type
+
+set preferencesVars {
+
+    godleyDE             "Godley Table Double Entry"     1      bool
+
+    godleyDisplay        "Godley Table Show Values"      1      bool
+
+godleyDisplayStyle       "Godley Table Output Style"    sign  { enum
+                                                               "DR/CR" DRCR
+							       "+/-" sign } 
+}
+
+foreach {var text default type} $preferencesVars {
+
+    set preferences($var) $default
+
     set rowdict($text) $row
-    grid [label .preferencesForm.label$row -text $text] -column 10 -row $row -sticky e
-    grid [entry  .preferencesForm.text$row -width 20 -textvariable preferences_input($var)] -column 20 -row $row -sticky ew -columnspan 999
+
+    grid [label .preferencesForm.label$row -text $text] -column 10 -row $row -sticky e -pady 5
+
+    switch $type {
+    	text {
+	    grid [entry  .preferencesForm.text$row -width 20 -textvariable preferences_input($var)] -column 20 -row $row -sticky ew -columnspan 999
+	}
+	bool {
+	    grid [checkbutton .preferencesForm.cb$row -variable preferences_input($var)] -row $row -column 20 -sticky w
+	}
+	default {
+	    if {[llength $type] > 1} {
+	       switch [lindex $type 0] {
+		    enum {
+			set column 20
+			foreach {valtext val} [lrange $type 1 end] {
+			    grid [radiobutton .preferencesForm.rb${row}v$column  -text $valtext -variable preferences_input($var) -value $val] -row $row -column $column
+			    incr column 
+			}
+		    }
+	       }
+	    } else { error "unknown preferences widget $type" }
+	}
+    }
+
     incr row 10
 }
 
-set row "$rowdict(Godley Table Output Style)"
-grid forget .preferencesForm.text$row
-grid [radiobutton .preferencesForm.rb1-$row -text "DR/CR" -variable preferences_input(godleyDisplayStyle) -value DRCR] -row $row -column 20
-grid [radiobutton .preferencesForm.rb2-$row -text "+/-" -variable preferences_input(godleyDisplayStyle) -value sign] -row $row -column 25 -padx 10
-
-set row "$rowdict(Godley Table Show Values)"
-grid forget .preferencesForm.text$row
-grid [checkbutton .preferencesForm.rb1-$row -variable preferences_input(godleyDisplay)] -row $row -column 20 -sticky w
-
-set preferences(initial_focus) ".preferencesForm.rb1-$rowdict(Godley Table Output Style)"
+set preferences(initial_focus) ".preferencesForm.cb$rowdict(Godley Table Double Entry)"
 
 frame .preferencesForm.buttonBar
 button .preferencesForm.buttonBar.ok -text OK -command {setPreferenceParms; closePreferencesForm;updateGodleysDisplay}
@@ -439,7 +475,10 @@ proc closePreferencesForm {} {
 
 proc setPreferenceParms {} {
     global preferencesVars preferences preferences_input
-    foreach {var text} $preferencesVars { set preferences($var) $preferences_input($var) }
+
+    foreach var [array names preferences_input] {
+	set preferences($var) $preferences_input($var)
+    }
 }
 
 toplevel .aboutMinsky
