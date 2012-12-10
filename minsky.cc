@@ -193,8 +193,6 @@ int Minsky::CopyOperation(int id)
   if (source==operations.end()) return -1;
   int newId=operations.empty()? 0: operations.rbegin()->first+1;
   OperationPtr newOp = source->second->clone();
-  // newOp->setDescription(source->second->description());
-  //  newOp.addPorts();
   operations.insert(make_pair(newId, newOp));
   return newId;
 }
@@ -839,4 +837,36 @@ array<int> Minsky::opOrder()
         if (equations[i].state==j->second)
           r<<=j->first;
   return r;
+}
+
+void Minsky::Zoom(float xOrigin, float yOrigin, float factor)
+{
+  for (Wires::iterator w=wires.begin(); w!=wires.end(); ++w)
+    w->second.zoom(xOrigin, yOrigin, factor);
+  for (Operations::iterator o=operations.begin(); o!=operations.end(); ++o)
+    o->second->zoom(xOrigin, yOrigin, factor);
+  for (VariableManager::iterator v=variables.begin(); v!=variables.end(); ++v)
+    v->second->zoom(xOrigin, yOrigin, factor);
+  for (GodleyItems::iterator g=godleyItems.begin(); g!=godleyItems.end(); ++g)
+    g->second.zoom(xOrigin, yOrigin, factor);
+  for (GroupIcons::iterator g=groupItems.begin(); g!=groupItems.end(); ++g)
+    g->second.zoom(xOrigin, yOrigin, factor);
+  for (Plots::Map::iterator p=plots.plots.begin(); p!=plots.plots.end(); ++p)
+    p->second.zoom(xOrigin, yOrigin, factor);
+  m_zoomFactor*=factor;
+}
+
+void Minsky::setZoom(float factor)
+{
+  for (Operations::iterator o=operations.begin(); o!=operations.end(); ++o)
+    o->second->setZoom(factor);
+  for (VariableManager::iterator v=variables.begin(); v!=variables.end(); ++v)
+    v->second->setZoom(factor);
+  for (GodleyItems::iterator g=godleyItems.begin(); g!=godleyItems.end(); ++g)
+    g->second.setZoom(factor);
+  for (GroupIcons::iterator g=groupItems.begin(); g!=groupItems.end(); ++g)
+    g->second.setZoom(factor);
+  for (Plots::Map::iterator p=plots.plots.begin(); p!=plots.plots.end(); ++p)
+    p->second.setZoom(factor);
+  m_zoomFactor=factor;
 }

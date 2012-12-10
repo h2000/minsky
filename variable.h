@@ -43,7 +43,7 @@ struct VariableType
 
 struct VariableBaseAttributes: public VariableType
 {
-  VariableBaseAttributes(): m_x(0), m_y(0), rotation(0), 
+  VariableBaseAttributes(): m_x(0), m_y(0), zoomFactor(1), rotation(0), 
                             group(-1), visible(true) {}
 
   // tempFlow variables are temporary flow variable not visible on
@@ -52,6 +52,7 @@ struct VariableBaseAttributes: public VariableType
   // to implement integration
 
   float m_x, m_y; ///< position in canvas
+  float zoomFactor;
   string name; ///< variable name
   double rotation; /// rotation if icon, in degrees
   int group;
@@ -93,7 +94,13 @@ public:
   float x() const;
   float y() const;
   /// @}
-  
+
+  /// zoom by \a factor, scaling all widget's coordinates, using (\a
+  /// xOrigin, \a yOrigin) as the origin of the zoom transformation
+  void zoom(float xOrigin, float yOrigin,float factor);
+  void setZoom(float factor) {zoomFactor=factor;}
+
+
   double Init() const; /// < return initial value for this variable
   double Init(double); /// < set the initial value for this variable
   double init(TCL_args args) {
@@ -125,7 +132,6 @@ public:
   /// adds inPort for integral case (not relevant elsewhere) if one
   /// not allocated, removes it if one allocated
   void toggleInPort();
-  
 };
 
 namespace minsky

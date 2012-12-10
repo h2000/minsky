@@ -56,7 +56,7 @@ namespace minsky
     // triangle parameters - l: xcoord of lhs, r; xcoord of apex, h: height of base
     static const float l=-8, h=12, r=12;
 
-    float m_x, m_y;
+    float m_x, m_y, zoomFactor;
     // operator dependent data
     double rotation; /// rotation if icon, in degrees
 
@@ -65,7 +65,7 @@ namespace minsky
     /// otherwise. Coordinates are taken relative to group centre, if
     /// this is a group item
     int group;
-    OpAttributes(): m_x(10), m_y(10), rotation(0), visible(true), group(-1) {}
+    OpAttributes(): m_x(10), m_y(10), zoomFactor(1), rotation(0), visible(true), group(-1) {}
   };
 
   class OperationBase: public classdesc::PolyBase<OperationType::Type>,
@@ -105,6 +105,11 @@ namespace minsky
     /// move whole operation object to canvas location x,y
     void MoveTo(float x, float y); 
     void moveTo(TCL_args args) {MoveTo(args[0], args[1]);}
+
+    /// zoom by \a factor, scaling all widget's coordinates, using (\a
+    /// xOrigin, \a yOrigin) as the origin of the zoom transformation
+    void zoom(float xOrigin, float yOrigin,float factor);
+    void setZoom(float factor) {zoomFactor=factor;}
 
     /// returns true if from matches the out port, and to matches one of
     /// the in ports

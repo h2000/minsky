@@ -55,29 +55,19 @@ namespace
         {
           GodleyIcon& gIcon=_minsky->godleyItems[id];
 
-          // scale icon so that gIcon.scale = 1 => 200x200 pixels
-          const double nominal_width=200, imgFactor=2;
-          unsigned width=imgFactor*nominal_width*m_scale*xScale,
-            height=imgFactor*nominal_width*m_scale*yScale;
-          if (width!=cairoSurface->width() || height!=cairoSurface->height())
-            resize(width, height);
+          if (gIcon.width()!=cairoSurface->width() || 
+              gIcon.height()!=cairoSurface->height())
+            resize(gIcon.width(), gIcon.height());
 
           cairoSurface->clear();
           cairo_t *cairo=cairoSurface->cairo();
 
-          CairoRenderer renderer(cairoSurface->surface());
-          // centre coordinate
-          double xScaleFactor=gIcon.scale*m_scale*xScale,
-            yScaleFactor=gIcon.scale*m_scale*yScale;
 
-          cairo_translate(renderer.cairo(), 0.5*cairoSurface->width(), 
-                          0.5*cairoSurface->height());
-          cairo_scale(renderer.cairo(), xScaleFactor, yScaleFactor);
-          cairo_scale(renderer.cairo(), nominal_width/cairoSurface->width(),
-                      nominal_width/cairoSurface->height());
-          // origin is at top left of icon
-          cairo_translate(renderer.cairo(), -0.5*cairoSurface->width(), 
-                          -0.5*cairoSurface->width());
+          CairoRenderer renderer(cairoSurface->surface());
+          cairo_translate(renderer.cairo(), gIcon.leftMargin(), 0);
+          cairo_scale(renderer.cairo(), 
+                      (gIcon.width()-gIcon.leftMargin())/gIcon.width(),
+                      (gIcon.height()-gIcon.bottomMargin())/gIcon.height());
           xgl drawing(renderer);
           drawing.load(xglRes.c_str());
           drawing.render();
@@ -104,36 +94,39 @@ namespace
           
 
           // render the variables
-          initMatrix();
-          DrawVars drawVars(cairo, gIcon.x(), gIcon.y());
-          drawVars.left = -0.6*gIcon.scale*nominal_width;
-          drawVars.right = -drawVars.left;
-          drawVars.top = -0.55*gIcon.scale*nominal_width;
-          drawVars.bottom = -drawVars.top;
+          //          initMatrix();
+          cairo_identity_matrix(cairo);
+          cairo_translate(cairo,0.5*cairoSurface->width(),0.5*cairoSurface->height());
+          DrawVars drawVars(cairo, gIcon.x(), gIcon.y(), gIcon.zoomFactor());
+//          drawVars.left = -0.6*gIcon.scale*nominal_width;
+//          drawVars.right = -drawVars.left;
+//          drawVars.top = -0.55*gIcon.scale*nominal_width;
+//          drawVars.bottom = -drawVars.top;
           drawVars(gIcon.flowVars); 
           drawVars(gIcon.stockVars); 
 
-          width=xScale*m_scale*(drawVars.right-drawVars.left);
-          height=yScale*m_scale*(drawVars.bottom-drawVars.top);
-          double x=0.5*cairoSurface->width()+xScale*m_scale*drawVars.left;
-          double y=0.5*cairoSurface->height()+xScale*m_scale*drawVars.top;
-          
-          if (x+width>cairoSurface->width() || 
-              y+height>cairoSurface->height() ||
-              x<0|| y<0)
-            {
-              //              resize(x+width+100, y+height+100);
-              resize(2*cairoSurface->width(), 2*cairoSurface->height());
-              draw();
-            }
-
+//         width=xScale*m_scale*(drawVars.right-drawVars.left);
+//         height=yScale*m_scale*(drawVars.bottom-drawVars.top);
+//         double x=(0.5*cairoSurface->width()+xScale*m_scale*drawVars.left);
+//         double y=(0.5*cairoSurface->height()+yScale*m_scale*drawVars.top);
+//         
+//         if (x+width>cairoSurface->width() || 
+//             y+height>cairoSurface->height() ||
+//             x<0|| y<0)
+//           {
+//             //              resize(x+width+100, y+height+100);
+//             resize(2*cairoSurface->width(), 2*cairoSurface->height());
+//             draw();
+//           }
+//
           // adjust positions so ports line up correctly
-          gIcon.adjustHoriz=0.25*(drawVars.left+drawVars.right);
-          gIcon.adjustVert=0.25*(drawVars.top+drawVars.bottom);
-          adjustPorts(gIcon.stockVars, gIcon.adjustHoriz, gIcon.adjustVert);
-          adjustPorts(gIcon.flowVars, gIcon.adjustHoriz, gIcon.adjustVert);
-
-          cairoSurface->blit(x,y,width,height);
+//          gIcon.adjustHoriz=0.25*(drawVars.left+drawVars.right);
+//          gIcon.adjustVert=0.25*(drawVars.top+drawVars.bottom);
+//          adjustPorts(gIcon.stockVars, gIcon.adjustHoriz, gIcon.adjustVert);
+//          adjustPorts(gIcon.flowVars, gIcon.adjustHoriz, 
+//                      gIcon.adjustVert);
+//
+          cairoSurface->blit();
         }
     }
 
@@ -143,7 +136,9 @@ namespace
       float x, y; // position of this icon
       float left, right; //left & right side of bounding box. Adjusted by this
       float top, bottom; //left & right side of bounding box. Adjusted by this
-      DrawVars(cairo_t* cairo, float x, float y): cairo(cairo), x(x), y(y) {}
+      float zoomFactor;
+      DrawVars(cairo_t* cairo, float x, float y, float zoomFactor): 
+        cairo(cairo), x(x), y(y), zoomFactor(zoomFactor) {}
       
       void operator()(const GodleyIcon::Variables& vars)
       {
@@ -153,8 +148,9 @@ namespace
             cairo_save(cairo);
             const VariableBase& vv=**v;
             // coordinates of variable within the cairo context
-            cairo_translate(cairo, vv.x()-x, vv.y()-y);
-            RenderVariable rv(*v, cairo);
+            cairo_translate(cairo, (vv.x()-x), (vv.y()-y));
+            cairo_scale(cairo, zoomFactor, zoomFactor);
+            RenderVariable rv(*v, cairo, zoomFactor, zoomFactor);
             rv.draw();
             cairo_restore(cairo);
             // adjust bounding box
@@ -267,9 +263,10 @@ namespace
     for (GodleyIcon::Variables::const_iterator v=vars.begin(); v!=vars.end(); ++v)
       {
         RenderVariable rv(*v);
-        h+=rv.height();
+        h+=2*rv.height();
         if (h>height) height=h;
-        if (rv.width()>width) width=rv.width();
+        float w=2*rv.width()+2;
+        if (w>width) width=w;
       }
   }
 }
@@ -319,31 +316,35 @@ void GodleyIcon::update()
         }
 
   // determine height of variables part of icon
-  float height=0, flowVarWidth=0, stockVarWidth=0;
-  //  accumulateWidthHeight(stockVars, height, stockVarWidth);
-  accumulateWidthHeight(flowVars, height, flowVarWidth);
+  float height=0;
+  stockMargin=0;
+  flowMargin=0;
+  accumulateWidthHeight(stockVars, height, stockMargin);
+  accumulateWidthHeight(flowVars, height, flowMargin);
+  iconSize=max(100.0, 1.8*height);
 
-  scale=max(0.5f, height/60);
-  float x=-80*scale + this->x();
-  float y=-36*scale + this->y();
+  // position of margin in absolute canvas coordinate
+  float x= this->x() - 0.5*(0.8*iconSize-flowMargin)*zoomFactor();
+  float y= this->y() - 0.37*iconSize*zoomFactor();
   for (Variables::iterator v=flowVars.begin(); v!=flowVars.end(); ++v)
     {
       // right justification
       RenderVariable rv(*v);
-      const_cast<VariablePtr&>(*v)->MoveTo(x-rv.width(),y);
-      y+=2*RenderVariable(*v).height();
+      const_cast<VariablePtr&>(*v)->MoveTo(x-rv.width()*zoomFactor(),y);
+      y+=2*RenderVariable(*v).height()*zoomFactor();
     }
-  x=-80*scale + this->x();
-  y=90*scale + this->y();
+  x=this->x() - 0.5*(0.85*iconSize-flowMargin)*zoomFactor();
+  y=this->y() + 0.5*(iconSize-stockMargin)*zoomFactor();
+
   for (Variables::iterator v=stockVars.begin(); v!=stockVars.end(); ++v)
     {
       // top justification at bottom of icon
       RenderVariable rv(*v);
       //OK because we're not changing variable name
       VariableBase& vv=const_cast<VariableBase&>(**v); 
-      vv.MoveTo(x,y+rv.width());
+      vv.MoveTo(x,y+rv.width()*zoomFactor());
       vv.rotation=90;
-      x+=2*rv.height();
+      x+=2*rv.height()*zoomFactor();
     }
 }
 
@@ -381,7 +382,7 @@ void GodleyIcon::MoveTo(float x1, float y1)
 
 int GodleyIcon::Select(float x, float y)
 {
-  x+=2*adjustHoriz; y+=2*adjustVert; //account for icon centering offset
+  //  x+=2*adjustHoriz; y+=2*adjustVert; //account for icon centering offset
   for (Variables::iterator v=flowVars.begin(); v!=flowVars.end(); ++v)
     if (RenderVariable(*v).inImage(x,y)) 
       return _minsky->variables.getIDFromVariable(*v);
@@ -395,5 +396,36 @@ void GodleyIcon::setMinsky(Minsky& m)
 {
   _minsky=&m;
 }
+
+void GodleyIcon::zoom(float xOrigin, float yOrigin,float factor) {
+  minsky::zoom(m_x, xOrigin, factor);
+  minsky::zoom(m_y, yOrigin, factor);
+  m_zoomFactor*=factor;
+  update();
+  array<int> pp=ports();
+//  for (int i=0; i<pp.size(); ++i)
+//    {
+//      Port& p=portManager().ports[pp[i]];
+//      float x=p.x(), y=p.y();
+//      ::zoom(x, xOrigin, factor);
+//      ::zoom(y, yOrigin, factor);
+//      portManager().movePortTo(pp[i], x, y);
+//    }
+//  for (Variables::iterator v=flowVars.begin(); v!=flowVars.end(); ++v)
+//    {
+//      (*v)->visible=true;
+//      (*v)->zoom(xOrigin,yOrigin,factor);
+//      (*v)->visible=false;
+//    }
+//  for (Variables::iterator v=stockVars.begin(); v!=stockVars.end(); ++v)
+//    {
+//      // gnargh! - need to temporarily make the icons visible to get
+//      // zooming to work...
+//      (*v)->visible=true;
+//      (*v)->zoom(xOrigin,yOrigin,factor);
+//      (*v)->visible=false;
+//    }
+}
+
 
 static int dum=(initVec().push_back(registerItem), 0);

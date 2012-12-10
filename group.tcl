@@ -31,7 +31,8 @@ proc newGroupItem {id} {
     }
     image create photo groupImage$id -width [groupItem.width] -height [groupItem.height]
     .wiring.canvas create group [groupItem.x] [groupItem.y] -image groupImage$id -id $id -xgl $minskyHome/icons/group.xgl -tags "group$id groups"
- 
+    .wiring.canvas lower group$id
+
      setM1Binding groupItem $id group$id
     .wiring.canvas bind group$id <<middleMouse-Motion>> \
         "wires::extendConnect \[closestOutPort %x %y \] group$id %x %y"
@@ -78,6 +79,8 @@ proc groupContext {id x y} {
     .wiring.context add command -label "Resize" -command "group::resize $id"
     .wiring.context add command -label "Copy" -command "group::copy $id"
     .wiring.context add command -label "Flip" -command "group::flip $id"
+    .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.groupItems.@elem $id].*"
+
 }
 
 toplevel .wiring.editGroup
@@ -161,6 +164,7 @@ namespace eval group {
         set ry [expr $scalex*sin($angle)+$scaley*cos($angle)]
         groupItem.width [expr int(ceil(abs($rx*[groupItem.width])))]
         groupItem.height [expr int(ceil(abs($ry*[groupItem.height])))]
+        groupItem.computeDisplayZoom
         groupItem.set
         .wiring.canvas delete group$id
         newGroupItem $id

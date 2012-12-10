@@ -187,6 +187,15 @@ void VariableManager::deleteWire(int port)
     }
 }
 
+int VariableManager::getVariableIDFromPort(int port) const
+{
+  PortMap::const_iterator it=portToVariable.find(port);
+  if (it!=portToVariable.end())
+    return it->second;
+  else
+    return -1;
+}
+
 VariablePtr VariableManager::getVariableFromPort(int port) const
 {
   PortMap::const_iterator it=portToVariable.find(port);

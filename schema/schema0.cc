@@ -112,8 +112,8 @@ namespace schema0
   GodleyIcon::operator minsky::GodleyIcon() const
   {
     minsky::GodleyIcon g;
-    g.adjustHoriz=adjustHoriz;
-    g.adjustVert=adjustVert;
+//    g.adjustHoriz=adjustHoriz;
+//    g.adjustVert=adjustVert;
     g.MoveTo(x, y);
     g.scale=scale;
     asg(g.flowVars, flowVars);
@@ -125,14 +125,40 @@ namespace schema0
   GroupIcon::operator minsky::GroupIcon() const
   {
     minsky::GroupIcon g;
+    minsky::SchemaHelper::setPrivates
+      (g, operations, variables, wires, inVariables, outVariables);
     g.MoveTo(x,y);
-    minsky::SchemaHelper::setPrivates(g, operations, variables, wires, m_ports);
     g.name=name;
     g.width=width;
     g.height=height;
     g.rotation=rotation;
     return g;
   }
+
+  void GroupIcon::updateEdgeVariables(const VariableManager& vm)
+  {
+    inVariables.clear();
+    outVariables.clear();
+    // for each edge port, we need to determine the edgeVariable
+    // associated with it, and whether it is an input or output edge
+    // variable
+    for (size_t p=0; p<m_ports.size(); ++p)
+      {
+        map<int,int>::const_iterator vid=vm.portToVariable.find(m_ports[p]);
+        if (vid!=vm.portToVariable.end())
+          {
+            VariableManager::Variables::const_iterator v=vm.find(vid->second);
+            if (v!=vm.end())
+              {
+                if (v->second.m_inPort==m_ports[p])
+                  inVariables.push_back(v->first);
+                else if (v->second.m_outPort==m_ports[p])
+                  outVariables.push_back(v->first);
+              }
+          }
+      }
+  }
+
 
   PlotWidget::operator minsky::PlotWidget() const
   {
@@ -220,6 +246,9 @@ namespace schema0
           asg(gi.stockVars, gicon.stockVars);
         }
     
+    for (size_t i=0; i<groupItems.size(); ++i)
+      groupItems[i].updateEdgeVariables(variables);
+
   }
 
 }

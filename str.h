@@ -1,7 +1,14 @@
+#ifndef STR_H
+#define STR_H
 #include <string>
+#include <sstream>
 namespace minsky
 {
   /// utility function to create a string representation of a numeric type
-  string str(long x);
-  string str(double x);
+  template <class T> string str(T x) {
+    ostringstream s;
+    s<<x;
+    return s.str();
+  }
 }
+#endif

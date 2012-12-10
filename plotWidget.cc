@@ -124,6 +124,7 @@ namespace
   {
     if (cairoSurface)
       {
+        xScale=yScale=pw.zoomFactor();
         double w=origWidth*xScale, h=origHeight*yScale;
 
         if (w!=cairoSurface->width() || h!=cairoSurface->height())

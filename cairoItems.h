@@ -68,6 +68,8 @@ namespace minsky
                    double xScale=1, double yScale=1);
     /// render the cairo image
     void draw();
+    /// compute and update port locations
+    void updatePortLocs();
     /// half width of unrotated image
     float width() const {return w;}
     /// half height of unrotated image

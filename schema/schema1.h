@@ -94,7 +94,7 @@ namespace schema1
     string name;
     Group() {}
     Group(int id, const minsky::GroupIcon& g): 
-      Item(id), ports(toVector(g.ports())), name(g.name) {}
+      Item(id), ports(g.ports()), name(g.name) {}
   };
 
   struct Godley: public Item
@@ -255,7 +255,8 @@ namespace schema1
     int schemaVersion;
     MinskyModel model;
     vector<shared_ptr<Layout> > layout;
-    Minsky(): schemaVersion(-1) {} // schemaVersion defined on read in
+    float zoomFactor;
+    Minsky(): schemaVersion(-1), zoomFactor(1) {} // schemaVersion defined on read in
     Minsky(const minsky::Minsky& m);
 
     operator minsky::Minsky() const;

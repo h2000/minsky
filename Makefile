@@ -32,7 +32,7 @@ MODELS=minsky
 # custom one that picks up its scripts from a relative library
 # directory
 MODLINK=$(LIBMODS:%=$(ECOLAB_HOME)/lib/%)
-OTHER_OBJS=tclmain.o godley.o portManager.o variable.o variableManager.o variableValue.o operation.o plotWidget.o cairoItems.o XGLItem.o godleyIcon.o groupIcon.o equations.o schema0.o schema1.o
+OTHER_OBJS=tclmain.o godley.o portManager.o wire.o variable.o variableManager.o variableValue.o operation.o plotWidget.o cairoItems.o XGLItem.o godleyIcon.o groupIcon.o equations.o schema0.o schema1.o inGroupTest.o
 MODLINK+=$(OTHER_OBJS)
 FLAGS+=-Ischema -DTR1 $(OPT) -UECOLAB_LIB -DECOLAB_LIB=\"library\"
 
@@ -85,8 +85,8 @@ include $(MODELS:=.d) $(OTHER_OBJS:.o=.d)
 include schema/schema0.d
 
 # ecolab doesn't normally provide XML definitions of things
-plot.xmlcd: $(ECOLAB_HOME)/include/plot.h
-	$(CLASSDESC) -nodef -I $(CDINCLUDE) -I $(ECOLAB_HOME)/include  -i $< xml_pack xml_unpack >>$@
+#plot.xmlcd: $(ECOLAB_HOME)/include/plot.h
+#	$(CLASSDESC) -nodef -I $(CDINCLUDE) -I $(ECOLAB_HOME)/include  -i $< xml_pack xml_unpack >>$@
 
 tests: $(MODELS)
 	cd test; $(MAKE)

@@ -44,7 +44,7 @@ string OperationBase::OpName(int op)
 float OperationBase::x() const
 {
   if (group>=0)
-    return m_x + minsky::minsky.groupItems[group].x();
+    return m_x + minsky::minsky.groupItems[group].iconCentre();
   else
     return m_x;
 }
@@ -408,4 +408,16 @@ bool IntOp::toggleCoupled()
       v->visible=false;
     }
   return coupled();
+}
+
+void OperationBase::zoom(float xOrigin, float yOrigin,float factor)
+{
+  if (visible)
+    {
+      float xx=x(), yy=y();
+      ::zoom(xx,xOrigin,factor);
+      ::zoom(yy,yOrigin,factor);
+      MoveTo(xx,yy);
+      zoomFactor*=factor;
+    }
 }

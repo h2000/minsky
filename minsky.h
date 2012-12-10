@@ -40,6 +40,7 @@ using namespace classdesc;
 #include "version.h"
 #include "variable.h"
 #include "equations.h"
+#include "inGroupTest.h"
 
 namespace minsky
 {
@@ -165,15 +166,13 @@ namespace minsky
     (map<int,VariableValue>& inputFrom, int port, const VariableValue& v, 
      const map<int,int>& operationIdFromInputsPort);
 
+    float m_zoomFactor;
+
   public:
 
     GodleyTable godley; // deprecated - needed for Minsky.1 capability
     typedef std::map<int, GodleyIcon> GodleyItems;
     GodleyItems godleyItems;
-
-    // including a reference here ensures serialisation
-    //  PortManager::Ports& ports;
-    //  PortManager::Wires& wires;
 
     Operations operations;
     VariableManager variables;
@@ -194,6 +193,7 @@ namespace minsky
     GetterSetter<string, PlotWidget> plot;
     GetterSetter<int, GodleyIcon> godleyItem;
     GetterSetter<int, GroupIcon> groupItem;
+
 
     Minsky();
     ~Minsky() {clearAll();} //improve shutdown times
@@ -285,11 +285,23 @@ namespace minsky
     int group(TCL_args args);
     void ungroup(TCL_args args);
     
+    InGroup groupTest;
+    void initGroupList() {groupTest.initGroupList(groupItems);}
+    float localZoomFactor(TCL_args args) const {
+      int g=groupTest.containingGroup(args);
+      if (g==-1) return zoomFactor(); //global zoom factor
+      else return groupItems.find(g)->second.localZoom();
+    }
 
-    /// add any newly created Godley variables. Variables removed from
-    /// the Godley table will still exist with the system until deleted
-    /// on the wiring canvas
-    //  void updateGodleyVariables();
+    /// current state of zoom
+    float zoomFactor() const {return m_zoomFactor;}
+    /// zoom by \a factor, scaling all widget's coordinates, using (\a
+    /// xOrigin, \a yOrigin) as the origin of the zoom transformation
+    void Zoom(float xOrigin, float yOrigin,float factor);
+    void zoom(TCL_args args) {Zoom(args[0],args[1],args[2]);}
+    /// set scaling factors in all widgets, without adjusting
+    /// coordinates, for use in reloading the model
+    void setZoom(float);
 
     /// evaluate the Godley table (update stock variables according to
     /// the current value of the internal variables

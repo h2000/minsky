@@ -65,6 +65,7 @@ namespace
           cairo=cairoSurface->cairo();
           string label;
           cairo_reset_clip(cairo);
+          xScale=yScale=op->zoomFactor;
           initMatrix();
           cairo_select_font_face(cairo, "sans-serif", CAIRO_FONT_SLANT_ITALIC,
                                  CAIRO_FONT_WEIGHT_NORMAL);
@@ -106,6 +107,7 @@ namespace
         {
           cairoSurface->clear();
           cairo_t *cairo=cairoSurface->cairo();
+          xScale=yScale=var->zoomFactor;
 
           cairo_reset_clip(cairo);
           initMatrix();
@@ -487,8 +489,8 @@ void RenderOperation::draw()
 
   cairo_save(cairo);
   cairo_identity_matrix(cairo);
-  cairo_scale(cairo,xScale,yScale);
   cairo_translate(cairo, op->x(), op->y());
+  cairo_scale(cairo,xScale,yScale);
   cairo_rotate(cairo, angle);
   cairo_user_to_device(cairo, &x0, &y0);
   cairo_user_to_device(cairo, &x1, &y1);
@@ -563,21 +565,23 @@ void RenderVariable::draw()
       cairo_clip_preserve(cairo);
       cairo_stroke(cairo);
   
-      // calculate port coordinates in current rotation
-      double x0=w, y0=0, x1=-w+2, y1=0;
-      cairo_save(cairo);
-      cairo_identity_matrix(cairo);
-      cairo_scale(cairo, xScale, yScale);
-      cairo_rotate(cairo, angle);
-      cairo_user_to_device(cairo, &x0, &y0);
-      cairo_user_to_device(cairo, &x1, &y1);
-      cairo_restore(cairo);
-
-     // set the ports coordinates
-      portManager().movePortTo(var->outPort(), var->x()+x0, var->y()+y0);
-      portManager().movePortTo(var->inPort(), var->x()+x1, var->y()+y1);
+      updatePortLocs();
     }
 }
+
+void RenderVariable::updatePortLocs()
+{
+  double angle=var->rotation * M_PI / 180.0;
+  double x0=w, y0=0, x1=-w+2, y1=0;
+  double sa=sin(angle), ca=cos(angle);
+  portManager().movePortTo(var->outPort(), 
+                           var->x()+xScale*(x0*ca-y0*sa), 
+                           var->y()+xScale*(y0*ca+x0*sa));
+  portManager().movePortTo(var->inPort(), 
+                           var->x()+xScale*(x1*ca-y1*sa), 
+                           var->y()+xScale*(y1*ca+x1*sa));
+}
+
 
 bool RenderVariable::inImage(float x, float y)
 {

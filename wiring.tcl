@@ -143,14 +143,17 @@ bind .wiring.canvas <Button-5> {zoom [expr 1.0/1.1]}
 # mouse wheel bindings for pc and aqua
 bind .wiring.canvas <MouseWheel> { if {%D>=0} {zoom [expr 1+.1*%D]} {zoom [expr 1.0/(1+.1*-%D)]} }
 
-set zoomFactor 1
-proc zoom {factor} {
-    global zoomFactor
+bind .wiring.canvas <Alt-Button-1> {
+    tk_messageBox -message "Mouse coordinates [.wiring.canvas canvasx %x] [.wiring.canvas canvasy %y]"
+}
 
-    set zoomFactor [expr $zoomFactor*$factor]
+proc zoom {factor} {
     set x0 [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]]
     set y0 [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]]
-    after idle .wiring.canvas scale all $x0 $y0 $factor $factor
+    disableEventProcessing
+    .wiring.canvas scale all $x0 $y0 $factor $factor
+    minsky.zoom $x0 $y0 $factor
+    enableEventProcessing
 }
 
 .menubar.ops.menu add command -label "Godley Table" -command {addNewGodleyItem [addGodleyTable 10 10]}
@@ -164,6 +167,7 @@ proc placeNewVar {id} {
     global moveOffsvar$id.x moveOffsvar$id.y
     set moveOffsvar$id.x 0
     set moveOffsvar$id.y 0
+    initGroupList
     setInteractionMode 2
 
     bind .wiring.canvas <Enter> "move var $id var$id %x %y"
@@ -220,6 +224,7 @@ proc placeNewOp {opid} {
     global moveOffsop$opid.x moveOffsop$opid.y
     set moveOffsop$opid.x 0
     set moveOffsop$opid.y 0
+    initGroupList
     setInteractionMode 2
 
     drawOperation $opid
@@ -272,6 +277,7 @@ proc moveSet {item id tag x y} {
     global moveOffs$item$id.x moveOffs$item$id.y
     set moveOffs$item$id.x [expr $x-[$item.x]]
     set moveOffs$item$id.y [expr $y-[$item.y]]
+    initGroupList
 }
 
 proc move {item id tag x y} {
@@ -280,6 +286,7 @@ proc move {item id tag x y} {
     set x [expr $x-[set moveOffs$item$id.x]]
     set y [expr $y-[set moveOffs$item$id.y]]
     $item.moveTo [.wiring.canvas canvasx $x] [.wiring.canvas canvasy $y]
+    $item.zoomFactor [localZoomFactor [$item.x] [$item.y]]
     $item.set $id
     global updateItemPositionSubmitted
     if {!$updateItemPositionSubmitted} {
@@ -628,11 +635,6 @@ proc updateCanvas {} {
 # centre canvas
     .wiring.canvas xview moveto 0.5
     .wiring.canvas yview moveto 0.5
-    foreach var [variables.visibleVariables] {
-        newVar $var
-
-    }
-
     setInteractionMode
 
     # groups need to be done first, as they adjust port positions (hence wires)
@@ -640,18 +642,24 @@ proc updateCanvas {} {
         newGroupItem $g
     }
 
+    foreach var [variables.visibleVariables] {
+        var.get $var
+        if {[var.group]==-1} {newVar $var}
+    }
+
     # add operations
     foreach o [operations.visibleOperations] {
         op.get $o
-        drawOperation $o
+        if {[op.group]==-1} {drawOperation $o}
         if {[op.name]=="constant"} {drawSlider $o [op.x] [op.y]}
     }
 
     # add wires to canvas
     foreach w [visibleWires] {
-#        set wire [wires.@elem $w]
-        set id [createWire [wireCoords $w]]
-        newWire $id $w 
+        if {[llength [.wiring.canvas find withtag wire$w]]==0} {
+            set id [createWire [wireCoords $w]]
+            newWire $id $w 
+        }
     }
 
     foreach im [plots.plots.#keys] {
@@ -720,6 +728,7 @@ proc contextMenu {item x y} {
             .wiring.context add command -label "Edit" -command "editItem $id $tag"
             .wiring.context add command -label "Copy" -command "copyVar $id"
             .wiring.context add command -label "Flip" -command "rotateVar $id 180; flip_default"
+            .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.variables.@elem $id].*"
         }
         "operations" {
             set tag [lindex $tags [lsearch -regexp $tags {op[0-9]+}]]
@@ -746,6 +755,7 @@ proc contextMenu {item x y} {
             if {[op.name]=="integrate"} {
                 .wiring.context add command -label "Toggle var binding" -command "toggleCoupled $id"
             }
+            .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.operations.@elem $id].*"
         }
         "wires" {
             set tag [lindex $tags [lsearch -regexp $tags {wire[0-9]+}]]
@@ -753,6 +763,7 @@ proc contextMenu {item x y} {
             .wiring.context delete 0 end
             .wiring.context add command -label "Straighten" -command "straightenWire $id"
             .wiring.context add command -label "Delete" -command "deleteItem $id $tag"
+            .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.wires.@elem $id].*"
         }
         "plots" {
             set tag [lindex $tags [lsearch -regexp $tags {plot#.+}]]
@@ -760,6 +771,7 @@ proc contextMenu {item x y} {
             .wiring.context delete 0 end
             .wiring.context add command -label "Expand" -command "plotDoubleClick $id"
             .wiring.context add command -label "Delete" -command "deletePlot $item $id"
+            .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.plots.plots.@elem $id].*"
         }
         "godleys" {
             set tag [lindex $tags [lsearch -regexp $tags {godley[0-9]+}]]
@@ -767,6 +779,7 @@ proc contextMenu {item x y} {
             .wiring.context delete 0 end
             .wiring.context add command -label "Open Godley Table" -command "openGodley $id"
             .wiring.context add command -label "Delete Godley Table" -command "deleteItem $id $tag"
+            .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.godleys.@elem $id].*"
         }
         "group" {
             set tag [lindex $tags [lsearch -regexp $tags {group[0-9]+}]]

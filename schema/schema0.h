@@ -166,8 +166,11 @@ namespace schema0
     operator minsky::GodleyIcon() const;
   };
 
-  struct GroupIcon
+  class GroupIcon
   {
+    std::vector<int> inVariables, outVariables;
+    CLASSDESC_ACCESS(GroupIcon);
+  public:
     std::vector<int> operations;
     std::vector<int> variables;
     std::vector<int> wires;
@@ -180,6 +183,8 @@ namespace schema0
 
     GroupIcon(): width(100), height(100), rotation(0) {}
     operator minsky::GroupIcon() const;
+
+    void updateEdgeVariables(const VariableManager& vm);
 
   };
 

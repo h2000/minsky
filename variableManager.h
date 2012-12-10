@@ -98,6 +98,11 @@ namespace minsky
     bool addWire(int from, int to);
     /// deletes wire 
     void deleteWire(int port);
+    /// return ID for variable owning \a port. Returns -1 if no such
+    /// variable is registered.
+    int getVariableIDFromPort(int port) const;
+    /// return reference to variable owning \a port. Returns a default
+    /// constructed VariablePtr if no such variable is registered
     VariablePtr getVariableFromPort(int port) const;
     VariableValue& getVariableValue(const string& name) {
       VariableValues::iterator v=values.find(name);
@@ -123,6 +128,7 @@ namespace minsky
       else return i->second;
     }
       
+
     /// reallocates variables in ValueVector, and set value back to init
     void reset();
 

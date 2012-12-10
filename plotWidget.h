@@ -25,7 +25,7 @@
 #include "variable.h"
 #include "portManager.h"
 #include "variableManager.h"
-using namespace ecolab;
+#include "zoom.h"
 
 #include "port.h"
 
@@ -35,6 +35,7 @@ namespace minsky
   class PlotWidget: public ecolab::Plot
   {
     float m_x, m_y;
+    float m_zoomFactor;
     CLASSDESC_ACCESS(PlotWidget);
     friend class SchemaHelper;
   public:
@@ -58,19 +59,29 @@ namespace minsky
     float y() const {return m_y;}
     /// @}
 
-    PlotWidget(): displayNTicks(3), displayFontSize(3) {grid=true;}
+    PlotWidget(): m_x(0), m_y(0), m_zoomFactor(1), 
+                  displayNTicks(3), displayFontSize(3) {grid=true;}
 
     void MoveTo(float x, float y);
     void moveTo(TCL_args args) {MoveTo(args[0],args[1]);}
     void addPlotPt(double t); ///< add another plot point
     /// connect variable \a var to port \a port. 
     void connectVar(const VariableValue& var, unsigned port);
-    //  void disconnectPen(unsigned pen);
     void redraw(); // redraw plot using current data
 
-    // set autoscaling
+    /// set autoscaling
     void autoScale() {xminVar=xmaxVar=yminVar=ymaxVar=VariableValue();}
     void scalePlot();
+
+    /// adjust coordinates and zoomFactor, where (\a xOrigin, \a
+    /// yOrigin) is the origin of the zooming
+    void zoom(float xOrigin, float yOrigin, float factor) {
+      minsky::zoom(m_x, xOrigin, factor);
+      minsky::zoom(m_y, yOrigin, factor);
+      m_zoomFactor*=factor;
+    }
+    void setZoom(float factor) {m_zoomFactor=factor;}
+    float zoomFactor() const {return m_zoomFactor;}
   };
 
   /// global register of plot widgets, indexed by the item image name

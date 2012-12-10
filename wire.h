@@ -20,7 +20,6 @@
 #define WIRE_H
 
 #include <arrays.h>
-//using ecolab::array_ns::array;
 
 namespace minsky
 {
@@ -39,6 +38,9 @@ namespace minsky
          const ecolab::array<float>& coords=ecolab::array<float>(), 
          bool visible=true): 
       from(from), to(to), coords(coords), visible(visible) {}
+    /// zoom by \a factor, scaling all widget's coordinates, using (\a
+    /// xOrigin, \a yOrigin) as the origin of the zoom transformation
+    void zoom(float xOrigin, float yOrigin, float factor);
   };
 }
 #include "wire.cd"

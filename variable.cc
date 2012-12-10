@@ -92,7 +92,7 @@ template <> int Variable<VariableBase::integral>::numPorts() const
 float VariableBase::x() const
 {
   if (group>=0)
-    return m_x + minsky::minsky.groupItems[group].x();
+    return m_x + minsky::minsky.groupItems[group].iconCentre();
   else
     return m_x;
 }
@@ -133,4 +133,16 @@ array<int> VariableBase::ports() const
   return r;
 }
 
+
+void VariableBase::zoom(float xOrigin, float yOrigin,float factor)
+{
+  if (visible)
+    {
+      float xx=x(), yy=y();
+      ::zoom(xx,xOrigin,factor);
+      ::zoom(yy,yOrigin,factor);
+      MoveTo(xx,yy);
+      zoomFactor*=factor;
+    }
+}
 

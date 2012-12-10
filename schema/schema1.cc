@@ -135,7 +135,8 @@ namespace schema1
               c->sliderMax=l.sliderMax;
               c->sliderStep=l.sliderStep;
             }
-          o->MoveTo(l.x, l.y);
+          o->m_x=l.x;
+          o->m_y=l.y;
         }
       return o;
     }
@@ -155,7 +156,8 @@ namespace schema1
           int out=v1.ports.size()>0? v1.ports[0]: -1;
           int in=v1.ports.size()>1? v1.ports[1]: -1;
           SchemaHelper::setPrivates(*v, out, in);
-          v->MoveTo(l.x, l.y);
+          v->m_x=l.x;
+          v->m_y=l.y;
         }
       return v;
     }
@@ -332,6 +334,8 @@ namespace schema1
     c.populate(m.godleyItems, model.godleys);
     c.populate(m.groupItems, model.groups);
 
+    m.setZoom(zoomFactor);
+
     // separate the group item list into ports, wires, operations and
     // variables. Then set the Minsky model group item list to these
     // appropriate sublists.
@@ -350,10 +354,32 @@ namespace schema1
           else if (m.variables.count(*item))
             vars.push_back(*item);
         minsky::GroupIcon& gi=m.groupItems[g->id];
-        SchemaHelper::setPrivates(gi, ops, vars, wires, ports);
+
+        vector<int> inVars, outVars;
+        for (size_t i=0; i<ports.size(); ++i)
+          {
+            int varId=m.variables.getVariableIDFromPort(ports[i]);
+            if (varId>=0)
+              if (m.ports[ports[i]].input)
+                inVars.push_back(varId);
+              else
+                outVars.push_back(varId);
+          }
+        SchemaHelper::setPrivates(gi, ops, vars, wires, inVars, outVars);
         for (vector<int>::const_iterator o=ops.begin(); o!=ops.end(); ++o)
           m.operations[*o]->group=g->id;
-        //        gi.MoveTo(gi.x(), gi.y());
+        for (vector<int>::const_iterator v=vars.begin(); v!=vars.end(); ++v)
+          m.variables[*v]->group=g->id;
+        float zoomRatio = zoomFactor/gi.computeDisplayZoom();
+        // compute zoom factors of contained variables etc, if visible
+        for (vector<int>::const_iterator o=ops.begin(); o!=ops.end(); ++o)
+          m.operations[*o]->setZoom(zoomRatio);
+        
+        set<int> eVars(gi.edgeSet());
+        for (vector<int>::const_iterator v=vars.begin(); v!=vars.end(); ++v)
+          if (eVars.count(*v)==0)
+            m.variables[*v]->setZoom(zoomRatio);;
+        
       }
 
     c.populate(m.plots, model.plots);
@@ -369,6 +395,7 @@ namespace schema1
   Minsky::Minsky(const minsky::Minsky& m)
   {
     schemaVersion = version;
+    zoomFactor=m.zoomFactor();
 
     int id=0; // we're renumbering items
     ItemMap portMap; // map old ports ids to the new ones

@@ -76,21 +76,14 @@ namespace minsky
 
     static void setPrivates
     (minsky::GroupIcon& g, const vector<int>& ops, const vector<int>& vars,
-     const vector<int>& wires, const ecolab::array<int>& ports)
+     const vector<int>& wires, const vector<int>& inVariables, 
+     const vector<int>& outVariables)
     {
       g.m_operations=ops;
       g.m_variables=vars;
       g.m_wires=wires;
-      g.m_ports=ports;
-    }
-
-    static void setPrivates
-    (minsky::GroupIcon& g, const vector<int>& ops, const vector<int>& vars,
-     const vector<int>& wires, const vector<int>& ports)
-    {
-      ecolab::array<int> p;
-      p=toArray(ports);
-      setPrivates(g,ops,vars,wires,p);
+      g.inVariables=inVariables;
+      g.outVariables=outVariables;
     }
 
     static void setPrivates(minsky::VariableManager& vm, 
