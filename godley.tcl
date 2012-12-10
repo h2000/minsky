@@ -21,7 +21,7 @@
 
 set globals(godley_tables) {}
 		    
-set fp [open "accountingRules" r]
+set fp [open "$minskyHome/accountingRules" r]
 set accountingRules [read $fp]
 close $fp
 
