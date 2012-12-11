@@ -168,7 +168,7 @@ if {$classicMode} {
 
 menubutton .menubar.options -menu .menubar.options.menu -text Options -underline 0
 menu .menubar.options.menu
-.menubar.options.menu add command -label "Prefrences" -command {
+.menubar.options.menu add command -label "Preferences" -command {
     foreach var [array names preferences_input] {
 	set preferences_input($var) $preferences($var)
     }
