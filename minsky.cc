@@ -91,7 +91,7 @@ namespace minsky
   make_model(minsky);
 }
 
-Minsky::Minsky(): edited(true), 
+Minsky::Minsky(): edited(true), m_zoomFactor(1),
                   port(ports), wire(wires), op(operations), 
                   constant(operations), integral(operations), var(variables),
                   value(variables.values), plot(plots.plots), 
@@ -110,6 +110,13 @@ void Minsky::clearAll()
   variables.clear();
   groupItems.clear();
   plots.clear();
+
+  // need also to clear the GetterSetterPtr variables, as these
+  // potentially hold onto objects
+  op.clear();
+  constant.clear();
+  integral.clear();
+  var.clear();
 }
 
 
@@ -222,7 +229,8 @@ void Minsky::DeleteOperation(int opid)
 int Minsky::group(TCL_args args)
 {
   int id=groupItems.empty()? 0: groupItems.rbegin()->first+1;
-  groupItems[id].group(args[0], args[1], args[2], args[3], id);
+  GroupIcon& g=groupItems.insert(make_pair(id, GroupIcon(id))).first->second;
+  g.group(args[0], args[1], args[2], args[3]);
   return id;
 }
 
@@ -238,7 +246,9 @@ int Minsky::CopyGroup(int id)
   GroupIcons::iterator srcIt=groupItems.find(id);
   if (srcIt==groupItems.end()) return -1; //src not found
   int newId=groupItems.rbegin()->first+1;
-  groupItems[newId].copy(srcIt->second);
+  GroupIcon& g=
+    groupItems.insert(make_pair(newId, GroupIcon(newId))).first->second;
+  g.copy(srcIt->second);
   return newId;
 }
 
@@ -816,6 +826,10 @@ void Minsky::Load(const char* filename)
   for (GodleyItems::iterator g=godleyItems.begin(); g!=godleyItems.end(); ++g)
     g->second.update();
 
+  // Don't know why this is needed!!
+  for (GroupIcons::iterator g=groupItems.begin(); g!=groupItems.end(); ++g)
+    g->second.computeDisplayZoom();
+
   edited=true;
 }
 
@@ -862,9 +876,9 @@ void Minsky::setZoom(float factor)
     o->second->setZoom(factor);
   for (VariableManager::iterator v=variables.begin(); v!=variables.end(); ++v)
     v->second->setZoom(factor);
-  for (GodleyItems::iterator g=godleyItems.begin(); g!=godleyItems.end(); ++g)
-    g->second.setZoom(factor);
   for (GroupIcons::iterator g=groupItems.begin(); g!=groupItems.end(); ++g)
+    g->second.setZoom(factor);
+  for (GodleyItems::iterator g=godleyItems.begin(); g!=godleyItems.end(); ++g)
     g->second.setZoom(factor);
   for (Plots::Map::iterator p=plots.plots.begin(); p!=plots.plots.end(); ++p)
     p->second.setZoom(factor);

@@ -70,7 +70,11 @@ ifeq ($(OS),MINGW)
 ifndef DEBUG
 FLAGS+=-mwindows
 endif
+MODLINK+=MinskyLogo.o
 endif
+
+MinskyLogo.o: MinskyLogo.rc icons/MinskyLogo.ico
+	windres -O coff -i $< -o $@
 
 # This rule uses a header file of object descriptors
 $(MODELS:=.o): %.o: %.cc 
@@ -112,11 +116,14 @@ else
 endif
 
 win-dist: all
-	mkdir -p $(WIN_DIST_DIR)
-	cp -r examples icons library windows $(WIN_DIST_DIR)
-	cp -rf /usr/local/lib/tcl8.5 /usr/local/lib/tk8.5 $(WIN_DIST_DIR)/library
-	cp minsky *.tcl *.bat $(WIN_DIST_DIR)
-	cp $(DLLS:%=/bin/%) $(WIN_DIST_DIR)
+	mkdir -p $(WIN_DIST_DIR)/Minsky
+	cp -r examples icons library windows $(WIN_DIST_DIR)/Minsky
+	cp -rf /usr/local/lib/tcl8.5 /usr/local/lib/tk8.5 $(WIN_DIST_DIR)/Minsky/library
+	cp minsky.exe *.tcl *.bat $(WIN_DIST_DIR)/Minsky
+	cp $(DLLS:%=/bin/%) $(WIN_DIST_DIR)/Minsky
+	cp accountingRules $(WIN_DIST_DIR)/Minsky
+	sh makeMsi.sh
+	cp minsky.msi $(WIN_DIST_DIR)
 
 mac-dist:
 # build objects in 32 bit mode, using custom static libraries
@@ -133,6 +140,8 @@ mac-dist:
 	cp -r $(HOME)/usr/lib/tcl8.5 $(HOME)/usr/lib/tk8.5 $(MAC_DIST_DIR)/library
 	cp $(HOME)/usr/lib/libTktable2.11.dylib $(MAC_DIST_DIR)/library
 	cp -r icons $(MAC_DIST_DIR)
+	pkgbuild --root minsky.app --install-location /Applications/Minsky.app --identifier Minsky minsky.pkg
+	cp accountingRules $(MAC_DIST_DIR)
 
 checkMissing:
 	sh test/checkMissing.sh

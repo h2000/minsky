@@ -65,9 +65,9 @@ void InGroup::initGroupList(const std::map<int, GroupIcon>& g)
   cells.resize(int(sqrtNoGroups+1), 
                std::vector<std::set<Cell> >(int(sqrtNoGroups+1)));
   for (vector<Cell>::const_iterator i=rects.begin(); i!=rects.end(); ++i)
-    for (float x=i->x0; x<i->x1; x+=xBinSz)
-      for (float y=i->y0; y<i->y1; y+=yBinSz)
-        cells[int(x/xBinSz)][int(y/yBinSz)].insert(*i);
+    for (float x=i->x0; x<(int((i->x1-xmin)/xBinSz)+1)*xBinSz+xmin; x+=xBinSz)
+      for (float y=i->y0; y<(int((i->y1-ymin)/yBinSz)+1)*yBinSz+ymin; y+=yBinSz)
+        cells[int((x-xmin)/xBinSz)][int((y-ymin)/yBinSz)].insert(*i);
 }
 
 
@@ -80,7 +80,7 @@ int InGroup::ContainingGroup(float x, float y) const
   /// rectangles are binned into cells of size (xBinSz, yBinSz),
   /// lookup searches linearly over cell contents, sorted by rectangle
   /// size
-  int xi=(x-xmin)/xBinSz, yi=(y=ymin)/yBinSz;
+  int xi=(x-xmin)/xBinSz, yi=(y-ymin)/yBinSz;
   for (set<Cell>::const_iterator i=cells[xi][yi].begin(); i!=cells[xi][yi].end(); ++i)
     if (i->inRect(x,y))
       return i->id;

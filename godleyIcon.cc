@@ -75,7 +75,6 @@ namespace
           if (!gIcon.table.title.empty())
             {
               cairo_save(cairo);
-              //cairo_identity_matrix(cairo);
               initMatrix();
               cairo_move_to(cairo,0,0);
               cairo_select_font_face
@@ -94,38 +93,12 @@ namespace
           
 
           // render the variables
-          //          initMatrix();
           cairo_identity_matrix(cairo);
           cairo_translate(cairo,0.5*cairoSurface->width(),0.5*cairoSurface->height());
           DrawVars drawVars(cairo, gIcon.x(), gIcon.y(), gIcon.zoomFactor());
-//          drawVars.left = -0.6*gIcon.scale*nominal_width;
-//          drawVars.right = -drawVars.left;
-//          drawVars.top = -0.55*gIcon.scale*nominal_width;
-//          drawVars.bottom = -drawVars.top;
           drawVars(gIcon.flowVars); 
           drawVars(gIcon.stockVars); 
 
-//         width=xScale*m_scale*(drawVars.right-drawVars.left);
-//         height=yScale*m_scale*(drawVars.bottom-drawVars.top);
-//         double x=(0.5*cairoSurface->width()+xScale*m_scale*drawVars.left);
-//         double y=(0.5*cairoSurface->height()+yScale*m_scale*drawVars.top);
-//         
-//         if (x+width>cairoSurface->width() || 
-//             y+height>cairoSurface->height() ||
-//             x<0|| y<0)
-//           {
-//             //              resize(x+width+100, y+height+100);
-//             resize(2*cairoSurface->width(), 2*cairoSurface->height());
-//             draw();
-//           }
-//
-          // adjust positions so ports line up correctly
-//          gIcon.adjustHoriz=0.25*(drawVars.left+drawVars.right);
-//          gIcon.adjustVert=0.25*(drawVars.top+drawVars.bottom);
-//          adjustPorts(gIcon.stockVars, gIcon.adjustHoriz, gIcon.adjustVert);
-//          adjustPorts(gIcon.flowVars, gIcon.adjustHoriz, 
-//                      gIcon.adjustVert);
-//
           cairoSurface->blit();
         }
     }
@@ -168,7 +141,6 @@ namespace
     {
       for (GodleyIcon::Variables::iterator v=vars.begin(); v!=vars.end(); ++v)
             {
-              //              const_cast<Variable&>(*v).move(-2*dx, -2*dy);
               array<int> ports=(*v)->ports();
               for (int i=0; i<ports.size(); ++i)
                 portManager().movePort(ports[i], -2*dx, -2*dy);
@@ -382,7 +354,6 @@ void GodleyIcon::MoveTo(float x1, float y1)
 
 int GodleyIcon::Select(float x, float y)
 {
-  //  x+=2*adjustHoriz; y+=2*adjustVert; //account for icon centering offset
   for (Variables::iterator v=flowVars.begin(); v!=flowVars.end(); ++v)
     if (RenderVariable(*v).inImage(x,y)) 
       return _minsky->variables.getIDFromVariable(*v);
@@ -403,28 +374,6 @@ void GodleyIcon::zoom(float xOrigin, float yOrigin,float factor) {
   m_zoomFactor*=factor;
   update();
   array<int> pp=ports();
-//  for (int i=0; i<pp.size(); ++i)
-//    {
-//      Port& p=portManager().ports[pp[i]];
-//      float x=p.x(), y=p.y();
-//      ::zoom(x, xOrigin, factor);
-//      ::zoom(y, yOrigin, factor);
-//      portManager().movePortTo(pp[i], x, y);
-//    }
-//  for (Variables::iterator v=flowVars.begin(); v!=flowVars.end(); ++v)
-//    {
-//      (*v)->visible=true;
-//      (*v)->zoom(xOrigin,yOrigin,factor);
-//      (*v)->visible=false;
-//    }
-//  for (Variables::iterator v=stockVars.begin(); v!=stockVars.end(); ++v)
-//    {
-//      // gnargh! - need to temporarily make the icons visible to get
-//      // zooming to work...
-//      (*v)->visible=true;
-//      (*v)->zoom(xOrigin,yOrigin,factor);
-//      (*v)->visible=false;
-//    }
 }
 
 

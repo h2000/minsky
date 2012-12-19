@@ -44,6 +44,14 @@ namespace
     printf("port[%d] @ (%f,%f)\n",i,p.x(),p.y());
   }
 
+  // returns true if x==y, within a certain relative constant
+  bool near_eq(double x, double y)
+  {
+    const double epsilon=1e-10;
+    return (abs(x)<epsilon && abs(y)<epsilon) || 
+      abs(x)>=epsilon && abs((x-y)/x)<epsilon;
+  }
+
   struct Rectangle
   {
     float x0, y0, x1, y1;
@@ -85,6 +93,7 @@ namespace
           // sufficient space around the side for the edge variables
           float leftMargin, rightMargin;
           g.margins(leftMargin, rightMargin);
+          leftMargin*=xScale; rightMargin*=xScale;
 
           unsigned width=xScale*g.width, height=yScale*g.height;
           if (width!=cairoSurface->width() || height!=cairoSurface->height())
@@ -92,19 +101,6 @@ namespace
           cairoSurface->clear();
 
 
-          // determine if group icon is big enough to display contents
-          //          bool displayContents = g.displayContents();
-//          {
-//            float x0, x1, y0, y1;
-//            g.contentBounds(x0, y0, x1, y1);
-//            float ww=0.5*(width-(leftMargin+rightMargin)*xScale);
-//            float xcentre=g.x() + 0.5*width - rightMargin - ww;
-//            displayContents = 
-//              1.1*abs(x1-g.iconCentre()) < ww && 
-//              1.1*abs(x0-g.iconCentre()) < ww &&
-//              1.1*abs(y1-g.y()) < 0.5*height && 1.1*abs(y0-g.y()) < 0.5*height;
-//          }
-            
           // draw default group icon
           CairoRenderer renderer(cairoSurface->surface());
           cairo_save(renderer.cairo());
@@ -115,8 +111,8 @@ namespace
           cairo_rotate(renderer.cairo(), angle);
           cairo_translate(renderer.cairo(), -0.5*width, -0.5*height);
               
-          double scalex=double(width-(leftMargin+rightMargin)*xScale)/width;
-          cairo_translate(renderer.cairo(), leftMargin*xScale, 0);
+          double scalex=double(width-leftMargin-rightMargin)/width;
+          cairo_translate(renderer.cairo(), leftMargin, 0);
           cairo_scale(renderer.cairo(), scalex, 1);
           if (g.displayContents())
             {
@@ -137,6 +133,7 @@ namespace
           cairo_identity_matrix(cairo);
           cairo_translate(cairo,0.5*cairoSurface->width(),0.5*cairoSurface->height());
 
+          g.updatePortLocation();
           g.drawEdgeVariables(cairo,xScale,yScale);
           if (displayContents!=g.displayContents())
             {
@@ -182,21 +179,6 @@ namespace
               cairo_restore(cairo);
             }
 
-          // draw the ports
-//          initMatrix();
-//          cairo_rotate(cairo, angle);
-//          array<float> pLoc=g.updatePortLocation();
-//          assert(pLoc.size() == 2*g.numPorts());
-
-          //          for (size_t i=0; i<g.numPorts(); ++i)
-          //            {
-          //             // adjust output ports by the portOffset
-          //              drawTriangle(cairo, pLoc[2*i], pLoc[2*i+1], 
-          //                           palette[i%paletteSz]);
-          //            }
-
-          //          initMatrix();
-
           cairoSurface->blit();
         }
     }
@@ -223,29 +205,31 @@ namespace
             if (!itemExists("op",*i))
               {
                 cmd<<"drawOperation"<<*i<<"\n";
+                //                cmd|".wiring.canvas addtag groupitems"|id|" withtag op"|*i|"\n";
                 OperationBase& op=*minsky::minsky.operations[*i];
                 op.visible=true;
-//                if (op.type()==OperationType::constant)
-//                  cmd<<"drawSlider"<<*i<<op.x()<<op.y()<<"\n";
+                op.zoomFactor=g.localZoom();
+                if (op.type()==OperationType::constant)
+                  cmd<<"drawSlider"<<*i<<op.x()<<op.y()<<"\n";
               }
 
          set<int> edgeVars=g.edgeSet();
          for (i=g.variables().begin(); i!=g.variables().end(); ++i)
            if (edgeVars.count(*i)==0 && !itemExists("var",*i))
              {
-               minsky::minsky.variables[id]->visible=true;
                cmd<<"newVar"<<*i<<"\n";
+               cmd|".wiring.canvas addtag groupitems"|id|" withtag var"|*i|"\n";
+               VariableBase& v=*minsky::minsky.variables[*i];
+               v.visible=true;
+               v.zoomFactor=g.localZoom();
              }
          for (i=g.wires().begin(); i!=g.wires().end(); ++i)
            {
              Wire& w=minsky::minsky.wires[*i];
              w.visible=true;
              cmd << "adjustWire"<<w.to<<"\n";
-//             if (!itemExists("wire",*i))
-//               cmd<<"newWire"<<"[createWire {"<<w.coords<<"}]"<<*i<<"\n";
+             cmd|".wiring.canvas addtag groupitems"|id|" withtag wire"|*i|"\n";
            }
-         // TODO: this is overkill!
-         //         cmd<<"after 1000 updateCanvas\n";
         }
       else
         {
@@ -253,15 +237,24 @@ namespace
           for (; i!=g.operations().end(); ++i)
             {
               cmd|".wiring.canvas delete op"|*i|"\n";
+              cmd|".wiring.canvas delete slider"|*i|"\n";
               OperationBase& op=*minsky::minsky.operations[*i];
-              op.zoom(g.iconCentre(), g.y(), 1/op.zoomFactor);
+              op.m_x/=op.zoomFactor;
+              op.m_y/=op.zoomFactor;
+              op.zoomFactor=1;
               op.visible=false;
             }
+          set<int> eVars=g.edgeSet();
           for (i=g.variables().begin(); i!=g.variables().end(); ++i)
-            {
-              cmd|".wiring.canvas delete var"|*i|"\n";
-              minsky::minsky.variables[*i]->visible=false;
-            }
+            if (!eVars.count(*i))
+              {
+                cmd|".wiring.canvas delete var"|*i|"\n";
+                VariableBase& v=*minsky::minsky.variables[*i];
+                v.m_x/=v.zoomFactor;
+                v.m_y/=v.zoomFactor;
+                v.zoomFactor=1;
+                v.visible=false;              
+              }
           for (i=g.wires().begin(); i!=g.wires().end(); ++i)
             {
               cmd|".wiring.canvas delete wire"|*i|"\n";
@@ -317,18 +310,48 @@ namespace
 #pragma GCC pop
 #endif
 
+  Minsky* l_minsky=NULL;
 }
 
 static int dum=(initVec().push_back(registerItem), 0);
+
+GroupIcon::LocalMinsky::LocalMinsky(Minsky& m) {l_minsky=&m;}
+GroupIcon::LocalMinsky::~LocalMinsky() {l_minsky=NULL;}
+
+Minsky& GroupIcon::minsky()
+{
+  if (l_minsky)
+    return *l_minsky;
+  else
+    return minsky::minsky;
+}
+
+void GroupIcon::deleteContents()
+{
+  //remove any displayed items
+  tclcmd()|"if [winfo exists .wiring.canvas] {"
+    ".wiring.canvas delete groupitems"|id|"}\n"; 
+  // delete all contained objects
+  for (vector<int>::const_iterator i=m_operations.begin(); 
+       i!=m_operations.end(); ++i)
+    minsky().operations.erase(*i);
+  for (vector<int>::const_iterator i=m_variables.begin(); 
+       i!=m_variables.end(); ++i)
+    minsky().variables.erase(*i);
+  for (vector<int>::const_iterator i=m_wires.begin(); 
+       i!=m_wires.end(); ++i)
+    minsky().wires.erase(*i);
+}
+
 
 std::vector<int> GroupIcon::ports() const
 {
   vector<int> r;
   vector<int>::const_iterator i=inVariables.begin();
   for (; i!=inVariables.end(); ++i)
-    r.push_back(variableManager()[*i]->inPort());
+    r.push_back(minsky().variables[*i]->inPort());
   for (i=outVariables.begin(); i!=outVariables.end(); ++i)
-    r.push_back(variableManager()[*i]->outPort());
+    r.push_back(minsky().variables[*i]->outPort());
   return r;
 }
 
@@ -339,24 +362,30 @@ vector<VariablePtr> GroupIcon::edgeVariables() const
   // nb various methods below assume that the input variables come
   // before the output ones.
   for (size_t i=0; i<inVariables.size(); ++i)
-    r.push_back(variableManager()[inVariables[i]]);
+    {
+      r.push_back(minsky().variables[inVariables[i]]);
+      assert(r.back()->type()!=VariableType::undefined);
+    }
   for (size_t i=0; i<outVariables.size(); ++i)
-    r.push_back(variableManager()[outVariables[i]]);
+    {
+      r.push_back(minsky().variables[outVariables[i]]);
+      assert(r.back()->type()!=VariableType::undefined);
+    }
   return r;
 }
 
 void GroupIcon::addEdgeVariable
-(vector<int>& varVector, vector<Wire>& additionalWires, int port, int groupId)
+(vector<int>& varVector, vector<Wire>& additionalWires, int port)
 {
-  VariablePtr v=variableManager().getVariableFromPort(port);
+  VariablePtr v=minsky().variables.getVariableFromPort(port);
   if (v->type()!=VariableBase::undefined)
-    varVector.push_back(variableManager().getIDFromVariable(v));
+    varVector.push_back(minsky().variables.getIDFromVariable(v));
   else
     {
-      varVector.push_back(variableManager().newVariable(str(varVector.size())));
-      VariablePtr v=variableManager()[varVector.back()];
+      varVector.push_back(minsky().variables.newVariable(str(varVector.size())));
+      VariablePtr v=minsky().variables[varVector.back()];
       m_variables.push_back(varVector.back());
-      v->group=groupId;
+      v->group=id;
       v->visible=false;
       Port& p=portManager().ports[port];
       // insert variable into wire
@@ -378,8 +407,9 @@ void GroupIcon::addEdgeVariable
 }
 
 
-void GroupIcon::group(float x0, float y0, float x1, float y1, int groupId)
+void GroupIcon::group(float x0, float y0, float x1, float y1)
 {
+  assert(id>=0);
   Rectangle bbox(x0,y0,x1,y1);
   m_x=0.5*(x0+x1); m_y=0.5*(y0+y1);
 
@@ -405,35 +435,47 @@ void GroupIcon::group(float x0, float y0, float x1, float y1, int groupId)
               w->second.coords=translateWireCoords(w->second.coords,-x(),-y());
             }
           else if (edgePorts.insert(w->second.from).second)
-            addEdgeVariable(outVariables, additionalWires, w->second.from, groupId);
+            addEdgeVariable(outVariables, additionalWires, w->second.from);
         }
       else if (bbox.inside(to.x(), to.y()) && 
                edgePorts.insert(w->second.to).second) 
-        addEdgeVariable(inVariables, additionalWires, w->second.to, groupId);
+        addEdgeVariable(inVariables, additionalWires, w->second.to);
 
     }
 
-  for (Operations::iterator o=minsky::minsky.operations.begin(); 
-       o!=minsky::minsky.operations.end(); ++o)
+  for (Operations::iterator o=minsky().operations.begin(); 
+       o!=minsky().operations.end(); ++o)
     if (bbox.inside(o->second->x(),o->second->y()))
       {
         m_operations.push_back(o->first);
         o->second->move(-x(), -y());
         o->second->visible=false;
-        o->second->group=groupId;
+        o->second->group=id;
+        if (IntOp* i=dynamic_cast<IntOp*>(o->second.get()))
+          if (i->coupled()) 
+            {
+              i->toggleCoupled();
+              // now capture the extra wired that's just been inserted
+              int wid=portManager().WiresAttachedToPort(i->ports()[0])[0];
+              Wire& w=portManager().wires[wid];
+              wiredPorts.insert(w.to);
+              wiredPorts.insert(w.from);
+              m_wires.push_back(wid);
+              w.visible=false;
+            }
         const vector<int>& ports=o->second->ports();
         for (vector<int>::const_iterator p=ports.begin(); p!=ports.end(); ++p)
           if (wiredPorts.insert(*p).second)
             if (p==ports.begin())
-              addEdgeVariable(outVariables, additionalWires, *p, groupId);
+              addEdgeVariable(outVariables, additionalWires, *p);
             else 
-              addEdgeVariable(inVariables, additionalWires, *p, groupId);
+              addEdgeVariable(inVariables, additionalWires, *p);
       }
 
   // track variables already added
   set<int> varsAlreadyAdded(m_variables.begin(), m_variables.end());
-  VariableManager::Variables& vars=minsky::minsky.variables;
-  for (VariableManager::Variables::iterator v=vars.begin(); 
+  VariableManager& vars=minsky().variables;
+  for (VariableManager::iterator v=vars.begin(); 
        v!=vars.end(); ++v)
     if (varsAlreadyAdded.count(v->first)==0 && 
         bbox.inside(v->second->x(),v->second->y()))
@@ -445,12 +487,12 @@ void GroupIcon::group(float x0, float y0, float x1, float y1, int groupId)
         // make variable coordinates relative
         v->second->move(-x(), -y());
         
-        v->second->group=groupId;
+        v->second->group=id;
             
         if (wiredPorts.insert(v->second->inPort()).second)
-          addEdgeVariable(inVariables, additionalWires, v->second->inPort(), groupId);
+          addEdgeVariable(inVariables, additionalWires, v->second->inPort());
         if (wiredPorts.insert(v->second->outPort()).second)
-          addEdgeVariable(inVariables, additionalWires, v->second->outPort(), groupId);
+          addEdgeVariable(inVariables, additionalWires, v->second->outPort());
 
       }
   // now add the additional wires to port manager
@@ -462,6 +504,15 @@ void GroupIcon::group(float x0, float y0, float x1, float y1, int groupId)
   width=floor(0.95*abs(x1-x0)); height=floor(0.95*abs(y1-y0));
   computeDisplayZoom();
   updatePortLocation();
+
+  // centre contents on icon
+  float dx=iconCentre()-m_x;
+  for (size_t i=0; i<m_operations.size(); ++i)
+    minsky().operations[m_operations[i]]->move(dx,0);
+  set<int> eVars=edgeSet();
+  for (size_t i=0; i<m_variables.size(); ++i)
+    if (!eVars.count(m_variables[i]))
+      minsky().variables[m_variables[i]]->move(dx,0);
 }
 
 void GroupIcon::ungroup()
@@ -474,16 +525,16 @@ void GroupIcon::ungroup()
 
   for (size_t i=0; i<m_operations.size(); ++i)
     {
-      OperationBase& o=*minsky::minsky.operations[m_operations[i]];
+      OperationBase& o=*minsky().operations[m_operations[i]];
       o.group=-1; // TODO, set to parent id
       o.move(x(), y());
       o.visible=true;
       // TODO: set to zoomfactor of parent group
-      o.zoom(x(),y(),minsky::minsky.zoomFactor());
+      o.zoom(x(),y(),minsky().zoomFactor());
       if (IntOp* i=dynamic_cast<IntOp*>(&o))
         if (!i->coupled()) i->toggleCoupled();
     }
-  VariableManager::Variables& vars=minsky::minsky.variables;
+  VariableManager& vars=minsky().variables;
   for (size_t i=0; i<m_variables.size(); ++i)
     {
       VariableBase& v=*vars[m_variables[i]];
@@ -491,7 +542,7 @@ void GroupIcon::ungroup()
       v.group=-1; // TODO, set to parent id
       v.move(x(), y());
       // TODO: set to zoomfactor of parent group
-      v.zoom(x(),y(),minsky::minsky.zoomFactor());
+      v.zoom(x(),y(),minsky().zoomFactor());
       if (v.type()!=VariableType::integral) 
         v.visible=true;
     }
@@ -505,11 +556,44 @@ void GroupIcon::ungroup()
 
 void GroupIcon::MoveTo(float x1, float y1)
 {
-  float dx=x1-x(), dy=y1-y();
+  float dx=x1-m_x, dy=y1-m_y;
   m_x=x1; m_y=y1;
-  vector<VariablePtr> eVars=edgeVariables();
-  for (vector<VariablePtr>::iterator v=eVars.begin(); v!=eVars.end(); ++v)
-    (*v)->move(dx,dy);
+  for (vector<int>::const_iterator i=m_wires.begin(); 
+       i!=m_wires.end(); ++i)
+    {
+      Wire& w=minsky().wires[*i];
+      w.move(dx,dy);
+    }
+  //  (tclcmd() | ".wiring.canvas move groupitems"|id) << dx << dy<<"\n";
+  
+  // move contained items (if any) 
+
+  /*
+    TODO, callbacks to TCL interpreter is way to slow - figure out how
+   notify Tk of coordinate changes
+  */
+  if (displayContents())
+    {
+      DisableEventProcessing e;
+      tclcmd cmd;
+      for (vector<int>::const_iterator i=m_operations.begin(); 
+           i!=m_operations.end(); ++i)
+        {
+          OperationBase& op=*minsky().operations[*i];
+          //          (cmd|"submitUpdateItemPos op"|*i)<<"op"<<*i<<"\n";
+          (cmd|".wiring.canvas coords op"|*i)<<op.x()<<op.y()<<"\n";
+        }
+      for (vector<int>::const_iterator i=m_variables.begin(); 
+           i!=m_variables.end(); ++i)
+        {
+          VariableBase& v=*minsky().variables[*i];
+          //(cmd|"submitUpdateItemPos var"|*i)<<"var"<<*i<<"\n";
+          (cmd|".wiring.canvas coords var"|*i)<<v.x()<<v.y()<<"\n";        
+        }
+      for (vector<int>::const_iterator i=m_wires.begin(); 
+           i!=m_wires.end(); ++i)
+        (cmd|".wiring.canvas coords wire"|*i)<<minsky().wires[*i].coords<<"\n";  
+    }      
 }
 
 array<float> GroupIcon::updatePortLocation()
@@ -546,6 +630,7 @@ array<float> GroupIcon::updatePortLocation()
         
       // calculate rotated port positions
       (*v)->MoveTo(dx*ca-dy*sa+x(), dx*sa+dy*ca+y());
+      assert((*v)->type()!=VariableType::undefined);
       rv.updatePortLocs(); // ensures ports locations are corrected for curren zoom
     }
   return r;
@@ -567,7 +652,9 @@ void GroupIcon::copy(const GroupIcon& src)
 {
   //  a map of port correspondences
   PortMap portMap;
+  int newId=id; //save id, to restore it after copy
   *this=src;
+  id=newId;
   m_operations.resize(src.m_operations.size());
   m_variables.resize(src.m_variables.size());
   m_wires.resize(src.m_wires.size());
@@ -582,10 +669,11 @@ void GroupIcon::copy(const GroupIcon& src)
   // generate copies of operations
   for (int i=0; i<src.m_operations.size(); ++i)
     {
-      m_operations[i]=minsky::minsky.CopyOperation(src.m_operations[i]);
-      Operations& op=minsky::minsky.operations;
+      m_operations[i]=minsky().CopyOperation(src.m_operations[i]);
+      Operations& op=minsky().operations;
       OperationBase& srcOp=*op[src.m_operations[i]];
       OperationBase& destOp=*op[m_operations[i]];
+      destOp.group=id;
       portMap.addPorts(srcOp, destOp);
       // add intVarMap entry if an integral
       if (IntOp* i=dynamic_cast<IntOp*>(&srcOp))
@@ -599,29 +687,32 @@ void GroupIcon::copy(const GroupIcon& src)
   for (int i=0; i<src.m_variables.size(); ++i)
     if (!integrationVars.count(src.m_variables[i]))
       {
-        m_variables[i] = minsky::minsky.CopyVariable(src.m_variables[i]);
-        VariablePtr& v=variableManager()[m_variables[i]];
+        int srcVar= src.m_variables[i];
+        m_variables[i] = minsky().CopyVariable(srcVar);
+        VariablePtr& v=minsky().variables[m_variables[i]];
+        v->visible = minsky().variables[src.m_variables[i]]->visible;
+        v->group = id;
         if (v->type()==VariableType::integral && intVarMap.count(v->name))
           // remap the variable name
           v->name=intVarMap[v->name];
-        portMap.addPorts(*variableManager()[src.m_variables[i]], *v);
+        portMap.addPorts(*minsky().variables[srcVar], *v);
       }
   
   // add corresponding wires
   for (int i=0; i<src.m_wires.size(); ++i)
     {
-      Wire w=minsky::minsky.wires[src.m_wires[i]];
+      Wire w=minsky().wires[src.m_wires[i]];
       w.from=portMap[w.from]; w.to=portMap[w.to];
-      m_wires[i]=portManager().addWire(w);
+      m_wires[i]=static_cast<PortManager&>(minsky()).addWire(w);
     }
 
   // add corresponding I/O variables
   for (int i=0; i<src.inVariables.size(); ++i)
-    inVariables[i]=variableManager().getVariableIDFromPort
-      (portMap[variableManager()[src.inVariables[i]]->inPort()]);
+    inVariables[i]=minsky().variables.getVariableIDFromPort
+      (portMap[minsky().variables[src.inVariables[i]]->inPort()]);
   for (int i=0; i<src.outVariables.size(); ++i)
-    outVariables[i]=variableManager().getVariableIDFromPort
-      (portMap[variableManager()[src.outVariables[i]]->inPort()]);
+    outVariables[i]=minsky().variables.getVariableIDFromPort
+      (portMap[minsky().variables[src.outVariables[i]]->inPort()]);
  
 }
 
@@ -633,7 +724,7 @@ void GroupIcon::contentBounds(float& x0, float& y0, float& x1, float& y1) const
   vector<int>::const_iterator i=m_operations.begin();
   for (; i!=m_operations.end(); ++i)
     {
-      OperationPtr& op=minsky.operations[*i];
+      OperationPtr& op=minsky().operations[*i];
       assert(op);
       RenderOperation ro(op);
       x0=min(x0, op->x() - ro.width()*op->zoomFactor);
@@ -646,7 +737,7 @@ void GroupIcon::contentBounds(float& x0, float& y0, float& x1, float& y1) const
     // exclude the edge variables from content bound calc    
     if (edgeVars.count(*i)==0) 
       {
-        VariablePtr& v=minsky.variables[*i];
+        VariablePtr& v=minsky().variables[*i];
         assert(v);
         RenderVariable rv(v);
         x0=min(x0, v->x() - rv.width());
@@ -672,9 +763,15 @@ void GroupIcon::drawEdgeVariables
 {
   vector<int>::const_iterator i=inVariables.begin();
   for (; i!=inVariables.end(); ++i)
-    drawVar(cairo, variableManager()[*i], xScale, yScale);
+    {
+      drawVar(cairo, minsky().variables[*i], xScale, yScale);
+      assert(minsky().variables[*i]->type()!=VariableType::undefined);
+    }
   for (i=outVariables.begin(); i!=outVariables.end(); ++i)
-    drawVar(cairo, variableManager()[*i], xScale, yScale);
+    {
+      drawVar(cairo, minsky().variables[*i], xScale, yScale);
+      assert(minsky().variables[*i]->type()!=VariableType::undefined);
+    }
 }
 
 void GroupIcon::margins(float& left, float& right) const
@@ -683,12 +780,16 @@ void GroupIcon::margins(float& left, float& right) const
   vector<int>::const_iterator i=inVariables.begin();
   for (; i!=inVariables.end(); ++i)
     {
-      float w=2*RenderVariable(variableManager()[*i]).width()+2;
+      assert(minsky().variables.count(*i));
+      float w=2*RenderVariable(minsky().variables[*i]).width()+2;
+      assert(minsky().variables[*i]->type()!=VariableType::undefined);
       if (w>left) left=w;
     }
   for (i=outVariables.begin(); i!=outVariables.end(); ++i)
     {
-      float w=2*RenderVariable(variableManager()[*i]).width()+2;
+      assert(minsky().variables.count(*i));
+      float w=2*RenderVariable(minsky().variables[*i]).width()+2;
+      assert(minsky().variables[*i]->type()!=VariableType::undefined);
       if (w>right) right=w;
     }
 }
@@ -707,11 +808,125 @@ float GroupIcon::computeDisplayZoom()
   margins(l,r);
   displayZoom=1.1*max((x1-x0)/(width-l-r), (y1-y0)/height);
   // centre contents within icon
-  float dx=iconCentre()-0.5*(x0+x1), dy=y()-0.5*(y0+y1);
-  vector<int>::iterator i=m_operations.begin();
-  for (;i!=m_operations.end(); ++i)
-    minsky::minsky.operations[*i]->move(dx,dy);
-  for (i=m_variables.begin();i!=m_variables.end(); ++i)
-    minsky::minsky.variables[*i]->move(dx,dy);
+//  float dx=iconCentre()-0.5*(x0+x1), dy=y()-0.5*(y0+y1);
+//  vector<int>::iterator i=m_operations.begin();
+//  for (;i!=m_operations.end(); ++i)
+//    {
+//      Operations::iterator o=minsky().operations.find(*i);
+//      if (o!=minsky().operations.end())
+//        o->second->move(dx,dy);
+//    }
+//  for (i=m_variables.begin();i!=m_variables.end(); ++i)
+//    {
+//      assert(minsky().variables.count(*i));
+//      minsky().variables[*i]->move(dx,dy);
+//      assert(minsky().variables[*i]->type()!=VariableType::undefined);
+//    }
   return displayZoom;
+}
+
+void GroupIcon::AddVariable(int varId)
+{
+  VariableManager::iterator i=minsky().variables.find(varId);
+  if (i!=minsky().variables.end())
+    if (i->second->group!=id)
+      {
+        m_variables.push_back(varId);
+        float x=i->second->x(), y=i->second->y();
+        i->second->group=id;
+        i->second->visible=displayContents();
+        i->second->MoveTo(x,y); // adjust to group relative coordinates
+        // see if any attached wires should also be moved into the group
+        array<int> wiresToCheck=portManager().WiresAttachedToPort(i->second->inPort());
+        wiresToCheck+=portManager().WiresAttachedToPort(i->second->outPort());
+        if (wiresToCheck.size()>0)
+          {
+            // first build list of contained ports
+            set<int> containedPorts;
+            for (size_t i=0; i<m_operations.size(); ++i)
+              {
+                const vector<int>& p=minsky().operations[m_operations[i]]->ports();
+                containedPorts.insert(p.begin(), p.end());
+              }
+             for (size_t i=0; i<m_variables.size(); ++i)
+              {
+                const array<int>& p=minsky().variables[m_variables[i]]->ports();
+                containedPorts.insert(p.begin(), p.end());
+              }
+             for (array<int>::iterator w=wiresToCheck.begin(); 
+                  w!=wiresToCheck.end(); ++w)
+               {
+                 Wire& wire=portManager().wires[*w];
+                 if (containedPorts.count(wire.from) && 
+                     containedPorts.count(wire.to))
+                   m_wires.push_back(*w);
+               }
+          }
+      }
+}
+
+void GroupIcon::removeVariable(int id)
+{
+}
+
+void GroupIcon::addOperator(int id)
+{
+}
+
+void GroupIcon::removeOperator(int id)
+{
+}
+
+namespace 
+{
+  // transform (x,y) by rotating around (0,0)
+  inline void rotate(float& x, float& y, float ca, float sa)
+  {
+    float x1=ca*x-sa*y, y1=sa*x+ca*y;
+    x=x1; y=y1;
+  }
+
+  // transform (x,y) by rotating around the origin(ox,oy)
+  inline void rotate(float& x, float& y, float ox, float oy, float ca, float sa)
+  {
+    x-=ox; y-=oy;
+    rotate(x,y,ca,sa);
+    x+=ox; y+=oy;
+  }
+}
+
+void GroupIcon::Rotate(float angle)
+{
+  rotation+=angle;
+  float ca=cos(M_PI*angle/180), sa=(M_PI*angle/180);
+
+  vector<int>::const_iterator i=m_operations.begin();
+  for (; i!=m_operations.end(); ++i)
+    {
+      OperationBase& o=*minsky().operations[*i];
+      o.rotation+=angle;
+      ::rotate(o.m_x, o.m_y, ca, sa);
+    }
+  for (i=m_variables.begin(); i!=m_variables.end(); ++i)
+    {
+      VariableBase& v=*minsky().variables[*i];
+      v.rotation+=angle;
+      ::rotate(v.m_x, v.m_y, ca, sa);
+    }
+  // transform wire coordinates
+  for (i=m_wires.begin(); i!=m_wires.end(); ++i)
+    {
+      Wire& w=portManager().wires[*i];
+      for (int j=0; j<w.coords.size(); j+=2)
+        ::rotate(w.coords[j], w.coords[j+1], x(), y(), ca, sa);
+    }
+  // transform external ports
+  vector<int> externalPorts=ports();
+  for (i=externalPorts.begin(); i!=externalPorts.end(); ++i)
+    {
+      Port& p=portManager().ports[*i];
+      float px=p.x(), py=p.y();
+      ::rotate(px,py,x(),y(),ca,sa);
+      portManager().movePortTo(*i,px,py);
+    }
 }

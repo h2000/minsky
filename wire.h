@@ -41,6 +41,8 @@ namespace minsky
     /// zoom by \a factor, scaling all widget's coordinates, using (\a
     /// xOrigin, \a yOrigin) as the origin of the zoom transformation
     void zoom(float xOrigin, float yOrigin, float factor);
+    /// move wire by \a dx, \a dy. End ports are moved also
+    void move(float dx, float dy);
   };
 }
 #include "wire.cd"

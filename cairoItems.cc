@@ -27,7 +27,6 @@
 #include <ecolab_epilogue.h>
 using namespace ecolab::cairo;
 using namespace ecolab;
-//using namespace ecolab::array_ns;
 using namespace std;
 using namespace minsky;
 
@@ -85,8 +84,6 @@ namespace
             if (bbox[0]<0) bbox[0]=0;
             if (bbox[1]<0) bbox[1]=0;
 
-         //   assert(bbox[0]>=0);
-         //   assert(bbox[1]>=0);
             assert(w<=cairoSurface->width());
             assert(h<=cairoSurface->height());
 
@@ -124,8 +121,6 @@ namespace
             if (bbox[0]<0) bbox[0]=0;
             if (bbox[1]<0) bbox[1]=0;
 
-         //   assert(bbox[0]>=0);
-         //   assert(bbox[1]>=0);
             assert(w<=cairoSurface->width());
             assert(h<=cairoSurface->height());
 
@@ -224,7 +219,6 @@ namespace
 }
 
 
-//static int dum=registerItems();
 static int dum=(initVec().push_back(registerItems), 0);
 
 RenderOperation::RenderOperation(const OperationPtr& op, cairo_t* cairo,
@@ -358,7 +352,7 @@ void RenderOperation::draw()
         cairo_set_source_rgb(cairo,0,0,1);
         cairo_move_to(cairo,-w,-h);
         cairo_line_to(cairo,-w,h);
-        cairo_line_to(cairo,w,h);        //                cairo_restore(cairo);
+        cairo_line_to(cairo,w,h);
 
         cairo_line_to(cairo,w+2,0);
         cairo_line_to(cairo,w,-h);
@@ -392,7 +386,7 @@ void RenderOperation::draw()
     case OperationType::integrate:
       cairo_move_to(cairo,-7,4.5);
       cairo_show_text(cairo,"\xE2\x88\xAB");
-      cairo_show_text(cairo,"dx");
+      cairo_show_text(cairo,"dt");
       break;
     case OperationType::exp:
       cairo_move_to(cairo,-9,3);
@@ -600,7 +594,6 @@ void minsky::drawTriangle
   cairo_set_source_rgba(cairo,col.r,col.g,col.b,col.a);
   cairo_translate(cairo,x,y);
   cairo_rotate(cairo, angle);
-  //  cairo_scale(cairo,1,1);
   cairo_move_to(cairo,10,0);
   cairo_line_to(cairo,0,-3);
   cairo_line_to(cairo,0,3);

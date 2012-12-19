@@ -52,7 +52,7 @@ void VariableBase::toggleInPort()
       }
 }
 
-////Factory
+//Factory
 VariableBase* VariableBase::create(VariableType::Type type)
 {
   switch (type)
@@ -138,10 +138,16 @@ void VariableBase::zoom(float xOrigin, float yOrigin,float factor)
 {
   if (visible)
     {
-      float xx=x(), yy=y();
-      ::zoom(xx,xOrigin,factor);
-      ::zoom(yy,yOrigin,factor);
-      MoveTo(xx,yy);
+      if (group==-1)
+        {
+          ::zoom(m_x,xOrigin,factor);
+          ::zoom(m_y,yOrigin,factor);
+        }
+      else
+        {
+          m_x*=factor;
+          m_y*=factor;
+        }
       zoomFactor*=factor;
     }
 }

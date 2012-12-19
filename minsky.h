@@ -143,6 +143,7 @@ namespace minsky
     }
     // for backward compatibility
     void set(TCL_args args) {}
+    void clear() {val.reset();}
     GetterSetterPtr(std::map<K,T>& m): map(m) {}
     // asignment is do nothing, as reference member is created as part
     // of constructor
@@ -170,7 +171,7 @@ namespace minsky
 
   public:
 
-    GodleyTable godley; // deprecated - needed for Minsky.1 capability
+    //    GodleyTable godley; // deprecated - needed for Minsky.1 capability
     typedef std::map<int, GodleyIcon> GodleyItems;
     GodleyItems godleyItems;
 
@@ -282,9 +283,18 @@ namespace minsky
         }
     }
 
+    /// create a group from items found in rectangle given by \a x0,
+    /// \a y0, \a x1 \a y1
     int group(TCL_args args);
+    /// remove a group, leaving its contents in place
     void ungroup(TCL_args args);
-    
+    /// remove a group, deleting all the contents too
+    void deleteGroup(TCL_args args) {
+      int id=args;
+      groupItems[id].deleteContents();
+      groupItems.erase(args);
+    }
+
     InGroup groupTest;
     void initGroupList() {groupTest.initGroupList(groupItems);}
     float localZoomFactor(TCL_args args) const {

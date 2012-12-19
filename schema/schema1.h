@@ -260,7 +260,8 @@ namespace schema1
     Minsky(const minsky::Minsky& m);
 
     operator minsky::Minsky() const;
-    
+    /// move locations such that minx, miny lies at (0,0) on canvas
+    void relocateCanvas();
   };
 }
 

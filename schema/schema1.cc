@@ -71,6 +71,10 @@ namespace schema1
           combine(m[i->id], *i);
       }
 
+      /// populate the GroupItem  from a vector of schema data
+      void populate
+      (map<int, minsky::GroupIcon>& m, const vector<Group>& v) const;
+
       /// populate the variable manager from a vector of schema data
       void populate(minsky::VariableManager& vm, const vector<Variable>& v) const
       {
@@ -191,7 +195,7 @@ namespace schema1
 //            (g, g1.operations, g1.variables, g1.wires, g1.ports);
           g.name=g1.name;
           // moveTo needs to called later as well
-          g.MoveTo(l.x, l.y);
+          minsky::SchemaHelper::setXY(g, l.x, l.y);
           g.width=l.width;
           g.height=l.height;
           g.rotation=l.rotation;
@@ -229,7 +233,18 @@ namespace schema1
         }
       return g;
     }
-
+    
+    void Combine::populate
+    (map<int, minsky::GroupIcon>& m, const vector<Group>& v) const
+    {
+      for (typename vector<Group>::const_iterator i=v.begin(); i!=v.end(); ++i)
+        {
+          minsky::GroupIcon& g = m.insert
+            (make_pair(i->id, minsky::GroupIcon(i->id))).first->second;
+          combine(g, *i);
+         }
+    }
+     
     void Combine::populate(minsky::Plots& plots, const vector<Plot>& v) const
     {
       for (vector<Plot>::const_iterator i=v.begin(); i!=v.end(); ++i)
@@ -325,6 +340,8 @@ namespace schema1
 
     minsky::Minsky m;
     Combine c(layout, m.variables);
+    // override default minsky object for this method
+    minsky::GroupIcon::LocalMinsky lm(m);
 
     c.populate(m.ports, model.ports);
     c.populate(m.wires, model.wires);
@@ -333,6 +350,7 @@ namespace schema1
     m.variables.makeConsistent();
     c.populate(m.godleyItems, model.godleys);
     c.populate(m.groupItems, model.groups);
+    c.populate(m.plots, model.plots);
 
     m.setZoom(zoomFactor);
 
@@ -370,19 +388,19 @@ namespace schema1
           m.operations[*o]->group=g->id;
         for (vector<int>::const_iterator v=vars.begin(); v!=vars.end(); ++v)
           m.variables[*v]->group=g->id;
-        float zoomRatio = zoomFactor/gi.computeDisplayZoom();
-        // compute zoom factors of contained variables etc, if visible
-        for (vector<int>::const_iterator o=ops.begin(); o!=ops.end(); ++o)
-          m.operations[*o]->setZoom(zoomRatio);
-        
-        set<int> eVars(gi.edgeSet());
-        for (vector<int>::const_iterator v=vars.begin(); v!=vars.end(); ++v)
-          if (eVars.count(*v)==0)
-            m.variables[*v]->setZoom(zoomRatio);;
-        
+//        float zoomRatio = 1/gi.computeDisplayZoom();
+//        // compute zoom factors of contained variables etc, if visible
+//        for (vector<int>::const_iterator o=ops.begin(); o!=ops.end(); ++o)
+//          m.operations[*o]->setZoom(zoomRatio);
+//      
+//        set<int> eVars(gi.edgeSet());
+//        for (vector<int>::const_iterator v=vars.begin(); v!=vars.end(); ++v)
+//          if (eVars.count(*v)==0)
+//            m.variables[*v]->setZoom(zoomRatio);;
+        gi.computeDisplayZoom();
+        gi.computeDisplayZoom();
       }
 
-    c.populate(m.plots, model.plots);
     m.stepMin=model.rungeKutta.stepMin; 
     m.stepMax=model.rungeKutta.stepMax; 
     m.nSteps=model.rungeKutta.nSteps;   
@@ -481,5 +499,56 @@ namespace schema1
 
       model.rungeKutta=RungeKutta(m);
       
+      relocateCanvas();
+  
   }
+
+  void Minsky::relocateCanvas()
+  {
+    // ignore group items, as these coordinates are relative to group centre
+    set<int> groupItems;
+    for (vector<Group>::iterator i=model.groups.begin(); 
+         i<model.groups.end(); ++i)
+      groupItems.insert(i->items.begin(), i->items.end());
+
+    // compute min values of coordinates
+    float xmin=numeric_limits<float>::max(), 
+      ymin=numeric_limits<float>::max();
+    for (size_t i=0; i<layout.size(); ++i)
+      {
+        if (groupItems.count(layout[i]->id)) continue;
+        if (PositionLayout* p=dynamic_cast<PositionLayout*>(layout[i].get()))
+          {
+            if (p->x<xmin) xmin=p->x;
+            if (p->y<ymin) ymin=p->y;
+          }
+        else if (WireLayout* w=dynamic_cast<WireLayout*>(layout[i].get()))
+          {
+            for (size_t i=0; i<w->coords.size(); i+=2)
+              if (w->coords[i]<xmin) xmin=w->coords[i];
+            for (size_t i=1; i<w->coords.size(); i+=2)
+              if (w->coords[i]<ymin) ymin=w->coords[i];
+          }
+      }
+    // move all items be (-xmin, -ymin)
+    ymin-=zoomFactor*15; // additional margin in vertical direction
+    for (size_t i=0; i<layout.size(); ++i)
+      {
+        if (groupItems.count(layout[i]->id)) continue;
+        if (PositionLayout* p=dynamic_cast<PositionLayout*>(layout[i].get()))
+          {
+            p->x-=xmin;
+            p->y-=ymin;
+          }
+        else if (WireLayout* w=dynamic_cast<WireLayout*>(layout[i].get()))
+          {
+            for (size_t i=0; i<w->coords.size(); i+=2)
+              w->coords[i]-=xmin;
+            for (size_t i=1; i<w->coords.size(); i+=2)
+              w->coords[i]-=ymin;
+          }
+      }
+  }
+
 }
+

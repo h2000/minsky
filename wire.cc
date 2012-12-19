@@ -19,11 +19,22 @@
 
 #include "wire.h"
 #include "zoom.h"
+#include "portManager.h"
 using namespace minsky;
+using namespace ecolab;
 
 void Wire::zoom(float xOrigin, float yOrigin, float factor)
 {
   if (visible)
     for (size_t i=0; i<coords.size(); ++i)
       minsky::zoom(coords[i], (i&1)? yOrigin: xOrigin, factor);
+}
+
+void Wire::move(float dx, float dy)
+{
+  coords[pcoord(coords.size()/2)*2]+=dx;
+  coords[pcoord(coords.size()/2)*2+1]+=dy;
+  assert(coords.size()>=4);
+  portManager().movePortTo(from, coords[0], coords[1]);
+  portManager().movePortTo(to, coords[coords.size()-2], coords[coords.size()-1]);
 }

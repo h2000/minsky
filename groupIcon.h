@@ -34,6 +34,7 @@
 namespace minsky
 {
   using namespace ecolab;
+  class Minsky;
 
   class GroupIcon
   {
@@ -47,6 +48,7 @@ namespace minsky
     std::vector<int> inVariables, outVariables;
     float m_x, m_y, m_zoomFactor; ///< icon position, amount of zoom
     float displayZoom; ///< zoom at which contents are displayed
+    int id;
 
     friend struct SchemaHelper;
 
@@ -54,12 +56,22 @@ namespace minsky
     /// port. If the operation results in addition wires being
     /// created, these are returned in \a additionalWires
     void addEdgeVariable(std::vector<int>& varVector, 
-                         std::vector<Wire>& additionalWires,
-                         int port, int groupId);
+                         std::vector<Wire>& additionalWires, int port);
 
     void drawVar(cairo_t*, const VariablePtr&, float, float) const;
 
+    /// return current scope's Minksy object
+    static Minsky& minsky();
+
   public:
+
+    /// RAII set the minsky object to a different one for the current scope
+    struct LocalMinsky
+    {
+      LocalMinsky(Minsky& m);
+      ~LocalMinsky();
+    };
+
     std::string name;
     float width, height; // size of icon
     float rotation; // orientation of icon
@@ -91,16 +103,17 @@ namespace minsky
       return x()+zoomFactor()*0.5*(left-right);
     }
                                    
-    GroupIcon(): m_x(0), m_y(0), m_zoomFactor(1), width(100), height(100), 
-                 rotation(0), displayZoom(1) {}
+    GroupIcon(int id=-1): m_x(0), m_y(0), m_zoomFactor(1), 
+                          width(100), height(100), rotation(0), 
+                          displayZoom(1), id(id) {}
 
     /// group all icons in rectangle bounded by (x0,y0):(x1,y1)
-    void group(float x0, float y0, float x1, float y1, int groupId);
+    void group(float x0, float y0, float x1, float y1);
     /// ungroup all icons
     void ungroup();
 
     /// populates this with a copy of src (with all internal objects
-    /// registered with minsky)
+    /// registered with minsky).
     void copy(const GroupIcon& src);
 
     /// update port locations to current geometry and rotation.  Return
@@ -127,6 +140,9 @@ namespace minsky
     void setZoom(float factor) {m_zoomFactor=factor;}
     float zoomFactor() const {return m_zoomFactor;}
 
+    /// delete contents, leaving an empty group
+    void deleteContents();
+
     /// computes the zoom at which to show contents, given current
     /// contentBounds and width
     float computeDisplayZoom();
@@ -134,6 +150,25 @@ namespace minsky
 
     /// returns whether contents should be displayed
     bool displayContents() const {return zoomFactor()>displayZoom;}
+
+    /// add a variable to to the group
+    void AddVariable(int id);
+    void addVariable(TCL_args args) {AddVariable(args);}
+    /// remove variable from group
+    void removeVariable(int id);
+    /// add a operator to to the group
+    void addOperator(int id);
+    /// remove operator from group
+    void removeOperator(int id);
+
+    /// rotate icon and all its contents
+    void Rotate(float angle);
+    void rotate(TCL_args args) {Rotate(args);}
+    /// rotate icon to a given rotation value
+    void rotateTo(TCL_args args) {
+      float angle=args;
+      Rotate(angle-rotation);
+    }
   };
 }
 

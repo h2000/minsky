@@ -151,8 +151,13 @@ proc zoom {factor} {
     set x0 [.wiring.canvas canvasx [get_pointer_x .wiring.canvas]]
     set y0 [.wiring.canvas canvasy [get_pointer_y .wiring.canvas]]
     disableEventProcessing
-    .wiring.canvas scale all $x0 $y0 $factor $factor
-    minsky.zoom $x0 $y0 $factor
+    if {$factor>1} {
+        .wiring.canvas scale all $x0 $y0 $factor $factor
+        minsky.zoom $x0 $y0 $factor
+    } else {
+        minsky.zoom $x0 $y0 $factor
+        .wiring.canvas scale all $x0 $y0 $factor $factor
+    }        
     enableEventProcessing
 }
 
@@ -173,7 +178,7 @@ proc placeNewVar {id} {
     bind .wiring.canvas <Enter> "move var $id var$id %x %y"
     bind .wiring.canvas <Motion> "move var $id var$id %x %y"
     bind .wiring.canvas <Button> \
-        "bind .wiring.canvas <Motion> {}; bind .wiring.canvas <Enter> {}"
+        "bind .wiring.canvas <Motion> {}; bind .wiring.canvas <Enter> {}; checkAddGroup var $id %x %y"
 }
 
 proc addVariablePostModal {} {
@@ -259,16 +264,26 @@ proc drawOperation {id} {
 }
 
 proc updateItemPos {tag item id} {
-    global updateItemPositionSubmitted
+    global globals
     $item.get $id
     eval .wiring.canvas coords $tag [$item.x] [$item.y]
     foreach p [$item.ports]  {
         adjustWire $p
     }
-    set updateItemPositionSubmitted 0   
+    unset globals(updateItemPositionSubmitted$item$id)   
 }    
 
-set updateItemPositionSubmitted 0
+proc submitUpdateItemPos {tag item id} {
+    global globals
+    if {!
+        ([info exists globals(updateItemPositionSubmitted$item$id)] &&
+         [set globals(updateItemPositionSubmitted$item$id)])} {
+        # only submitted if no update already scheduled
+        set globals(updateItemPositionSubmitted$item$id) 1
+        after idle updateItemPos $tag $item $id
+    }
+}
+
 
 proc moveSet {item id tag x y} {
     $item.get $id
@@ -288,12 +303,7 @@ proc move {item id tag x y} {
     $item.moveTo [.wiring.canvas canvasx $x] [.wiring.canvas canvasy $y]
     $item.zoomFactor [localZoomFactor [$item.x] [$item.y]]
     $item.set $id
-    global updateItemPositionSubmitted
-    if {!$updateItemPositionSubmitted} {
-        # only submitted if no update already scheduled
-        set updateItemPositionSubmitted 1
-        after idle updateItemPos $tag $item $id
-    }
+    submitUpdateItemPos $tag $item $id
     if {$item=="op"} {
         foreach item [.wiring.canvas find withtag slider$id] {
             set coords [.wiring.canvas coords $item]
@@ -408,6 +418,8 @@ proc updateCoords {wire handle pos x y} {
     set coords [.wiring.canvas coords wire$wire]
     set x0 [lindex $coords $pos]
     set y0 [lindex $coords [expr $pos+1]]
+    set x [.wiring.canvas canvasx $x]
+    set y [.wiring.canvas canvasy $y]
     .wiring.canvas move $handle [expr $x-$x0] [expr $y-$y0]
     lset coords $pos $x
     lset coords [expr $pos+1] $y
@@ -422,7 +434,8 @@ proc insertCoords {wire handle pos x y} {
         set handles($handle) 1
         # add current handle coordinates to the wire shape
         set coords [.wiring.canvas coords wire$wire]
-        set coords [linsert $coords $pos $x $y]
+        set coords [linsert $coords $pos [.wiring.canvas canvasx $x] \
+                    [.wiring.canvas canvasy $y]]
         .wiring.canvas coords wire$wire $coords
     }
     updateCoords $wire $handle $pos $x $y
@@ -709,9 +722,9 @@ proc doubleClick {item x y} {
 }
 
 proc toggleCoupled {id} {
-    op.get $id
-    op.toggleCoupled
-    op.set
+    integral.get $id
+    integral.toggleCoupled
+    integral.set
     updateCanvas
 }
 
@@ -1198,4 +1211,5 @@ proc tout {args} {
 }
 
 # example debugging trace statements
-#trace add execution drawOperation enter tout
+#trace add execution placeNewVar enterstep tout
+#trace add execution move enterstep tout

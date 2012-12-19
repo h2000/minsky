@@ -44,13 +44,19 @@ proc newGroupItem {id} {
 }
 
 proc deleteGroupItem {id} {
-    groupItem.get $id
+    deleteGroup $id
+    updateCanvas
+}
+
+proc ungroupGroupItem {id} {
     ungroup $id
     updateCanvas
 }
 
 proc lasso {x y} {
     global lassoStart
+    set x [.wiring.canvas canvasx $x]
+    set y [.wiring.canvas canvasy $y]
     if {![info exists lassoStart]} {
         set lassoStart "$x $y"
         .wiring.canvas create rectangle $x $y $x $y -tag lasso
@@ -61,6 +67,8 @@ proc lasso {x y} {
 proc lassoEnd {x y} {
     global lassoStart
     if [info exists lassoStart] {
+        set x [.wiring.canvas canvasx $x]
+        set y [.wiring.canvas canvasy $y]
         eval group $x $y $lassoStart
         .wiring.canvas delete lasso
         updateCanvas
@@ -74,11 +82,12 @@ proc lassoEnd {x y} {
 
 proc groupContext {id x y} {
     .wiring.context delete 0 end
-    .wiring.context add command -label "Ungroup" -command "deleteGroupItem $id"
+    .wiring.context add command -label "Ungroup" -command "ungroupGroupItem $id"
     .wiring.context add command -label "Edit" -command "groupEdit $id"
     .wiring.context add command -label "Resize" -command "group::resize $id"
     .wiring.context add command -label "Copy" -command "group::copy $id"
     .wiring.context add command -label "Flip" -command "group::flip $id"
+    .wiring.context add command -label "Delete" -command "deleteGroupItem $id"
     .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.groupItems.@elem $id].*"
 
 }
@@ -120,10 +129,25 @@ proc groupEdit {id} {
             setItem groupItem name {.wiring.editGroup.name.val get}
             setItem groupItem rotation {.wiring.editGroup.rot.val get}
             groupItem.updatePortLocation
+            groupItem.set
             closeEditWindow .wiring.editGroup
         }
     wm deiconify .wiring.editGroup
     grab .wiring.editGroup
+}
+
+proc checkAddGroup {item id x y} {
+    set gid [groupTest.containingGroup [.wiring.canvas canvasx $x] [.wiring.canvas canvasy $y]]
+    if {$gid>=0} {
+        groupItem.get $gid
+        if {![groupItem.displayContents]} {.wiring.canvas delete $item$id}
+        switch $item {
+            "var" {groupItem.addVariable $id}
+            "op" {groupItem.addOperator $id}
+        }
+        groupItem.set
+        if {![$item.visible]} {.wiring.canvas delete $item$id}
+    }
 }
 
 namespace eval group {
@@ -182,6 +206,8 @@ namespace eval group {
         global interactionMode 
         set interactionMode 2
         setInteractionMode
+        groupItem.get $newId
+        moveSet groupItem $newId group$newId [groupItem.x] [groupItem.y]
         bind .wiring.canvas <Motion> "move groupItem $newId group$newId %x %y"
         bind .wiring.canvas <ButtonRelease> {
             bind .wiring.canvas <Motion> {}
