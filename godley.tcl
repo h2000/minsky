@@ -122,6 +122,12 @@ proc updateDEmode args {
 proc parse_input {input p v} {
     upvar $p prefix
     upvar $v varName
+    
+    if {[string trim $input] == ""} {
+      set prefix ""
+      set varName ""
+      return 1
+    }
 
     # regexp accepts input of the form "?DR|CR|-? VarName"
     # where VarName cannot begin with DR or CR
