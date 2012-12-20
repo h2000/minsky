@@ -1,5 +1,7 @@
 #!/opt/local/bin/tclsh
 
+set minskyHome ..
+
 source ../godley.tcl
 
 proc a {s} {
@@ -35,6 +37,7 @@ set testset {
 "- = 98.0"
 "dr - a = 98.0"
 ""
+" "
 "-"
 "-dr a"
 "--"
@@ -82,7 +85,8 @@ variable {1 {} variable}
 {DR = 98.0} {0 {} {}}
 {- = 98.0} {0 {} {}}
 {dr - a = 98.0} {0 {} {}}
-{} {0 {} {}}
+{} {1 {} {}}
+{ } {1 {} {}}
 - {0 {} {}}
 {-dr a} {0 {} {}}
 -- {0 {} {}}
@@ -143,7 +147,8 @@ proc chainingCheck {l} {
     foreach {ret prefix var} $res {}
     set res2 [lindex [a [concat $prefix $var]] 1]
     foreach {ret2 prefix2 var2} $res2 {}
-    foreach {v1 v2} {ret ret2 prefix prefix2 var var2} {
+    if {($ret != $ret2) && ($prefix != "") && ($var != "")} { incr failed 1; puts stdout "FAIL chaining for \"$l\" \"[set $v1]\" != \"[set $v2]\""}
+    foreach {v1 v2} {prefix prefix2 var var2} {
 	if {[set $v1] != [set $v2]} { incr failed 1; puts stdout "FAIL chaining for \"$l\" \"[set $v1]\" != \"[set $v2]\""}
     }
     return $failed
