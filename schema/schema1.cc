@@ -237,7 +237,7 @@ namespace schema1
     void Combine::populate
     (map<int, minsky::GroupIcon>& m, const vector<Group>& v) const
     {
-      for (typename vector<Group>::const_iterator i=v.begin(); i!=v.end(); ++i)
+      for (vector<Group>::const_iterator i=v.begin(); i!=v.end(); ++i)
         {
           minsky::GroupIcon& g = m.insert
             (make_pair(i->id, minsky::GroupIcon(i->id))).first->second;
