@@ -19,8 +19,6 @@
 
 # Godley table
 
-set globals(godley_tables) {}
-		    
 set fp [open "$minskyHome/accountingRules" r]
 set accountingRules [read $fp]
 close $fp
@@ -49,7 +47,6 @@ proc createGodleyWindow {id} {
     wm title .godley$id "Godley Table"
     wm withdraw .godley$id
 
-    lappend globals(godley_tables) $id
     set globals(updateGodleyLaunched$id) 0
 
     set t .godley$id.table
@@ -111,7 +108,7 @@ trace add variable preferences(godleyDE) write {updateDEmode}
 
 proc updateDEmode args {
   global globals preferences
-  foreach id $globals(godley_tables) {
+  foreach id [godleyItems.#keys] {
     godleyItem.get $id
     godleyItem.table.setDEmode $preferences(godleyDE)
     godleyItem.set
@@ -124,20 +121,20 @@ proc parse_input {input p v} {
     upvar $v varName
     
     if {[string trim $input] == ""} {
-      set prefix ""
-      set varName ""
-      return 1
+       set prefix ""
+       set varName ""
+       return 1
     }
 
-    # regexp accepts input of the form "?DR|CR|-? VarName"
+    # regexp accepts input of the form "?DR|CR|-? VarName" or ""
     # where VarName cannot begin with DR or CR
-    # eg   "var"   "-var"    "dr var"   "DR var"
+    # eg   "var"   "-var"    "dr var"   "DR var"  ""
 
-    set retval [regexp {^\s*(([cCdD][rR])?|\s*(-)?)(?:-)*\s*(?![cCdD][rR])\m([[:alnum:]]+)} $input matchstr prefix drcr sign varName]
+    set retval [regexp {^\s*(([cCdD][rR])?|\s*(-)?)(?:-)*\s*(?![cCdD][rR])\m([[:alnum:]]*)} $input matchstr prefix drcr sign varName]
 
     # attempt to re-parse the output and make sure it's unchanged
     if {$retval} {
-	set retval2 [regexp {^\s*(([cCdD][rR])?|\s*(-)?)(?:-)*\s*(?![cCdD][rR])\m([[:alnum:]]+)} "$prefix $varName" matchstr2 prefix2 drcr2 sign2 varName2]
+	set retval2 [regexp {^\s*(([cCdD][rR])?|\s*(-)?)(?:-)*\s*(?![cCdD][rR])\m([[:alnum:]]*)} "$prefix $varName" matchstr2 prefix2 drcr2 sign2 varName2]
 	if {!$retval2 || $prefix!=$prefix2 || $varName!=$varName2} {
 	    return 0;
 	}
@@ -330,7 +327,7 @@ proc delCol {id c} {
     
 proc updateGodleys {} {
   global globals
-  foreach id $globals(godley_tables) {
+  foreach id [godleyItems.#keys] {
     updateGodley $id
   }
   
@@ -338,7 +335,7 @@ proc updateGodleys {} {
 
 proc updateGodleysDisplay {} {
   global globals
-  foreach id $globals(godley_tables) {
+  foreach id [godleyItems.#keys] {
     updateGodleyDisplay $id
   }
   
