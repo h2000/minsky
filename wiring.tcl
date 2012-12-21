@@ -216,13 +216,16 @@ proc addVariable {} {
 }
 
 proc addOperation {op} {
-    global globals
+    global globals constInput
     set id [minsky.addOperation $op]
     op.get $id
     op.rotation $globals(default_rotation)
     op.set
     placeNewOp $id
-    if {$op=="constant"} {editItem $id op$id}
+    if {$op=="constant"} {
+	editItem $id op$id
+	set constInput(cancelCommand) "cancelPlaceNewOp $id;closeEditWindow .wiring.editConstant"
+    }
 }
 
 proc placeNewOp {opid} {
@@ -237,6 +240,14 @@ proc placeNewOp {opid} {
     bind .wiring.canvas <Motion> "move op $opid op$opid %x %y"
     bind .wiring.canvas <Button> \
         "bind .wiring.canvas <Motion> {}; bind .wiring.canvas <Enter> {}"
+}
+
+proc cancelPlaceNewOp {id} {
+    bind .wiring.canvas <Motion> {}
+    bind .wiring.canvas <Enter> {}
+    .wiring.canvas delete op$id
+    deleteOperation $id
+    updateCanvas
 }
 
 proc drawOperation {id} {
@@ -792,7 +803,7 @@ proc contextMenu {item x y} {
             .wiring.context delete 0 end
             .wiring.context add command -label "Open Godley Table" -command "openGodley $id"
             .wiring.context add command -label "Delete Godley Table" -command "deleteItem $id $tag"
-            .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.godleys.@elem $id].*"
+            #.wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.godleys.@elem $id].*"
         }
         "group" {
             set tag [lindex $tags [lsearch -regexp $tags {group[0-9]+}]]
@@ -942,8 +953,7 @@ set row 0
 grid [label .wiring.editConstant.title -textvariable constInput(title)] -row $row -column 0 -columnspan 999 -pady 10
 frame .wiring.editConstant.buttonBar
 button .wiring.editConstant.buttonBar.ok -text OK -command {eval $constInput(command)}
-button .wiring.editConstant.buttonBar.cancel -text Cancel -command {
-    closeEditWindow .wiring.editConstant}
+button .wiring.editConstant.buttonBar.cancel -text Cancel -command {eval $constInput(cancelCommand)}
 pack .wiring.editConstant.buttonBar.ok [label .wiring.editConstant.buttonBar.spacer -width 2] .wiring.editConstant.buttonBar.cancel -side left -pady 10
 grid .wiring.editConstant.buttonBar -row 999 -column 0 -columnspan 1000
 
@@ -1097,6 +1107,7 @@ proc editItem {id tag} {
                         setItem op rotation {set constInput(Rotation)}
                         closeEditWindow .wiring.editConstant
                     "
+		set constInput(cancelCommand) "closeEditWindow .wiring.editConstant"
 
                 wm deiconify .wiring.editConstant
 		::tk::TabToWindow $constInput(initial_focus);
