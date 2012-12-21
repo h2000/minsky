@@ -93,10 +93,6 @@ proc createGodleyWindow {id} {
     updateDEmode
     checkbutton .godley$id.doubleEntryMode -text "Double Entry" -variable preferences(godleyDE)
 
-    # default checkbox mode is deselected - select if model variable is set
-    #if [godleyItem.table.doubleEntryCompliant] {
-    #    .godley$id.doubleEntryMode select
-    #}
     pack .godley$id.topbar -fill x
     pack .godley$id.sy -side right -fill y
     pack .godley$id.table -fill both 
@@ -130,11 +126,11 @@ proc parse_input {input p v} {
     # where VarName cannot begin with DR or CR
     # eg   "var"   "-var"    "dr var"   "DR var"  ""
 
-    set retval [regexp {^\s*(([cCdD][rR])?|\s*(-)?)(?:-)*\s*(?![cCdD][rR])\m([[:alnum:]]*)} $input matchstr prefix drcr sign varName]
+    set retval [regexp {^\s*(([cCdD][rR])?|\s*(-)?)(?:-)*\s*(?![cCdD][rR])\m([[:graph:]]*)} $input matchstr prefix drcr sign varName]
 
     # attempt to re-parse the output and make sure it's unchanged
     if {$retval} {
-	set retval2 [regexp {^\s*(([cCdD][rR])?|\s*(-)?)(?:-)*\s*(?![cCdD][rR])\m([[:alnum:]]*)} "$prefix $varName" matchstr2 prefix2 drcr2 sign2 varName2]
+	set retval2 [regexp {^\s*(([cCdD][rR])?|\s*(-)?)(?:-)*\s*(?![cCdD][rR])\m([[:graph:]]*)} "$prefix $varName" matchstr2 prefix2 drcr2 sign2 varName2]
 	if {!$retval2 || $prefix!=$prefix2 || $varName!=$varName2} {
 	    return 0;
 	}
