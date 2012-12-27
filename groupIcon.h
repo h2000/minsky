@@ -63,6 +63,11 @@ namespace minsky
     /// return current scope's Minksy object
     static Minsky& minsky();
 
+    /// see if any attached wires should also be moved into the group
+    template <class S> void addAnyWires(const S& ports);
+    /// remove any attached wires that belong to the group
+    template <class S> void removeAnyWires(const S& ports);
+
   public:
 
     /// RAII set the minsky object to a different one for the current scope
@@ -155,11 +160,14 @@ namespace minsky
     void AddVariable(int id);
     void addVariable(TCL_args args) {AddVariable(args);}
     /// remove variable from group
-    void removeVariable(int id);
+    void RemoveVariable(int id);
+    void removeVariable(TCL_args args) {RemoveVariable(args);}
     /// add a operator to to the group
-    void addOperator(int id);
+    void AddOperation(int id);
+    void addOperation(TCL_args args) {AddOperation(args);}
     /// remove operator from group
-    void removeOperator(int id);
+    void RemoveOperation(int id);
+    void removeOperation(TCL_args args) {RemoveOperation(args);}
 
     /// rotate icon and all its contents
     void Rotate(float angle);

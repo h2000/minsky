@@ -88,10 +88,30 @@ using namespace std;
 namespace minsky
 {
   Minsky minsky;
-  make_model(minsky);
+
+  // a hook for recording when the minsky model's state changes
+  void member_entry_hook(int argc, CONST84 char** argv)
+  {
+    if (argc>1) minsky.markEdited();
+  }
+
+  TCL_obj_t& minskyTCL_obj() 
+  {
+    static TCL_obj_t t;
+    static int dum=(t.member_entry_hook=member_entry_hook,1);
+    return t;
+  }
+
+  tclvar TCL_obj_lib("ecolab_library",ECOLAB_LIB);
+  int TCL_obj_minsky=
+    (
+     TCL_obj_init(minsky),
+     ::TCL_obj(minskyTCL_obj(),"minsky",minsky),
+     1
+    );
 }
 
-Minsky::Minsky(): edited(true), m_zoomFactor(1),
+Minsky::Minsky(): reset_needed(true), m_zoomFactor(1),
                   port(ports), wire(wires), op(operations), 
                   constant(operations), integral(operations), var(variables),
                   value(variables.values), plot(plots.plots), 
@@ -99,6 +119,7 @@ Minsky::Minsky(): edited(true), m_zoomFactor(1),
                   t(0), stepMin(0), stepMax(1), nSteps(1),
                   epsAbs(1e-3), epsRel(1e-2) 
 {
+  m_edited=false; // needs to be here, because the GodleyIcon constructor calls markEdited
 }
 
 void Minsky::clearAll()
@@ -117,17 +138,11 @@ void Minsky::clearAll()
   constant.clear();
   integral.clear();
   var.clear();
+  reset_needed=true;
 }
 
 
 const char* Minsky::minskyVersion=MINSKY_VERSION;
-
-bool Minsky::portInput(TCL_args args)
-{
-  int id=args;
-  assert(ports.count(id));
-  return ports[id].input;
-}
 
 int Minsky::addWire(TCL_args args) {
   int from=args, to=args;
@@ -151,8 +166,9 @@ int Minsky::addWire(TCL_args args) {
   args>>w.coords;
   if (w.coords.size()<4)
     return -1;
-  edited = true;
-  return PortManager::addWire(w);
+  int id=PortManager::addWire(w);
+  markEdited();
+  return id;
 }
 
 void Minsky::deleteWire(TCL_args args)
@@ -162,6 +178,7 @@ void Minsky::deleteWire(TCL_args args)
     {
       variables.deleteWire(wires[id].to);
       PortManager::deleteWire(id);
+      markEdited();
     }
 }
 
@@ -176,6 +193,7 @@ array<float> Minsky::wireCoords(TCL_args args)
       args>>tmp;
       if (tmp.size()>=4)
         wire.coords=tmp;
+      markEdited();
     }
   assert(wire.coords.size()>=4);
   return wire.coords;
@@ -190,7 +208,7 @@ int Minsky::AddOperation(const char* o)
   if (!newOp) return -1;
   int id=operations.empty()? 0: operations.rbegin()->first+1;
   operations.insert(make_pair(id, newOp));
-  edited = true;
+  markEdited();
   return id;
 }
 
@@ -201,6 +219,7 @@ int Minsky::CopyOperation(int id)
   int newId=operations.empty()? 0: operations.rbegin()->first+1;
   OperationPtr newOp = source->second->clone();
   operations.insert(make_pair(newId, newOp));
+  markEdited();
   return newId;
 }
 
@@ -222,7 +241,7 @@ void Minsky::DeleteOperation(int opid)
             }
         }
       operations.erase(op);
-      edited = true;
+      markEdited();
     }
 }
 
@@ -231,6 +250,7 @@ int Minsky::group(TCL_args args)
   int id=groupItems.empty()? 0: groupItems.rbegin()->first+1;
   GroupIcon& g=groupItems.insert(make_pair(id, GroupIcon(id))).first->second;
   g.group(args[0], args[1], args[2], args[3]);
+  markEdited();
   return id;
 }
 
@@ -239,6 +259,7 @@ void Minsky::ungroup(TCL_args args)
   int id=args;
   groupItems[id].ungroup();
   groupItems.erase(id);
+  markEdited();
 }
 
 int Minsky::CopyGroup(int id)
@@ -249,13 +270,14 @@ int Minsky::CopyGroup(int id)
   GroupIcon& g=
     groupItems.insert(make_pair(newId, GroupIcon(newId))).first->second;
   g.copy(srcIt->second);
+  markEdited();
   return newId;
 }
 
-array<int> Minsky::unwiredOperations()
+array<int> Minsky::unwiredOperations() const
 {
   array<int> ret;
-  for (Operations::iterator op=operations.begin(); op!=operations.end(); ++op)
+  for (Operations::const_iterator op=operations.begin(); op!=operations.end(); ++op)
     for (int i=0; i<op->second->numPorts(); ++i)
       if (WiresAttachedToPort(op->second->ports()[i]).size()==0)
         {
@@ -271,7 +293,9 @@ int Minsky::CopyVariable(int id)
     {
       VariablePtr v(variables[id]->clone());
       v->visible=true; // a copied variable should always be visible!
-      return variables.addVariable(v);
+      int id=variables.addVariable(v);
+      markEdited();
+      return id;
     }
   else
     return -1;
@@ -362,7 +386,6 @@ void Minsky::garbageCollect()
       ports[pl->second.ports[p]] = oldPortMap[pl->second.ports[p]];
 
   variables.reset();
-  edited = true;
 }
 
 namespace {
@@ -723,10 +746,10 @@ void Minsky::reset()
 
 void Minsky::step()
 {
- if (edited) 
+  if (reset_needed) 
     {
       reset();
-      edited=false;
+      reset_needed=false;
     }
 
   // update flow variable
@@ -800,6 +823,7 @@ void Minsky::Save(const char* filename)
   saveFile.prettyPrint=true;
   garbageCollect();
   xml_pack(saveFile, "Minsky", schema1::Minsky(*this));
+  m_edited=false;
 }
 
 void Minsky::Load(const char* filename) 
@@ -830,7 +854,8 @@ void Minsky::Load(const char* filename)
   for (GroupIcons::iterator g=groupItems.begin(); g!=groupItems.end(); ++g)
     g->second.computeDisplayZoom();
 
-  edited=true;
+  m_edited=false;
+  reset_needed=true;
 }
 
 void Minsky::ExportSchema(const char* filename, int schemaLevel)
@@ -868,6 +893,7 @@ void Minsky::Zoom(float xOrigin, float yOrigin, float factor)
   for (Plots::Map::iterator p=plots.plots.begin(); p!=plots.plots.end(); ++p)
     p->second.zoom(xOrigin, yOrigin, factor);
   m_zoomFactor*=factor;
+  markEdited();
 }
 
 void Minsky::setZoom(float factor)
@@ -883,4 +909,5 @@ void Minsky::setZoom(float factor)
   for (Plots::Map::iterator p=plots.plots.begin(); p!=plots.plots.end(); ++p)
     p->second.setZoom(factor);
   m_zoomFactor=factor;
+  markEdited();
 }

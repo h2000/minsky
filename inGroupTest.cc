@@ -28,8 +28,8 @@ InGroup::Cell::Cell(int id, const GroupIcon& g):
   y1(g.y()+0.5*g.height*g.zoomFactor()), 
   area(g.width*g.height*g.zoomFactor()* g.zoomFactor()) 
 {
-  float left, right;
-  g.margins(left, right);
+  float left=0, right=0;
+  //g.margins(left, right);
   x0=g.x()-(0.5*g.width-left)*g.zoomFactor();
   x1=g.x()+(0.5*g.width-right)*g.zoomFactor();
 }

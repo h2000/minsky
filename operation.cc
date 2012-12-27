@@ -427,3 +427,30 @@ void OperationBase::zoom(float xOrigin, float yOrigin,float factor)
       zoomFactor*=factor;
     }
 }
+
+void Constant::adjustSliderBounds()
+{
+  if (sliderMax<value) sliderMax=value;
+  if (sliderMin<value) sliderMin=value;
+}
+
+void Constant::initOpSliderBounds()
+{
+  if (!sliderBoundsSet) 
+    {
+      if (value==0)
+        {
+          sliderMin=-1;
+          sliderMax=1;
+          sliderStep=0.1;
+        }
+      else
+        {
+          sliderMin=-value*10;
+          sliderMax=value*10;
+          sliderStep=abs(0.1*value);
+        }
+      sliderStepRel=false;
+      sliderBoundsSet=true;
+    }
+}

@@ -19,10 +19,16 @@
 #include "godley.h"
 #include "port.h"
 #include "variableManager.h"
+#include "minsky.h"
 #include <ecolab_epilogue.h>
 using namespace minsky;
 
 const char* GodleyTable::initialConditions="Initial Conditions";
+
+void GodleyTable::markEdited()
+{
+  minsky::minsky.markEdited();
+}
 
 bool GodleyTable::initialConditionRow(unsigned row) const
 {
@@ -40,13 +46,19 @@ bool GodleyTable::initialConditionRow(unsigned row) const
 void GodleyTable::InsertRow(unsigned row)
 {
   if (row<=data.size())
-    data.insert(data.begin()+row, vector<string>(cols()));
+    {
+      data.insert(data.begin()+row, vector<string>(cols()));
+      markEdited();
+    }
 }
 
 void GodleyTable::DeleteRow(unsigned row)
 {
   if (row>0 && row<=data.size())
-    data.erase(data.begin()+row-1);
+    {
+      data.erase(data.begin()+row-1);
+      markEdited();
+    }
 }
 
 void GodleyTable::InsertCol(unsigned col)
@@ -55,8 +67,11 @@ void GodleyTable::InsertCol(unsigned col)
     m_assetClass.resize(cols(), noAssetClass);
   m_assetClass.insert(m_assetClass.begin()+col,noAssetClass);
   if (data.size()>0 && col<=data[0].size())
-    for (unsigned row=0; row<data.size(); ++row)
-      data[row].insert(data[row].begin()+col, "");
+    {
+      for (unsigned row=0; row<data.size(); ++row)
+        data[row].insert(data[row].begin()+col, "");
+      markEdited();
+    }
 }
 
 void GodleyTable::DeleteCol(unsigned col)
@@ -65,8 +80,11 @@ void GodleyTable::DeleteCol(unsigned col)
     m_assetClass.resize(cols(), noAssetClass);
   m_assetClass.erase(m_assetClass.begin()+col-1);
   if (col>0 && col<=data[0].size())
-    for (unsigned row=0; row<rows(); ++row)
-      data[row].erase(data[row].begin()+col-1);
+    {
+      for (unsigned row=0; row<rows(); ++row)
+        data[row].erase(data[row].begin()+col-1);
+      markEdited();
+    }
 }
 
 vector<string> GodleyTable::getColumnVariables() const
@@ -123,11 +141,12 @@ string GodleyTable::assetClass(TCL_args args)
 {
   int col=args;
   if (args.count) 
-    return classdesc::enumKey<AssetClass>
-      (_assetClass
-       (col, AssetClass(classdesc::enumKey<AssetClass>((char*)args))));
-  else
-    return classdesc::enumKey<AssetClass>(_assetClass(col));
+    {
+      _assetClass
+        (col, AssetClass(classdesc::enumKey<AssetClass>((char*)args)));
+      markEdited();  
+    }
+  return classdesc::enumKey<AssetClass>(_assetClass(col));
 }
 
 string GodleyTable::RowSum(int row) const
@@ -215,4 +234,5 @@ void GodleyTable::SetDEmode(bool mode)
               formula.insert(start,"-");
           }
   doubleEntryCompliant=mode;
+  markEdited();  
 }

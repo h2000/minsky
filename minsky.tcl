@@ -284,11 +284,11 @@ proc openFile {} {
     set ofname [tk_getOpenFile -multiple 1 -filetypes {
 	    {Minsky {.mky}} {XML {.xml}} {All {.*}}} -initialdir $workDir]
     if [string length $ofname] {
+        newSystem
         setFname $ofname
 
-        deleteSubsidiaryTopLevels
         #not sure why this is needed
-        .wiring.canvas delete variables operations wires handles plots
+#        .wiring.canvas delete variables operations wires handles plots
         minsky.load $fname
         updateCanvas
 	foreach g [godleyItems.#keys] {
@@ -519,6 +519,7 @@ proc deleteSubsidiaryTopLevels {} {
     global globals
 
     set globals(default_rotation) 0
+    set globals(godley_tables) {}
 
     foreach w [info commands .godley*] {destroy $w}
     foreach w [info commands .plot*] {destroy $w}
@@ -536,6 +537,15 @@ if {[llength [info commands afterMinskyStarted]]>0} {
 }
 
 proc finishUp {} {
+    # check if the model has been saved yet
+    if [edited] {
+        switch [tk_messageBox -message "Save before exiting?" -type yesnocancel] {
+            yes save
+            no {}
+            cancel return
+        }
+    }
+
     # if we have a valid rc file location, write out the directory of
     # the last file loaded
     global rcfile workDir 
@@ -546,6 +556,8 @@ proc finishUp {} {
         puts $rc "set canvasHeight [winfo height .wiring.canvas]"
         close $rc
     }
+    # why is this needed?
+    proc bgerror x {} 
     exit
 }
 
@@ -562,3 +574,4 @@ if {$argc>1 && ![string match "*.tcl" $argv(1)]} {
 # we have loaded a Minsky model, so must refresh the canvas
     updateCanvas
 }
+

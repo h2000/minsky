@@ -208,7 +208,8 @@ namespace
                 //                cmd|".wiring.canvas addtag groupitems"|id|" withtag op"|*i|"\n";
                 OperationBase& op=*minsky::minsky.operations[*i];
                 op.visible=true;
-                op.zoomFactor=g.localZoom();
+                //op.zoomFactor=g.localZoom();
+                op.zoom(g.x(), g.y(), g.localZoom()/op.zoomFactor);
                 if (op.type()==OperationType::constant)
                   cmd<<"drawSlider"<<*i<<op.x()<<op.y()<<"\n";
               }
@@ -221,7 +222,8 @@ namespace
                cmd|".wiring.canvas addtag groupitems"|id|" withtag var"|*i|"\n";
                VariableBase& v=*minsky::minsky.variables[*i];
                v.visible=true;
-               v.zoomFactor=g.localZoom();
+               //v.zoomFactor=g.localZoom();
+               v.zoom(g.x(), g.y(), g.localZoom()/v.zoomFactor);
              }
          for (i=g.wires().begin(); i!=g.wires().end(); ++i)
            {
@@ -418,11 +420,11 @@ void GroupIcon::group(float x0, float y0, float x1, float y1)
   set<int> wiredPorts, edgePorts; 
   vector<Wire> additionalWires;
 
-  for (PortManager::Wires::iterator w=portManager().wires.begin();
-       w!=portManager().wires.end(); ++w)
+  for (PortManager::Wires::iterator w=minsky().wires.begin();
+       w!=minsky().wires.end(); ++w)
     {
-      const Port& from=portManager().ports[w->second.from];
-      const Port& to=portManager().ports[w->second.to];
+      const Port& from=minsky().ports[w->second.from];
+      const Port& to=minsky().ports[w->second.to];
       wiredPorts.insert(w->second.from);
       wiredPorts.insert(w->second.to);
       if (bbox.inside(from.x(), from.y()))
@@ -627,7 +629,7 @@ array<float> GroupIcon::updatePortLocation()
           (r<<=0.5*width)<<=dy;
           fromIdx++;
         }
-        
+      (*v)->rotation=rotation;
       // calculate rotated port positions
       (*v)->MoveTo(dx*ca-dy*sa+x(), dx*sa+dy*ca+y());
       assert((*v)->type()!=VariableType::undefined);
@@ -807,23 +809,62 @@ float GroupIcon::computeDisplayZoom()
   contentBounds(x0,y0,x1,y1);
   margins(l,r);
   displayZoom=1.1*max((x1-x0)/(width-l-r), (y1-y0)/height);
-  // centre contents within icon
-//  float dx=iconCentre()-0.5*(x0+x1), dy=y()-0.5*(y0+y1);
-//  vector<int>::iterator i=m_operations.begin();
-//  for (;i!=m_operations.end(); ++i)
-//    {
-//      Operations::iterator o=minsky().operations.find(*i);
-//      if (o!=minsky().operations.end())
-//        o->second->move(dx,dy);
-//    }
-//  for (i=m_variables.begin();i!=m_variables.end(); ++i)
-//    {
-//      assert(minsky().variables.count(*i));
-//      minsky().variables[*i]->move(dx,dy);
-//      assert(minsky().variables[*i]->type()!=VariableType::undefined);
-//    }
   return displayZoom;
 }
+
+template <class S>
+void GroupIcon::addAnyWires(const S& ports)
+{
+  array<int> wiresToCheck;
+  for (size_t i=0; i<ports.size(); ++i)
+    wiresToCheck <<= portManager().WiresAttachedToPort(ports[i]);
+  if (wiresToCheck.size()>0)
+    {
+      // first build list of contained ports
+      set<int> containedPorts;
+      for (size_t i=0; i<m_operations.size(); ++i)
+        {
+          const vector<int>& p=minsky().operations[m_operations[i]]->ports();
+          containedPorts.insert(p.begin(), p.end());
+        }
+      for (size_t i=0; i<m_variables.size(); ++i)
+        {
+          const array<int>& p=minsky().variables[m_variables[i]]->ports();
+          containedPorts.insert(p.begin(), p.end());
+        }
+      for (array<int>::iterator w=wiresToCheck.begin(); 
+           w!=wiresToCheck.end(); ++w)
+        {
+          Wire& wire=portManager().wires[*w];
+          if (containedPorts.count(wire.from) && 
+              containedPorts.count(wire.to))
+            m_wires.push_back(*w);
+          wire.visible=false;
+        }
+    }
+}
+
+template void GroupIcon::addAnyWires(const array<int>& ports);
+template void GroupIcon::addAnyWires(const vector<int>& ports);
+
+template <class S>
+void GroupIcon::removeAnyWires(const S& ports)
+{
+  set<int> portsToCheck(ports.begin(), ports.end());
+  vector<int> newWires;
+  for (vector<int>::iterator i=m_wires.begin(); i!=m_wires.end(); ++i)
+    {
+      Wire& w=minsky().wires[*i];
+      if (!portsToCheck.count(w.from) && !portsToCheck.count(w.to))
+        newWires.push_back(*i);
+      else
+        w.visible=true; //TODO this won't work for nested groups
+    }
+  m_wires.swap(newWires);
+}
+
+template void GroupIcon::removeAnyWires(const array<int>& ports);
+template void GroupIcon::removeAnyWires(const vector<int>& ports);
 
 void GroupIcon::AddVariable(int varId)
 {
@@ -834,47 +875,79 @@ void GroupIcon::AddVariable(int varId)
         m_variables.push_back(varId);
         float x=i->second->x(), y=i->second->y();
         i->second->group=id;
-        i->second->visible=displayContents();
+
+        // determine if variable is to be added to the interface variable list
+        float left, right;
+        margins(left,right);
+        float dx=(x-this->x())*cos(rotation*M_PI/180)-
+          (y-this->y())*sin(rotation*M_PI/180);
+        if (0.5*width-right<dx)
+          outVariables.push_back(varId);
+        else if (-0.5*width+left>dx)
+          inVariables.push_back(varId);
+        else
+          i->second->visible=displayContents();
         i->second->MoveTo(x,y); // adjust to group relative coordinates
-        // see if any attached wires should also be moved into the group
-        array<int> wiresToCheck=portManager().WiresAttachedToPort(i->second->inPort());
-        wiresToCheck+=portManager().WiresAttachedToPort(i->second->outPort());
-        if (wiresToCheck.size()>0)
-          {
-            // first build list of contained ports
-            set<int> containedPorts;
-            for (size_t i=0; i<m_operations.size(); ++i)
-              {
-                const vector<int>& p=minsky().operations[m_operations[i]]->ports();
-                containedPorts.insert(p.begin(), p.end());
-              }
-             for (size_t i=0; i<m_variables.size(); ++i)
-              {
-                const array<int>& p=minsky().variables[m_variables[i]]->ports();
-                containedPorts.insert(p.begin(), p.end());
-              }
-             for (array<int>::iterator w=wiresToCheck.begin(); 
-                  w!=wiresToCheck.end(); ++w)
-               {
-                 Wire& wire=portManager().wires[*w];
-                 if (containedPorts.count(wire.from) && 
-                     containedPorts.count(wire.to))
-                   m_wires.push_back(*w);
-               }
-          }
+        computeDisplayZoom();
+        updatePortLocation();
+        addAnyWires(i->second->ports());
       }
 }
 
-void GroupIcon::removeVariable(int id)
+void GroupIcon::RemoveVariable(int id)
 {
+  for (vector<int>::iterator i=m_variables.begin(); i!=m_variables.end(); ++i)
+    if (*i==id)
+      {
+        m_variables.erase(i);
+        VariableManager::iterator i=minsky().variables.find(id);
+        if (i!=minsky().variables.end())
+          {
+            float x=i->second->x(), y=i->second->y();
+            i->second->group=-1;
+            i->second->MoveTo(x,y);
+            i->second->visible=true;
+            removeAnyWires(i->second->ports());
+            computeDisplayZoom();
+          }
+        break;
+      }
 }
 
-void GroupIcon::addOperator(int id)
+void GroupIcon::AddOperation(int opId)
 {
+  Operations::iterator i=minsky().operations.find(opId);
+  if (i!=minsky().operations.end())
+    if (i->second->group!=id)
+      {
+        m_operations.push_back(opId);
+        float x=i->second->x(), y=i->second->y();
+        i->second->group=id;
+        computeDisplayZoom();
+        i->second->visible=displayContents();
+        i->second->MoveTo(x,y); // adjust to group relative coordinates
+        addAnyWires(i->second->ports());
+      }
 }
 
-void GroupIcon::removeOperator(int id)
+void GroupIcon::RemoveOperation(int id)
 {
+  for (vector<int>::iterator i=m_operations.begin(); i!=m_operations.end(); ++i)
+    if (*i==id)
+      {
+        m_operations.erase(i);
+        Operations::iterator i=minsky().operations.find(id);
+        if (i!=minsky().operations.end())
+          {
+            float x=i->second->x(), y=i->second->y();
+            i->second->group=-1;
+            i->second->MoveTo(x,y);
+            i->second->visible=true;
+            removeAnyWires(i->second->ports());
+            computeDisplayZoom();
+          }
+        break;
+      }
 }
 
 namespace 

@@ -239,7 +239,7 @@ proc placeNewOp {opid} {
     bind .wiring.canvas <Enter> "move op $opid op$opid %x %y"
     bind .wiring.canvas <Motion> "move op $opid op$opid %x %y"
     bind .wiring.canvas <Button> \
-        "bind .wiring.canvas <Motion> {}; bind .wiring.canvas <Enter> {}"
+        "bind .wiring.canvas <Motion> {}; bind .wiring.canvas <Enter> {}; checkAddGroup op $opid %x %y"
 }
 
 proc cancelPlaceNewOp {id} {
@@ -615,7 +615,7 @@ proc setM1Binding {item id tag} {
             # move mode
             .wiring.canvas bind $tag <Button-1> "moveSet $item $id $tag %x %y"
             .wiring.canvas bind $tag <B1-Motion> "move $item $id $tag %x %y"
-            .wiring.canvas bind $tag <B1-ButtonRelease> "move $item $id $tag %x %y"
+            .wiring.canvas bind $tag <B1-ButtonRelease> "move $item $id $tag %x %y; checkAddGroup $item $id %x %y"
         }
         default { 
             # pan mode
@@ -748,18 +748,17 @@ proc contextMenu {item x y} {
             set tag [lindex $tags [lsearch -regexp $tags {var[0-9]+}]]
             set id [string range $tag 3 end]
 	    .wiring.context delete 0 end
-	    .wiring.context add command -label "Delete" -command "deleteItem $id $tag"
             .wiring.context add command -label "Edit" -command "editItem $id $tag"
             .wiring.context add command -label "Copy" -command "copyVar $id"
             .wiring.context add command -label "Flip" -command "rotateVar $id 180; flip_default"
             .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.variables.@elem $id].*"
+	    .wiring.context add command -label "Delete" -command "deleteItem $id $tag"
         }
         "operations" {
             set tag [lindex $tags [lsearch -regexp $tags {op[0-9]+}]]
             set id [string range $tag 2 end]
             op.get $id
             .wiring.context delete 0 end
-            .wiring.context add command -label "Delete" -command "deleteItem $id $tag"
             .wiring.context add command -label "Edit" -command "editItem $id $tag"             
             if {[op.name]=="integrate"} {
                 integral.get $id
@@ -780,30 +779,31 @@ proc contextMenu {item x y} {
                 .wiring.context add command -label "Toggle var binding" -command "toggleCoupled $id"
             }
             .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.operations.@elem $id].*"
+            .wiring.context add command -label "Delete" -command "deleteItem $id $tag"
         }
         "wires" {
             set tag [lindex $tags [lsearch -regexp $tags {wire[0-9]+}]]
             set id [string range $tag 4 end]
             .wiring.context delete 0 end
             .wiring.context add command -label "Straighten" -command "straightenWire $id"
-            .wiring.context add command -label "Delete" -command "deleteItem $id $tag"
             .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.wires.@elem $id].*"
+            .wiring.context add command -label "Delete" -command "deleteItem $id $tag"
         }
         "plots" {
             set tag [lindex $tags [lsearch -regexp $tags {plot#.+}]]
             set id [string range $tag 5 end]
             .wiring.context delete 0 end
             .wiring.context add command -label "Expand" -command "plotDoubleClick $id"
-            .wiring.context add command -label "Delete" -command "deletePlot $item $id"
             .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.plots.plots.@elem $id].*"
+            .wiring.context add command -label "Delete" -command "deletePlot $item $id"
         }
         "godleys" {
             set tag [lindex $tags [lsearch -regexp $tags {godley[0-9]+}]]
             set id [string range $tag 6 end]
             .wiring.context delete 0 end
             .wiring.context add command -label "Open Godley Table" -command "openGodley $id"
+            .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.godleyItems.@elem $id].*"
             .wiring.context add command -label "Delete Godley Table" -command "deleteItem $id $tag"
-            #.wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.godleys.@elem $id].*"
         }
         "group" {
             set tag [lindex $tags [lsearch -regexp $tags {group[0-9]+}]]
@@ -1082,7 +1082,7 @@ proc editItem {id tag} {
                         set constInput(Name) [constant.description]
                         set constInput(ValueLabel) "Value"
                         set constInput(Value) [constant.value]
-                        initOpSliderBounds
+                        constant.initOpSliderBounds
 			set "constInput(Slider Bounds: Min)" [constant.sliderMin]
 			set "constInput(Slider Bounds: Max)" [constant.sliderMax]
 			set "constInput(Slider Step Size)" [constant.sliderStep]
@@ -1131,30 +1131,15 @@ proc editItem {id tag} {
 
 proc setOpVal {op x} {
     constant.get $op
-    constant.value $x
-}
-
-# initialises sliderbounds based on current value, if not set otherwise
-proc initOpSliderBounds {} {
-    if {![constant.sliderBoundsSet]} {
-        if {[constant.value]==0} {
-            constant.sliderMin -1
-            constant.sliderMax 1
-            constant.sliderStep 0.1
-        } else {
-            constant.sliderMin [expr -[constant.value]*10]
-            constant.sliderMax [expr [constant.value]*10]
-            constant.sliderStep [expr abs(0.1*[constant.value])]
-        }
-        constant.sliderStepRel 0
-        constant.sliderBoundsSet 1
+    if {$x!=[constant.value]} {
+        constant.value $x
     }
 }
- 
+
 proc setSliderProperties {id} {
     if [winfo  exists .wiring.slider$id] {
         constant.get $id
-        initOpSliderBounds
+        constant.initOpSliderBounds
         if [constant.sliderStepRel] {
             set res [expr [constant.sliderStep]*([constant.sliderMax]-[constant.sliderMin])]
         } else {
@@ -1171,16 +1156,13 @@ proc setSliderProperties {id} {
        if {$newRes<$res} {set res $newRes}
 
         # ensure slider does not override value
-        if {[constant.sliderMax]<[constant.value]} {
-            constant.sliderMax [constant.value]}
-        if {[constant.sliderMin]>[constant.value]} {
-            constant.sliderMin [constant.value]}
+        constant.adjustSliderBounds
 
-        set origValue [constant.value]
+        #set origValue [constant.value]
         .wiring.slider$id configure -to [constant.sliderMax] \
             -from [constant.sliderMin] -resolution $res
         .wiring.slider$id set [constant.value]
-        constant.value $origValue
+        #constant.value $origValue
     }
 }
 
@@ -1192,7 +1174,9 @@ proc drawSlider {op x y} {
         # otherwise sliderCheck$op is more up to date
         set sliderCheck$op [constant.sliderVisible]
     }
-    constant.sliderVisible [set sliderCheck$op]
+    if {[constant.sliderVisible]!=[set sliderCheck$op]} {
+        constant.sliderVisible [set sliderCheck$op]
+    }
 
     if {[set sliderCheck$op]} {
         if {![winfo exists .wiring.slider$op]} {
@@ -1200,8 +1184,8 @@ proc drawSlider {op x y} {
                 -showvalue 1 -sliderlength 30 
         }
 
-
         setSliderProperties $op
+
         # configure command after slider initially set to prevent
         # constant value being set to initial state of slider when
         # constructed.

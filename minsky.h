@@ -45,6 +45,9 @@ using namespace classdesc;
 namespace minsky
 {
 
+  /// a TCL_obj_t that provides a hook for detecting model edits
+  ecolab::TCL_obj_t& minskyTCL_obj();
+
   // An integral is an additional stock variable, that integrates its flow variable
   struct Integral
   {
@@ -127,7 +130,7 @@ namespace minsky
                   // we keep another reference to value here so that we
                   // never dereference an invalid object
                   cmdPrefix.erase(cmdPrefix.rfind(".get"));
-                  TCL_obj(null_TCL_obj, cmdPrefix, *v);
+                  TCL_obj(minskyTCL_obj(), cmdPrefix, *v);
                   val=v;
                 }
             }
@@ -154,7 +157,6 @@ namespace minsky
   class Minsky: public ValueVector, public MinskyExclude, public PortManager
   {
     CLASSDESC_ACCESS(Minsky);
-    bool edited;
 
     /// add the extra copy operations performed when variableValue idx
     /// is updated.  Use idx=-1 for the initial set
@@ -168,8 +170,12 @@ namespace minsky
      const map<int,int>& operationIdFromInputsPort);
 
     float m_zoomFactor;
-
+    bool reset_needed; // if a new model, or loaded from disk
+    bool m_edited;
   public:
+    /// reflects whether the model has been changed since last save
+    bool edited() const {return m_edited;}
+    bool markEdited() {m_edited=true; reset_needed=true;}
 
     //    GodleyTable godley; // deprecated - needed for Minsky.1 capability
     typedef std::map<int, GodleyIcon> GodleyItems;
@@ -205,7 +211,7 @@ namespace minsky
     using PortManager::closestOutPort;
     using PortManager::closestInPort;
 
-    bool portInput(TCL_args);
+    //bool portInput(TCL_args);
 
     /// add a new wire connecting \a from port to \a to port with \a coordinates
     /// @return wireid, or -1 if wire is invalid
@@ -241,7 +247,7 @@ namespace minsky
     void deleteOperation(TCL_args args) {DeleteOperation(args);}
 
     /// useful for debugging wiring diagrams
-    array<int> unwiredOperations();
+    array<int> unwiredOperations() const;
 
     int newVariable(TCL_args args) {return variables.newVariable(args);}
     int CopyVariable(int id);
@@ -421,5 +427,6 @@ template <class K, class T, class V>
 void xml_pack(classdesc::xml_pack_t&,const string&,minsky::GetterSetterPtr<K,T,V>&) {}
 template <class K, class T, class V> 
 void xml_unpack(classdesc::xml_unpack_t&,const string&,minsky::GetterSetterPtr<K,T,V>&) {}
+
 
 #endif

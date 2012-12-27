@@ -51,12 +51,13 @@ proc afterMinskyStarted {} {
     bind .wiring.canvas <Button-1> "puts {%x %y}"
 
     # delivered to foobar
-    event generate .wiring.canvas <Button-3> -x 63 -y 164 -rootx 100 -rooty 100
+    event generate .wiring.canvas <Button-3>  -x 63 -y 65 -rootx 100 -rooty 100
     # check context menu is posted
     assert {[winfo viewable .wiring.context]} foobar
     # check the menu items are what is expected
-    assert {[.wiring.context entrycget 0 -command]=="editItem 0 var"} foobar
+    assert {[.wiring.context entrycget 0 -command]=="editItem 1 var"} foobar
     assert {[.wiring.context entrycget 1 -label]=="Copy"} foobar
+
 
     .wiring.context unpost
 
@@ -72,7 +73,7 @@ proc afterMinskyStarted {} {
     event generate .wiring.canvas <Button-3> -x 113 -y 69 -rootx 100 -rooty 100
     assert [winfo viewable .wiring.context] godley
     assert {[.wiring.context entrycget 0 -command]=="openGodley 0"} godley
-    assert {[.wiring.context entrycget 1 -command]=="deleteItem 0 godley0"} godley
+    assert {[.wiring.context entrycget 2 -command]=="deleteItem 0 godley0"} godley
 
     .wiring.context unpost
     # delivered to nowhere

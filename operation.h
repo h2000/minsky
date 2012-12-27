@@ -172,6 +172,10 @@ namespace minsky
     // clone has to be overridden, as default impl return object of
     // type Operation<T>
     Constant* clone() const {return new Constant(*this);}
+    /// ensure slider does not override value
+    void adjustSliderBounds();
+    /// initialises sliderbounds based on current value, if not set otherwise
+    void initOpSliderBounds();
   };
 
   class IntOp: public Operation<OperationType::integrate>

@@ -20,24 +20,26 @@
 #include <UnitTest++/UnitTest++.h>
 using namespace minsky;
 
-struct TestFixture: public Minsky
+namespace
 {
-  TestFixture()
+  struct TestFixture: public Minsky
   {
-    setPortManager(*this);
-    setVariableManager(variables);
-    GodleyIcon::setMinsky(*this);
-  }
-  void addWire(const Wire& w)
-  {
-    CHECK(ports.count(w.from));
-    CHECK(ports.count(w.to));
-    CHECK(!ports[w.from].input && ports[w.to].input);
-    CHECK(variables.addWire(w.from, w.to));
-    PortManager::addWire(w);
-  }
-};
-
+    TestFixture()
+    {
+      setPortManager(*this);
+      setVariableManager(variables);
+      GodleyIcon::setMinsky(*this);
+    }
+    void addWire(const Wire& w)
+    {
+      CHECK(ports.count(w.from));
+      CHECK(ports.count(w.to));
+      CHECK(!ports[w.from].input && ports[w.to].input);
+      CHECK(variables.addWire(w.from, w.to));
+      PortManager::addWire(w);
+    }
+  };
+}
 
 /*
   ASCII Art diagram for the below test:
@@ -326,7 +328,7 @@ TEST_FIXTURE(TestFixture,integrals)
   // now integrate the linear function
   operations[3]=OperationPtr(OperationType::integrate);
   wires[2]=Wire(operations[2]->ports()[0], operations[3]->ports()[1]);
-  constructEquations();
+  reset();
   step();
   CHECK_EQUAL(0.5*value*t*t, integrals[1].stock.value());
 }

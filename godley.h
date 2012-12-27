@@ -41,6 +41,7 @@ namespace minsky
     /// class of each column (used in DE compliant mode)
     vector<AssetClass> m_assetClass;
   
+    void markEdited(); ///< mark model as having changed
   public:
 
     bool doubleEntryCompliant;
@@ -83,12 +84,13 @@ namespace minsky
     size_t rows() const {return data.size();}
     size_t cols() const {return data.empty()? 0: data[0].size();}
 
-    void clear() {data.clear();}
+    void clear() {data.clear(); markEdited();}
     void Resize(unsigned rows, unsigned cols) {
       // resize existing
       for (size_t i=0; i<data.size(); ++i) data[i].resize(cols);
       data.resize(rows, vector<string>(cols));
       m_assetClass.resize(cols, noAssetClass);
+      markEdited();
     }
     void resize(TCL_args args) {Resize(args[0],args[1]);}
 
@@ -116,7 +118,7 @@ namespace minsky
       else
         return "";
     }
-    void setCell(TCL_args args) {cell(args[0],args[1])=(char*)args[2];}
+    void setCell(TCL_args args) {cell(args[0],args[1])=(char*)args[2]; markEdited();}
 
     /// get the set of column labels, in column order
     vector<string> getColumnVariables() const;

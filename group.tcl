@@ -82,13 +82,13 @@ proc lassoEnd {x y} {
 
 proc groupContext {id x y} {
     .wiring.context delete 0 end
-    .wiring.context add command -label "Ungroup" -command "ungroupGroupItem $id"
     .wiring.context add command -label "Edit" -command "groupEdit $id"
     .wiring.context add command -label "Resize" -command "group::resize $id"
     .wiring.context add command -label "Copy" -command "group::copy $id"
     .wiring.context add command -label "Flip" -command "group::flip $id"
-    .wiring.context add command -label "Delete" -command "deleteGroupItem $id"
     .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.groupItems.@elem $id].*"
+    .wiring.context add command -label "Ungroup" -command "ungroupGroupItem $id"
+    .wiring.context add command -label "Delete" -command "deleteGroupItem $id"
 
 }
 
@@ -137,16 +137,36 @@ proc groupEdit {id} {
 }
 
 proc checkAddGroup {item id x y} {
-    set gid [groupTest.containingGroup [.wiring.canvas canvasx $x] [.wiring.canvas canvasy $y]]
-    if {$gid>=0} {
-        groupItem.get $gid
-        if {![groupItem.displayContents]} {.wiring.canvas delete $item$id}
-        switch $item {
-            "var" {groupItem.addVariable $id}
-            "op" {groupItem.addOperator $id}
+    if {$item=="var" || $item=="op"} {
+        set gid [groupTest.containingGroup [.wiring.canvas canvasx $x] [.wiring.canvas canvasy $y]]
+        if {$gid>=0} {        
+            groupItem.get $gid
+            if {![groupItem.displayContents]} {.wiring.canvas delete $item$id}
+            switch $item {
+                "var" {groupItem.addVariable $id}
+                "op" {groupItem.addOperation $id}
+            }
+            groupItem.set
+            if {![$item.visible]} {.wiring.canvas delete $item$id}
+            # redraw group
+            .wiring.canvas delete group$gid
+            newGroupItem $gid
+            submitUpdateItemPos group$gid groupItem $gid
+        } else {
+            # check if it needs to be removed from a group
+            $item.get $id
+            if {[$item.group]>=0} {
+                groupItem.get [$item.group]
+                switch $item {
+                    "var" {groupItem.removeVariable $id}
+                    "op" {groupItem.removeOperation $id}
+                }
+                groupItem.set
+                # redraw group
+                .wiring.canvas delete group[$item.group]
+                newGroupItem [$item.group]
+            }
         }
-        groupItem.set
-        if {![$item.visible]} {.wiring.canvas delete $item$id}
     }
 }
 
