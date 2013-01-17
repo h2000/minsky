@@ -54,6 +54,11 @@ button .wiring.menubar.zoomIn -image zoomInImg -height 24 -width 37 \
     -command {zoom 1.1}
 tooltip .wiring.menubar.zoomIn "Zoom In"
 
+image create photo zoomOrigImg -file $minskyHome/icons/zoomOrig.gif
+button .wiring.menubar.zoomOrig -image zoomOrigImg -height 24 -width 37 \
+    -command {zoom [expr 1/[zoomFactor]]}
+tooltip .wiring.menubar.zoomOrig "Reset Zoom"
+
 image create photo godleyImg -file $minskyHome/icons/bank.gif
 button .wiring.menubar.godley -image godleyImg -height 24 -width 37 \
     -command {addNewGodleyItem [addGodleyTable 10 10]}
@@ -108,7 +113,7 @@ tooltip .wiring.menubar.plot "Plot"
 
 pack .wiring.menubar.wiringmode .wiring.menubar.movemode .wiring.menubar.panmode .wiring.menubar.lassomode -side left
 
-pack .wiring.menubar.zoomOut .wiring.menubar.zoomIn .wiring.menubar.godley .wiring.menubar.var .wiring.menubar.const .wiring.menubar.time -side left
+pack .wiring.menubar.zoomOut .wiring.menubar.zoomIn .wiring.menubar.zoomOrig .wiring.menubar.godley .wiring.menubar.var .wiring.menubar.const .wiring.menubar.time -side left
 
 
 pack .wiring.menubar.integrate .wiring.menubar.exp .wiring.menubar.add .wiring.menubar.subtract .wiring.menubar.multiply .wiring.menubar.divide .wiring.menubar.plot -side left
@@ -172,13 +177,18 @@ proc placeNewVar {id} {
     global moveOffsvar$id.x moveOffsvar$id.y
     set moveOffsvar$id.x 0
     set moveOffsvar$id.y 0
+    disableEventProcessing
     initGroupList
     setInteractionMode 2
 
     bind .wiring.canvas <Enter> "move var $id var$id %x %y"
     bind .wiring.canvas <Motion> "move var $id var$id %x %y"
     bind .wiring.canvas <Button> \
-        "bind .wiring.canvas <Motion> {}; bind .wiring.canvas <Enter> {}; checkAddGroup var $id %x %y"
+        "bind .wiring.canvas <Motion> {}
+         bind .wiring.canvas <Enter> {}
+         checkAddGroup var $id %x %y
+         bind .wiring.canvas <Button> {}"
+    enableEventProcessing
 }
 
 proc addVariablePostModal {} {
@@ -239,7 +249,18 @@ proc placeNewOp {opid} {
     bind .wiring.canvas <Enter> "move op $opid op$opid %x %y"
     bind .wiring.canvas <Motion> "move op $opid op$opid %x %y"
     bind .wiring.canvas <Button> \
-        "bind .wiring.canvas <Motion> {}; bind .wiring.canvas <Enter> {}; checkAddGroup op $opid %x %y"
+        "bind .wiring.canvas <Motion> {}
+         bind .wiring.canvas <Enter> {}
+         checkAddGroup op $opid %x %y
+         bind .wiring.canvas <Button> {}"
+}
+
+proc cancelPlaceNewOp {id} {
+    bind .wiring.canvas <Motion> {}
+    bind .wiring.canvas <Enter> {}
+    .wiring.canvas delete op$id
+    deleteOperation $id
+    updateCanvas
 }
 
 proc cancelPlaceNewOp {id} {
@@ -303,7 +324,11 @@ proc moveSet {item id tag x y} {
     global moveOffs$item$id.x moveOffs$item$id.y
     set moveOffs$item$id.x [expr $x-[$item.x]]
     set moveOffs$item$id.y [expr $y-[$item.y]]
-    initGroupList
+    if {"$item"=="groupItem"} {
+        initGroupList $id
+    } {
+        initGroupList
+    }
 }
 
 proc move {item id tag x y} {
@@ -312,15 +337,30 @@ proc move {item id tag x y} {
     set x [expr $x-[set moveOffs$item$id.x]]
     set y [expr $y-[set moveOffs$item$id.y]]
     $item.moveTo [.wiring.canvas canvasx $x] [.wiring.canvas canvasy $y]
-    $item.zoomFactor [localZoomFactor [$item.x] [$item.y]]
+    $item.zoomFactor [localZoomFactor $item $id [$item.x] [$item.y]]
     $item.set $id
     submitUpdateItemPos $tag $item $id
-    if {$item=="op"} {
-        foreach item [.wiring.canvas find withtag slider$id] {
-            set coords [.wiring.canvas coords $item]
-            .wiring.canvas move $item [expr $x-[lindex $coords 0]] [expr $y-[lindex $coords 1]-25]
+    switch $item {
+        "op" {
+            foreach item [.wiring.canvas find withtag slider$id] {
+                set coords [.wiring.canvas coords $item]
+                .wiring.canvas move $item [expr $x-[lindex $coords 0]] [expr $y-[lindex $coords 1]-25]
+            }
         }
     }
+        # check is variable is an I/O variable, and mark it differently
+#        "var" {
+#            .wiring.canvas delete iomarker
+#            set gid [groupTest.containingGroup [$item.x] [$item.y]]
+#            if {$gid>-1} {
+#                groupItem.get $gid
+#                if [groupItem.inIORegion [$item.x] [$item.y]] {
+#                    .wiring.canvas create oval [$item.x] [$item.y] \
+#                        [expr [$item.x]+3] [expr [$item.y]+3] \
+#                        -outline red  -tag iomarker
+#                }
+#            }
+#        }
 }
 
 # create a new canvas item for var id
@@ -649,11 +689,12 @@ proc setInteractionMode {args} {
     foreach var [variables.#keys] {setM1Binding var $var var$var}
     foreach op [operations.#keys] {setM1Binding op $op op$op}
     foreach id [godleyItems.#keys] {setM1Binding godleyItem $id godley$id}
-    foreach id [groupItems.#keys] {setM1Binding groupItem $id group$id}
+    foreach id [groupItems.#keys] {setM1Binding groupItem $id groupItem$id}
     foreach id [plots.plots.#keys] {setM1Binding plot $id plot#$id}
 }
 
 proc updateCanvas {} {
+    disableEventProcessing
     global fname showPorts
     .wiring.canvas delete all
 # centre canvas
@@ -662,8 +703,9 @@ proc updateCanvas {} {
     setInteractionMode
 
     # groups need to be done first, as they adjust port positions (hence wires)
-    foreach g [groupItems.#keys] {
-        newGroupItem $g
+    foreach g [groupItems.visibleGroups] {
+        groupItem.get $g
+        if {[groupItem.group]==-1} {newGroupItem $g}
     }
 
     foreach var [variables.visibleVariables] {
@@ -711,6 +753,7 @@ proc updateCanvas {} {
 #        adjustWire $port
 #    }
 
+    enableEventProcessing
 }
 
 menu .wiring.context -tearoff 0
@@ -805,9 +848,9 @@ proc contextMenu {item x y} {
             .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.godleyItems.@elem $id].*"
             .wiring.context add command -label "Delete Godley Table" -command "deleteItem $id $tag"
         }
-        "group" {
-            set tag [lindex $tags [lsearch -regexp $tags {group[0-9]+}]]
-            set id [string range $tag 5 end]
+        "groupItem" {
+            set tag [lindex $tags [lsearch -regexp $tags {groupItem[0-9]+}]]
+            set id [string range $tag 9 end]
             groupContext $id $x $y
         }
     }
@@ -1125,7 +1168,7 @@ proc editItem {id tag} {
 		wm transient .wiring.editOperation
             }
         }
-        "^group" {groupEdit $id}
+        "^groupItem" {groupEdit $id}
     }
 }
 

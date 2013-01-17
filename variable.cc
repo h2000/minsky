@@ -92,7 +92,7 @@ template <> int Variable<VariableBase::integral>::numPorts() const
 float VariableBase::x() const
 {
   if (group>=0)
-    return m_x + minsky::minsky.groupItems[group].iconCentre();
+    return m_x + minsky::minsky().groupItems[group].iconCentre();
   else
     return m_x;
 }
@@ -100,7 +100,7 @@ float VariableBase::x() const
 float VariableBase::y() const
 {
   if (group>=0)
-    return m_y + minsky::minsky.groupItems[group].y();
+    return m_y + minsky::minsky().groupItems[group].y();
   else
     return m_y;
 }

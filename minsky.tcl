@@ -21,7 +21,6 @@
 #
 
 # disable tear-off menus
-option add *Menu.tearOff 0
 
 
 set minskyHome [file dirname [info nameofexecutable]]
@@ -32,6 +31,7 @@ set workDir [pwd]
 # saved in .minskyrc
 set canvasWidth 600
 set canvasHeight 800
+set backgroundColour lightGray
 
 # read in .rc file, which differs on Windows and unix
 set rcfile ""
@@ -43,6 +43,7 @@ if {$tcl_platform(platform)=="unix"} {
 if [file exists $rcfile] {
   source $rcfile
 }
+
 
 
 if {![file exists [file join $tcl_library init.tcl]]
@@ -87,9 +88,11 @@ source [file join $tk_library bgerror.tcl]
 source $minskyHome/library/init.tcl
 
 GUI
+option add *Menu.tearOff 0
 wm deiconify .
 tk appname [file rootname [file tail $argv(0)]]
 wm title . "Minsky (prototype): $fname" 
+tk_setPalette $backgroundColour
 
 if {[string equal unix $tcl_platform(platform)]} {
     if {[catch {load $minskyHome/library/libTktable2.11[info sharedlibextension]}]} {
@@ -180,6 +183,10 @@ menu .menubar.options.menu
     wm transient .preferencesForm .
 }
 
+.menubar.options.menu add command -label "Background Colour" -command {
+    set backgroundColour [tk_chooseColor -initialcolor $backgroundColour]
+    tk_setPalette $backgroundColour
+}
 
 # placement of menu items in menubar
 pack .menubar.file -side left
@@ -291,11 +298,26 @@ proc openFile {} {
 #        .wiring.canvas delete variables operations wires handles plots
         minsky.load $fname
         updateCanvas
+        recentreCanvas
+
 	foreach g [godleyItems.#keys] {
 	    godleyItem.get $g
 	    set preferences(godleyDE) [godleyItem.table.doubleEntryCompliant]
 	}
     }
+}
+
+# adjust canvas so that -ve coordinates appear on canvas
+proc recentreCanvas {} {
+    set bounds [.wiring.canvas bbox all]
+    set scrollRegion [.wiring.canvas cget -scrollregion]
+    set xfrac [expr double([lindex $bounds 0]-[lindex $scrollRegion 0])/\
+                   ([lindex $scrollRegion 2]-[lindex $scrollRegion 0])]
+    set yfrac [expr double([lindex $bounds 1]-[lindex $scrollRegion 1])/\
+                   ([lindex $scrollRegion 3]-[lindex $scrollRegion 1])]
+    .wiring.canvas xview moveto $xfrac
+    .wiring.canvas yview moveto $yfrac
+    
 }
 
 proc save {} {
@@ -548,12 +570,13 @@ proc finishUp {} {
 
     # if we have a valid rc file location, write out the directory of
     # the last file loaded
-    global rcfile workDir 
+    global rcfile workDir backgroundColour
     if {$rcfile!=""} {
         set rc [open $rcfile w]
         puts $rc "set workDir \"$workDir\""
         puts $rc "set canvasWidth [winfo width .wiring.canvas]"
         puts $rc "set canvasHeight [winfo height .wiring.canvas]"
+        puts $rc "set backgroundColour $backgroundColour"
         close $rc
     }
     # why is this needed?
@@ -573,5 +596,10 @@ proc setFname {name} {
 if {$argc>1 && ![string match "*.tcl" $argv(1)]} {
 # we have loaded a Minsky model, so must refresh the canvas
     updateCanvas
+    recentreCanvas
+    foreach g [godleyItems.#keys] {
+        godleyItem.get $g
+        set preferences(godleyDE) [godleyItem.table.doubleEntryCompliant]
+    }
 }
 

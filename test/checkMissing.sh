@@ -12,7 +12,9 @@ notAegisFile()
 
 checkAegis()
 {
-    # ignore ,D & ,B files
+    # ignore ,D & ,B files, and emacs temporary files
+    if echo $1|grep "^#" >/dev/null; then return; fi
+    if echo $1|grep "~$" >/dev/null; then return; fi
     if echo $1|grep ",D$" >/dev/null; then return; fi
     if echo $1|grep ",B$" >/dev/null; then return; fi
     if aels -ter $1|grep -- \--- >/dev/null; then
@@ -22,7 +24,7 @@ checkAegis()
 }
 
 # for use in recusively descending directories. Not used, because too expensive
-for f in *.tcl *.bat *.sh *.pl examples/* icons/* library/* library/Xecolab/* windows/*; do 
+for f in *.tcl *.bat *.sh *.pl examples/* icons/* library/* library/Xecolab/*; do 
     if [ ! -d $f ]; then 
         checkAegis $f
     fi

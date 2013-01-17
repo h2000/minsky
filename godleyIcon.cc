@@ -42,10 +42,6 @@ namespace
     {assert(x&&y); return x->name<y->name;}
   };
 
-  // local reference to global Minsky object. Can be overridden (eg
-  // for eg testing purposes).
-  Minsky* _minsky=&minsky::minsky;
-
   struct GodleyIconItem: public XGLItem
   {
     GodleyIconItem(const char* x): XGLItem(x) {}
@@ -53,7 +49,7 @@ namespace
     {
       if (cairoSurface && id>=0)
         {
-          GodleyIcon& gIcon=_minsky->godleyItems[id];
+          GodleyIcon& gIcon=minsky::minsky().godleyItems[id];
 
           if (gIcon.width()!=cairoSurface->width() || 
               gIcon.height()!=cairoSurface->height())
@@ -76,7 +72,7 @@ namespace
             {
               cairo_save(cairo);
               initMatrix();
-              cairo_move_to(cairo,0,0);
+              cairo_move_to(cairo,0.5*gIcon.leftMargin(),-0.5*gIcon.bottomMargin());
               cairo_select_font_face
                 (cairo, "sans-serif", CAIRO_FONT_SLANT_ITALIC, 
                  CAIRO_FONT_WEIGHT_NORMAL);
@@ -211,7 +207,7 @@ namespace
           {
             // add new variable
             vars.push_back(newVar);
-            _minsky->variables.addVariable(newVar);
+            minsky::minsky().variables.addVariable(newVar);
           }
         else
           {
@@ -224,7 +220,7 @@ namespace
     set<string> svName(varNames.begin(),varNames.end()) ;
     for (set<VariablePtr>::iterator v=oldVars.begin(); v!=oldVars.end(); ++v)
       if (svName.count((*v)->name)==0)
-        _minsky->variables.erase(*v);
+        minsky::minsky().variables.erase(*v);
   }
 
   // determine the width and maximum height on screen of variables in vars
@@ -258,7 +254,7 @@ void GodleyIcon::update()
         {
           string name=table.cell(0,c);
           stripNonAlnum(name);
-          VariableValue& v=_minsky->variables.getVariableValue(name);
+          VariableValue& v=minsky().variables.getVariableValue(name);
           v.godleyOverridden=false;
           string::size_type start=table.cell(r,c).find_first_not_of(" ");
           if (start!=string::npos)
@@ -356,16 +352,11 @@ int GodleyIcon::Select(float x, float y)
 {
   for (Variables::iterator v=flowVars.begin(); v!=flowVars.end(); ++v)
     if (RenderVariable(*v).inImage(x,y)) 
-      return _minsky->variables.getIDFromVariable(*v);
+      return minsky().variables.getIDFromVariable(*v);
   for (Variables::iterator v=stockVars.begin(); v!=stockVars.end(); ++v)
     if (RenderVariable(*v).inImage(x,y)) 
-      return _minsky->variables.getIDFromVariable(*v);
+      return minsky().variables.getIDFromVariable(*v);
   return -1;
-}
-
-void GodleyIcon::setMinsky(Minsky& m)
-{
-  _minsky=&m;
 }
 
 void GodleyIcon::zoom(float xOrigin, float yOrigin,float factor) {

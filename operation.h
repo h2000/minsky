@@ -74,7 +74,7 @@ namespace minsky
     CLASSDESC_ACCESS(OperationBase);
   public:
     typedef OpAttributes::Type Type;
-    //    virtual Type type() const=0;
+
     const vector<int>& ports() const {return m_ports;}
     int numPorts() const  {return m_ports.size();}
     ///factory method. \a ports is used for recreating an object read
@@ -138,9 +138,6 @@ namespace minsky
   public:
     typedef OperationType::Type Type;
     Type type() const {return T;}
-//    Operation* clone() const {
-//      return new Operation(*this);
-//    }
 
     // ensure copies create new ports
     Operation(const Operation& x): Super(x) {this->addPorts();}

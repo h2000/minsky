@@ -24,24 +24,46 @@ using namespace std;
 
 InGroup::Cell::Cell(int id, const GroupIcon& g): 
   id(id), 
-  y0(g.y()-0.5*g.height*g.zoomFactor()), 
-  y1(g.y()+0.5*g.height*g.zoomFactor()), 
-  area(g.width*g.height*g.zoomFactor()* g.zoomFactor()) 
+  y0(g.y()-0.5*g.height*g.zoomFactor), 
+  y1(g.y()+0.5*g.height*g.zoomFactor), 
+  area(g.width*g.height*g.zoomFactor* g.zoomFactor) 
 {
   float left=0, right=0;
   //g.margins(left, right);
-  x0=g.x()-(0.5*g.width-left)*g.zoomFactor();
-  x1=g.x()+(0.5*g.width-right)*g.zoomFactor();
+  x0=g.x()-(0.5*g.width-left)*g.zoomFactor;
+  x1=g.x()+(0.5*g.width-right)*g.zoomFactor;
 }
 
 
-void InGroup::initGroupList(const std::map<int, GroupIcon>& g)
+namespace
+{
+  void excludeSelfAndChildren(set<int>& excludeIds, 
+                              const map<int, GroupIcon>& g, int id)
+  {
+    excludeIds.insert(id);
+    map<int, GroupIcon>::const_iterator excludeGroup=g.find(id);
+    if (excludeGroup!=g.end())
+      {
+        const vector<int>& children=excludeGroup->second.groups();
+        for (vector<int>::const_iterator i=children.begin(); 
+             i!=children.end(); ++i)
+          excludeSelfAndChildren(excludeIds, g, *i);
+      }
+  }
+     
+}
+
+void InGroup::initGroupList(const map<int, GroupIcon>& g, int exclude)
 {
   cells.clear();
   // construct all the Cells
   vector<Cell> rects;
+  set<int> excludeIds;
+  excludeSelfAndChildren(excludeIds, g, exclude);
+
   for (std::map<int, GroupIcon>::const_iterator i=g.begin(); i!=g.end(); ++i)
-    rects.push_back(Cell(i->first, i->second));
+    if (excludeIds.count(i->first)==0)
+      rects.push_back(Cell(i->first, i->second));
 
   // compute total bounds
   ymin=xmin=numeric_limits<float>::max(); ymax=xmax=-xmin;

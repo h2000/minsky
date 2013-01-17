@@ -24,6 +24,7 @@
 #include <string>
 #include "wire.h"
 #include "variable.h"
+#include "operation.h"
 
 #include "classdesc_access.h"
 #include <TCL_obj_base.h>
@@ -44,42 +45,30 @@ namespace minsky
     std::vector<int> m_operations;
     std::vector<int> m_variables;
     std::vector<int> m_wires;
+    std::vector<int> m_groups;
     /// input and output port variables of this group
-    std::vector<int> inVariables, outVariables;
-    float m_x, m_y, m_zoomFactor; ///< icon position, amount of zoom
+    std::set<int> inVariables, outVariables;
+    float m_x, m_y; ///< icon position
+    float m_localZoom;
     float displayZoom; ///< zoom at which contents are displayed
-    int id;
+    int id, m_parent;
 
     friend struct SchemaHelper;
 
     /// add variable to one of the edge lists, connected to port \a
     /// port. If the operation results in addition wires being
     /// created, these are returned in \a additionalWires
-    void addEdgeVariable(std::vector<int>& varVector, 
+    void addEdgeVariable(std::set<int>& varVector, 
                          std::vector<Wire>& additionalWires, int port);
 
     void drawVar(cairo_t*, const VariablePtr&, float, float) const;
 
-    /// return current scope's Minksy object
-    static Minsky& minsky();
-
-    /// see if any attached wires should also be moved into the group
-    template <class S> void addAnyWires(const S& ports);
-    /// remove any attached wires that belong to the group
-    template <class S> void removeAnyWires(const S& ports);
-
   public:
 
-    /// RAII set the minsky object to a different one for the current scope
-    struct LocalMinsky
-    {
-      LocalMinsky(Minsky& m);
-      ~LocalMinsky();
-    };
-
-    std::string name;
+   std::string name;
     float width, height; // size of icon
     float rotation; // orientation of icon
+    bool visible;
     std::vector<int> ports() const;
     int numPorts() const {return inVariables.size()+outVariables.size();}
 
@@ -95,27 +84,41 @@ namespace minsky
     const std::vector<int>& operations() const {return m_operations;}
     const std::vector<int>& variables() const {return m_variables;}
     const std::vector<int>& wires() const {return m_wires;}
+    const std::vector<int>& groups() const {return m_groups;}
     
     /// @{ coordinates of this icon on canvas
-    float x() const {return m_x;}
-    float y() const {return m_y;}
+    float x() const;
+    float y() const;
     /// @}
+
+    int parent() const {return m_parent;}
+    /// synonym for parent(), for TCL scripting purposes
+    int group() const {return parent();}
+
+    /// @return true if gid is a parent, or parent of a parent, etc
+    bool isAncestor(int gid) const;
 
     /// x-coordinate of the vertical centre line of the icon
     float iconCentre() const {
       float left, right;
       margins(left,right);
-      return x()+zoomFactor()*0.5*(left-right);
+      return x()+zoomFactor*0.5*(left-right);
     }
+
+    // scaling factor to allow a rotated icon to fit on the bitmap
+    float rotFactor() const;
                                    
-    GroupIcon(int id=-1): m_x(0), m_y(0), m_zoomFactor(1), 
-                          width(100), height(100), rotation(0), 
-                          displayZoom(1), id(id) {}
+    GroupIcon(int id=-1): m_x(0), m_y(0), zoomFactor(1), m_localZoom(1),
+                          width(100), height(100), rotation(0), visible(true),
+                          displayZoom(1), id(id), m_parent(-1) {}
 
     /// group all icons in rectangle bounded by (x0,y0):(x1,y1)
-    void group(float x0, float y0, float x1, float y1);
+    void createGroup(float x0, float y0, float x1, float y1);
     /// ungroup all icons
     void ungroup();
+
+    bool empty() {return m_variables.empty() && m_operations.empty() && 
+        m_wires.empty() && m_groups.empty();}
 
     /// populates this with a copy of src (with all internal objects
     /// registered with minsky).
@@ -134,16 +137,23 @@ namespace minsky
 
     void MoveTo(float x1, float y1); ///< absolute move
     void moveTo(TCL_args args) {MoveTo(args[0], args[1]);}
+    void move(float dx, float dy) {MoveTo(x()+dx, y()+dy);}
 
     /// return bounding box coordinates for all variables, operators
     /// etc in this group
     void contentBounds(float& x0, float& y0, float& x1, float& y1) const;
 
+    /// for TCL debugging
+    array<float> cBounds() const {
+      array<float> r(4);
+      contentBounds(r[0],r[1],r[2],r[3]);
+      return r;
+    }
+
     /// zoom by \a factor, scaling all widget's coordinates, using (\a
     /// xOrigin, \a yOrigin) as the origin of the zoom transformation
     void zoom(float xOrigin, float yOrigin,float factor);
-    void setZoom(float factor) {m_zoomFactor=factor;}
-    float zoomFactor() const {return m_zoomFactor;}
+    float zoomFactor;
 
     /// delete contents, leaving an empty group
     void deleteContents();
@@ -151,23 +161,36 @@ namespace minsky
     /// computes the zoom at which to show contents, given current
     /// contentBounds and width
     float computeDisplayZoom();
-    float localZoom() const {return zoomFactor()/displayZoom;}
+    float localZoom() const {return m_localZoom;}
+
+    /// returns 1 if x,y is located in the in margin, 2 if in the out
+    /// margin, 0 otherwise
+    int InIORegion(float x, float y) const;
+    int inIORegion(TCL_args args) const {return InIORegion(args[0], args[1]);}
 
     /// returns whether contents should be displayed
-    bool displayContents() const {return zoomFactor()>displayZoom;}
+    bool displayContents() const {return zoomFactor>displayZoom;}
 
     /// add a variable to to the group
-    void AddVariable(int id);
-    void addVariable(TCL_args args) {AddVariable(args);}
+    void addVariable(std::pair<const int,VariablePtr>&);
     /// remove variable from group
-    void RemoveVariable(int id);
-    void removeVariable(TCL_args args) {RemoveVariable(args);}
-    /// add a operator to to the group
-    void AddOperation(int id);
-    void addOperation(TCL_args args) {AddOperation(args);}
-    /// remove operator from group
-    void RemoveOperation(int id);
-    void removeOperation(TCL_args args) {RemoveOperation(args);}
+    void removeVariable(std::pair<const int,VariablePtr>&);
+    /// add a operation to to the group
+    void addOperation(std::pair<const int,OperationPtr>&);
+    /// remove operation from group
+    void removeOperation(std::pair<const int,OperationPtr>&);
+    /// make group a child of this group
+    /// @return true if successful
+    bool addGroup(std::pair<const int,GroupIcon>&);
+    /// remove child group from this group, and add it to the parent
+    void removeGroup(std::pair<const int,GroupIcon>&);
+    
+    /// see if any attached wires should also be moved into the group
+    /// \a ports is a sequence (vector or array) of ports
+    template <class S> void addAnyWires(const S& ports);
+    /// remove any attached wires that belong to the group
+    template <class S> void removeAnyWires(const S& ports);
+
 
     /// rotate icon and all its contents
     void Rotate(float angle);
@@ -178,6 +201,12 @@ namespace minsky
       Rotate(angle-rotation);
     }
   };
+
+  struct GroupIcons: public std::map<int, GroupIcon>
+  {
+    std::vector<int> visibleGroups() const;
+  };
+
 }
 
 #include "groupIcon.cd"

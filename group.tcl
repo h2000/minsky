@@ -24,23 +24,24 @@ proc radian {deg} {
 }
 
 proc newGroupItem {id} {
+    disableEventProcessing
     global minskyHome
     groupItem.get $id
     if {[lsearch -exact [image name] groupImage$id]!=-1} {
         image delete groupImage$id
     }
-    image create photo groupImage$id -width [groupItem.width] -height [groupItem.height]
-    .wiring.canvas create group [groupItem.x] [groupItem.y] -image groupImage$id -id $id -xgl $minskyHome/icons/group.xgl -tags "group$id groups"
-    .wiring.canvas lower group$id
+    image create photo groupImage$id -width [expr int(ceil([groupItem.width]))] -height [expr int(ceil([groupItem.height]))]
+    .wiring.canvas create group [groupItem.x] [groupItem.y] -image groupImage$id -id $id -xgl $minskyHome/icons/group.xgl -tags "groupItem$id groups"
+    .wiring.canvas lower groupItem$id
 
-     setM1Binding groupItem $id group$id
-    .wiring.canvas bind group$id <<middleMouse-Motion>> \
-        "wires::extendConnect \[closestOutPort %x %y \] group$id %x %y"
-    .wiring.canvas bind group$id <<middleMouse-ButtonRelease>> \
-        "wires::finishConnect group$id %x %y"
-    .wiring.canvas bind group$id  <<contextMenu>> "contextMenu group$id %X %Y"
-    .wiring.canvas bind group$id  <Double-Button-1> "groupEdit $id"
-   
+     setM1Binding groupItem $id groupItem$id
+    .wiring.canvas bind groupItem$id <<middleMouse-Motion>> \
+        "wires::extendConnect \[closestOutPort %x %y \] groupItem$id %x %y"
+    .wiring.canvas bind groupItem$id <<middleMouse-ButtonRelease>> \
+        "wires::finishConnect groupItem$id %x %y"
+    .wiring.canvas bind groupItem$id  <<contextMenu>> "contextMenu groupItem$id %X %Y"
+    .wiring.canvas bind groupItem$id  <Double-Button-1> "groupEdit $id"
+    enableEventProcessing
 }
 
 proc deleteGroupItem {id} {
@@ -89,7 +90,10 @@ proc groupContext {id x y} {
     .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.groupItems.@elem $id].*"
     .wiring.context add command -label "Ungroup" -command "ungroupGroupItem $id"
     .wiring.context add command -label "Delete" -command "deleteGroupItem $id"
-
+    .wiring.context add command -label "content bounds" -command "
+      groupItem.get $id
+      .wiring.canvas create rectangle \[groupItem.cBounds\]
+     "
 }
 
 toplevel .wiring.editGroup
@@ -127,7 +131,7 @@ proc groupEdit {id} {
     .wiring.editGroup.buttonBar.ok configure \
         -command {
             setItem groupItem name {.wiring.editGroup.name.val get}
-            setItem groupItem rotation {.wiring.editGroup.rot.val get}
+            groupItem.rotate [expr [.wiring.editGroup.rot.val get]-[groupItem.rotation]]
             groupItem.updatePortLocation
             groupItem.set
             closeEditWindow .wiring.editGroup
@@ -137,43 +141,52 @@ proc groupEdit {id} {
 }
 
 proc checkAddGroup {item id x y} {
-    if {$item=="var" || $item=="op"} {
-        set gid [groupTest.containingGroup [.wiring.canvas canvasx $x] [.wiring.canvas canvasy $y]]
-        if {$gid>=0} {        
-            groupItem.get $gid
-            if {![groupItem.displayContents]} {.wiring.canvas delete $item$id}
-            switch $item {
-                "var" {groupItem.addVariable $id}
-                "op" {groupItem.addOperation $id}
-            }
-            groupItem.set
-            if {![$item.visible]} {.wiring.canvas delete $item$id}
-            # redraw group
-            .wiring.canvas delete group$gid
-            newGroupItem $gid
-            submitUpdateItemPos group$gid groupItem $gid
-        } else {
-            # check if it needs to be removed from a group
-            $item.get $id
-            if {[$item.group]>=0} {
-                groupItem.get [$item.group]
-                switch $item {
-                    "var" {groupItem.removeVariable $id}
-                    "op" {groupItem.removeOperation $id}
+    set gid [groupTest.containingGroup [.wiring.canvas canvasx $x] [.wiring.canvas canvasy $y]]
+    $item.get $id
+    # check for moves within group
+    if {[llength [info commands minsky.$item.group]]==0 || [$item.group] == $gid} {
+        return
+    }
+    if {$gid>=0} {
+        groupItem.get $gid
+        if {![groupItem.displayContents]} {.wiring.canvas delete $item$id}
+        switch $item {
+            "var" {addVariableToGroup $gid $id; .wiring.canvas delete $item$id}
+            "op" {addOperationToGroup $gid $id; .wiring.canvas delete $item$id}
+            "groupItem" {
+                if [addGroupToGroup $gid $id] {
+                    .wiring.canvas delete $item$id
                 }
-                groupItem.set
-                # redraw group
-                .wiring.canvas delete group[$item.group]
-                newGroupItem [$item.group]
             }
         }
+        .wiring.canvas delete $item$id
+        # redraw group
+        .wiring.canvas delete groupItem$gid groupitems$gid
+        newGroupItem $gid
+        submitUpdateItemPos groupItem$gid groupItem $gid
+    } else {
+        # check if it needs to be removed from a group
+        $item.get $id
+        set gid [$item.group]
+        if {$gid>=0} {
+            switch $item {
+                "var" {removeVariableFromGroup $gid $id}
+                "op" {removeOperationFromGroup $gid $id}
+                "groupItem" {removeGroupFromGroup $gid $id}
+            }
+            # redraw group
+            .wiring.canvas dtag $item$id groupitems$gid
+            .wiring.canvas delete groupItem$gid groupitems$gid
+            newGroupItem $gid
+        }
     }
+    update
 }
 
 namespace eval group {
     proc resize {id} {
         groupItem.get $id
-        set bbox [.wiring.canvas bbox group$id]
+        set bbox [.wiring.canvas bbox groupItem$id]
         variable orig_width [expr [lindex $bbox 2]-[lindex $bbox 0]]
         variable orig_height [expr [lindex $bbox 3]-[lindex $bbox 1]]
         variable orig_x [groupItem.x]
@@ -210,7 +223,7 @@ namespace eval group {
         groupItem.height [expr int(ceil(abs($ry*[groupItem.height])))]
         groupItem.computeDisplayZoom
         groupItem.set
-        .wiring.canvas delete group$id
+        .wiring.canvas delete groupItem$id
         newGroupItem $id
         foreach p [groupItem.ports]  {
             adjustWire $p
@@ -227,8 +240,8 @@ namespace eval group {
         set interactionMode 2
         setInteractionMode
         groupItem.get $newId
-        moveSet groupItem $newId group$newId [groupItem.x] [groupItem.y]
-        bind .wiring.canvas <Motion> "move groupItem $newId group$newId %x %y"
+        moveSet groupItem $newId groupItem$newId [groupItem.x] [groupItem.y]
+        bind .wiring.canvas <Motion> "move groupItemItem $newId groupItem$newId %x %y"
         bind .wiring.canvas <ButtonRelease> {
             bind .wiring.canvas <Motion> {}
             bind .wiring.canvas <ButtonRelease> {}
@@ -239,10 +252,12 @@ namespace eval group {
         groupItem.get $id
         groupItem.rotation [expr [groupItem.rotation]+180]
         groupItem.set
-        .wiring.canvas delete group$id
+        .wiring.canvas delete groupItem$id
         newGroupItem $id
         foreach p [groupItem.ports] {
             adjustWire $p
         }
     }
 }
+
+#trace add execution checkAddGroup enterstep tout

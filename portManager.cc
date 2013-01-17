@@ -24,25 +24,21 @@
 using namespace std;
 using namespace minsky;
 
-namespace 
-{
-  PortManager* thePortManager=&minsky::minsky;
-}
-
-PortManager& minsky::portManager() {return *thePortManager;}
-void minsky::setPortManager(PortManager& pm) {thePortManager=&pm;}
+PortManager& minsky::portManager() {return minsky::minsky();}
 
 int PortManager::addWire(Wire w) 
 {
   // adjust end points to be aligned with ports
-  if (w.coords.size()<4)
-    w.coords.resize(4);
+  array<float> coords=w.Coords();
+  if (coords.size()<4)
+    coords.resize(4);
   const Port& to=ports[w.to];
   const Port& from=ports[w.from];
-  w.coords[0]=from.x();
-  w.coords[1]=from.y();
-  w.coords[w.coords.size()-2]=to.x();
-  w.coords[w.coords.size()-1]=to.y();
+  coords[0]=from.x();
+  coords[1]=from.y();
+  coords[coords.size()-2]=to.x();
+  coords[coords.size()-1]=to.y();
+  w.Coords(coords);
 
   int nextId=wires.empty()? 0: wires.rbegin()->first+1;
   wires.insert(Wires::value_type(nextId, w));
@@ -63,17 +59,19 @@ void PortManager::movePortTo(int port, float x, float y)
         {
           assert(wires.count(*i));
           Wire& w=wires[*i];
-          assert(w.coords.size()>=4);
+          array<float> coords=w.Coords();
+          assert(coords.size()>=4);
           if (w.from==port)
             {
-              w.coords[0]=p.x();
-              w.coords[1]=p.y();
+              coords[0]=p.x();
+              coords[1]=p.y();
             }
           else if (w.to==port)
             {
-              w.coords[w.coords.size()-2]=p.x();
-              w.coords[w.coords.size()-1]=p.y();
+              coords[coords.size()-2]=p.x();
+              coords[coords.size()-1]=p.y();
             }
+          w.Coords(coords);
         }
     }
 }

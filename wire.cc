@@ -19,22 +19,55 @@
 
 #include "wire.h"
 #include "zoom.h"
-#include "portManager.h"
+#include "minsky.h"
 using namespace minsky;
 using namespace ecolab;
 
 void Wire::zoom(float xOrigin, float yOrigin, float factor)
 {
+  if (group>=-1)
+    {
+      GroupIcon& g=minsky().groupItems[group];
+      xOrigin-=g.x();
+      yOrigin-=g.y();
+    }
   if (visible)
-    for (size_t i=0; i<coords.size(); ++i)
-      minsky::zoom(coords[i], (i&1)? yOrigin: xOrigin, factor);
+    for (size_t i=0; i<m_coords.size(); ++i)
+      minsky::zoom(m_coords[i], (i&1)? yOrigin: xOrigin, factor);
 }
 
 void Wire::move(float dx, float dy)
 {
-  coords[pcoord(coords.size()/2)*2]+=dx;
-  coords[pcoord(coords.size()/2)*2+1]+=dy;
-  assert(coords.size()>=4);
+  m_coords[pcoord(m_coords.size()/2)*2]+=dx;
+  m_coords[pcoord(m_coords.size()/2)*2+1]+=dy;
+  assert(m_coords.size()>=4);
+  array<float> coords=Coords();
   portManager().movePortTo(from, coords[0], coords[1]);
   portManager().movePortTo(to, coords[coords.size()-2], coords[coords.size()-1]);
 }
+
+ecolab::array<float> Wire::Coords() const
+{
+  array<float> coords=m_coords;
+  if (group>-1)
+    {
+      GroupIcon& g=minsky().groupItems[group];
+      coords[pcoord(coords.size()/2)*2]+=g.x();
+      coords[pcoord(coords.size()/2)*2+1]+=g.y();
+    }
+  return coords;
+}
+
+ecolab::array<float> Wire::Coords(const ecolab::array<float>& coords)
+{
+  array<float> offs(coords.size(), 0);
+  if (group>-1)
+    {
+      GroupIcon& g=minsky().groupItems[group];
+      offs[pcoord(coords.size()/2)*2]=g.x();
+      offs[pcoord(coords.size()/2)*2+1]+=g.y();
+    }
+  m_coords=coords-offs;
+  return coords;
+}
+

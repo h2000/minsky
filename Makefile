@@ -98,7 +98,7 @@ tests: $(MODELS)
 clean:
 	$(BASIC_CLEAN) minsky.xsd
 	rm -f $(MODELS) 
-	cd test; $(BASIC_CLEAN)
+	cd test; $(BASIC_CLEAN) unittests
 	cd schema; $(BASIC_CLEAN)
 
 # we want to build this target always when under AEGIS, otherwise only

@@ -164,7 +164,7 @@ namespace
         OperationItem* opItem=(OperationItem*)(tkMinskyItem->cairoItem);
         if (opItem) 
           {
-            opItem->op=minsky::minsky.operations[tkMinskyItem->id];
+            opItem->op=minsky::minsky().operations[tkMinskyItem->id];
             opItem->draw();
             TkImageCode::ComputeImageBbox(canvas, tkMinskyItem);
           }
@@ -183,7 +183,7 @@ namespace
         VariableItem* varItem=dynamic_cast<VariableItem*>(tkMinskyItem->cairoItem);
         if (varItem) 
           {
-            varItem->var=minsky::minsky.variables[tkMinskyItem->id];
+            varItem->var=minsky::minsky().variables[tkMinskyItem->id];
             varItem->draw();
             TkImageCode::ComputeImageBbox(canvas, tkMinskyItem);
           }

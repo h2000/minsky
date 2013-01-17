@@ -50,8 +50,9 @@ namespace minsky
     CLASSDESC_ACCESS(InGroup);
   public:
     /// initialise with a collection of GroupIcons
-    void initGroupList(const std::map<int, GroupIcon>&);
-    /// return group contining (x,y) - if more than one group, then
+    /// \a exclude specifies a group id to exclude from the test
+    void initGroupList(const std::map<int, GroupIcon>&, int exclude=-1);
+    /// return group containing (x,y) - if more than one group, then
     /// the smallest group (by area) is returned. If no group is
     /// applicable, -1 is returned
     int ContainingGroup(float x, float y) const;

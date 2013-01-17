@@ -27,7 +27,7 @@ const char* GodleyTable::initialConditions="Initial Conditions";
 
 void GodleyTable::markEdited()
 {
-  minsky::minsky.markEdited();
+  minsky::minsky().markEdited();
 }
 
 bool GodleyTable::initialConditionRow(unsigned row) const

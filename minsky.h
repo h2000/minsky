@@ -184,7 +184,6 @@ namespace minsky
     Operations operations;
     VariableManager variables;
 
-    typedef map<int, GroupIcon> GroupIcons;
     GroupIcons groupItems;
 
     Plots plots;
@@ -291,9 +290,11 @@ namespace minsky
 
     /// create a group from items found in rectangle given by \a x0,
     /// \a y0, \a x1 \a y1
-    int group(TCL_args args);
+    int Group(float x0, float y0, float x1, float y1);
+    int group(TCL_args args) {return Group(args[0],args[1],args[2],args[3]);}
     /// remove a group, leaving its contents in place
-    void ungroup(TCL_args args);
+    void Ungroup(int id);
+    void ungroup(TCL_args args) {Ungroup(args);}
     /// remove a group, deleting all the contents too
     void deleteGroup(TCL_args args) {
       int id=args;
@@ -301,12 +302,49 @@ namespace minsky
       groupItems.erase(args);
     }
 
+    /// add variable \a varid to group \a gid
+    void AddVariableToGroup(int gid, int varid);
+    void addVariableToGroup(TCL_args args)
+    {AddVariableToGroup(args[0], args[1]);}
+    /// remove variable \a varid from group \a gid
+    void RemoveVariableFromGroup(int gid, int varid);
+    void removeVariableFromGroup(TCL_args args)
+    {RemoveVariableFromGroup(args[0], args[1]);}
+    /// add operation \a opid to group \a gid
+    void AddOperationToGroup(int gid, int opid);
+    void addOperationToGroup(TCL_args args)
+    {AddOperationToGroup(args[0], args[1]);}
+    /// remove operation \a opid from group \a gid
+    void RemoveOperationFromGroup(int gid, int opid);
+    void removeOperationFromGroup(TCL_args args)
+    {RemoveOperationFromGroup(args[0], args[1]);}
+    /// add group \a gid1 to group \a group gid
+    /// @return true if successful
+    bool AddGroupToGroup(int gid, int gid1);
+    bool addGroupToGroup(TCL_args args)
+    {return AddGroupToGroup(args[0], args[1]);}
+    /// remove group \a gid1 from group \a group gid
+    void RemoveGroupFromGroup(int gid, int gid1);
+    void removeGroupFromGroup(TCL_args args) 
+    {RemoveGroupFromGroup(args[0], args[1]);}
+
+
     InGroup groupTest;
-    void initGroupList() {groupTest.initGroupList(groupItems);}
+    void initGroupList(TCL_args args) {
+      groupTest.initGroupList(groupItems, (args.count? args: -1));}
     float localZoomFactor(TCL_args args) const {
+      std::string item((char*)args);
+      int id=-1;
+      // plot ids aren't integers ATM
+      if (item!="plot") 
+        id=args;
+      else
+        (char*)args; //throw away ID
       int g=groupTest.containingGroup(args);
-      if (g==-1) return zoomFactor(); //global zoom factor
-      else return groupItems.find(g)->second.localZoom();
+      if (g==-1 || g==id && item=="groupItem") 
+        return zoomFactor(); //global zoom factor
+      else 
+        return groupItems.find(g)->second.localZoom();
     }
 
     /// current state of zoom
@@ -376,7 +414,16 @@ namespace minsky
     string ecolabVersion() {return VERSION;}
   };
   
-  extern Minsky minsky;
+  /// global minsky object
+  Minsky& minsky();
+  /// RAII set the minsky object to a different one for the current scope.
+  struct LocalMinsky
+  {
+    LocalMinsky(Minsky& m);
+    ~LocalMinsky();
+  };
+
+
 
 }
 

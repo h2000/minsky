@@ -142,7 +142,7 @@ proc obj_browser {{pat *} {ns ""}} {
     set $obj_browse.struct_cmds ""
     set $obj_browse.other_cmds ""
  
-    foreach c [set $obj_browse.all_cmds] {
+    foreach c [lsort [set $obj_browse.all_cmds]] {
 	# trim off leadin string
 	set c [string range $c [string length [set $obj_browse.lead]] end]
 	if [string match {[A-Za-z0-9]*.*} $c] {
@@ -151,22 +151,22 @@ proc obj_browser {{pat *} {ns ""}} {
 	    lappend $obj_browse.other_cmds $c
 	}
     }
-    foreach c [set $obj_browse.struct_cmds] {
+    foreach c [lsort [set $obj_browse.struct_cmds]] {
 	set struct_name [string range $c 0 [expr [string first "." $c]-1]]
 	if {[lsearch [set $obj_browse.structs] $struct_name]==-1} {
 	    lappend $obj_browse.structs  $struct_name
 	}
     }
-    foreach var [set $obj_browse.structs] {
+    foreach var [lsort [set $obj_browse.structs]] {
 	$obj_browse.vars insert end "$var->"
 	$obj_browse.vars itemconfigure end -foreground blue
     }
-    foreach var [set $obj_browse.namespaces] {
+    foreach var [lsort [set $obj_browse.namespaces]] {
 	$obj_browse.vars insert end [set var]::
 	$obj_browse.vars itemconfigure end -foreground green \
 		-selectforeground green
     }
-    foreach var [set $obj_browse.other_cmds] {
+    foreach var [lsort [set $obj_browse.other_cmds]] {
 	$obj_browse.vars insert end $var
 	$obj_browse.vars itemconfigure end -foreground red \
 		-selectforeground red

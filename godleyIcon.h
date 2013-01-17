@@ -72,9 +72,6 @@ namespace minsky
     int Select(float x, float y);
     int select(TCL_args args) {return Select(args[0],args[1]);}
 
-    /// override GodleyIcon's minsky reference
-    static void setMinsky(Minsky&);
-
     /// zoom by \a factor, scaling all widget's coordinates, using (\a
     /// xOrigin, \a yOrigin) as the origin of the zoom transformation
     void zoom(float xOrigin, float yOrigin,float factor);

@@ -143,8 +143,6 @@ namespace schema1
     VisibilityLayout(): visible(true) {}
     template <class T> VisibilityLayout(int id, const T& item):
       Layout(id), visible(item.visible) {}
-    VisibilityLayout(int id, const minsky::GroupIcon& g):
-      Layout(id), visible(true) {}
     void xml_pack(xml_pack_t& x, const string& d) const
     {xml_pack_layout(x,d,*this);}
   };
@@ -156,7 +154,7 @@ namespace schema1
 
     WireLayout() {}
     WireLayout(int id, const minsky::Wire& wire): 
-      Layout(id), VisibilityLayout(id, wire), coords(toVector(wire.coords)) {}
+      Layout(id), VisibilityLayout(id, wire), coords(toVector(wire.Coords())) {}
     void xml_pack(xml_pack_t& x, const string& d) const
     {xml_pack_layout(x,d,*this);}
   };

@@ -42,10 +42,10 @@ namespace schema0
       m1.insert(std::pair<K,V>(i->first,i->second));
   }
  
-  template <class M>
-  void asg(std::map<int,minsky::GroupIcon>& m1, const vector<M>& m2)
+  template <>
+  void asg(minsky::GroupIcons& m1, const Minsky::GroupIcons& m2)
   {
-    for (typename M::const_iterator i=m2.begin(); i!=m2.end(); ++i)
+    for (Minsky::GroupIcons::const_iterator i=m2.begin(); i!=m2.end(); ++i)
       m1.insert(std::pair<int,minsky::GroupIcon>
                 (i->first,minsky::GroupIcon(i->first))).first->second=i->second;
   }
@@ -134,7 +134,7 @@ namespace schema0
   {
     minsky::GroupIcon g;
     minsky::SchemaHelper::setPrivates
-      (g, operations, variables, wires, inVariables, outVariables);
+      (g, operations, variables, wires, vector<int>(), inVariables, outVariables);
     minsky::SchemaHelper::setXY(g, x, y);
     g.name=name;
     g.width=width;

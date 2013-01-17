@@ -142,8 +142,6 @@ namespace minsky
 
   /// global variablemanager
   VariableManager& variableManager();
-  /// overrride default portManager
-  void setVariableManager(VariableManager&);
 }
 
 #ifdef _CLASSDESC

@@ -33,7 +33,7 @@ namespace
 
   map<string, shared_ptr<TkPhotoSurface> > surfaces;
 
-  Plots::Map& plots() {return minsky::minsky.plots.plots;}
+  Plots::Map& plots() {return minsky::minsky().plots.plots;}
 
   // orientation of bounding box ports
   const double orient[]={-0.4*M_PI, -0.6*M_PI, -0.2*M_PI, 0.2*M_PI};

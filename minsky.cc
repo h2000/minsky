@@ -85,14 +85,29 @@ namespace minsky
 #include <algorithm>
 using namespace std;
 
+namespace 
+{
+  Minsky* l_minsky=NULL;
+}
+
 namespace minsky
 {
-  Minsky minsky;
+  Minsky& minsky()
+  {
+    static Minsky s_minsky;
+    if (l_minsky)
+      return *l_minsky;
+    else
+      return s_minsky;
+  }
+
+  LocalMinsky::LocalMinsky(Minsky& minsky) {l_minsky=&minsky;}
+  LocalMinsky::~LocalMinsky() {l_minsky=NULL;}
 
   // a hook for recording when the minsky model's state changes
   void member_entry_hook(int argc, CONST84 char** argv)
   {
-    if (argc>1) minsky.markEdited();
+    if (argc>1) minsky().markEdited();
   }
 
   TCL_obj_t& minskyTCL_obj() 
@@ -105,8 +120,8 @@ namespace minsky
   tclvar TCL_obj_lib("ecolab_library",ECOLAB_LIB);
   int TCL_obj_minsky=
     (
-     TCL_obj_init(minsky),
-     ::TCL_obj(minskyTCL_obj(),"minsky",minsky),
+     TCL_obj_init(minsky()),
+     ::TCL_obj(minskyTCL_obj(),"minsky",minsky()),
      1
     );
 }
@@ -163,8 +178,8 @@ int Minsky::addWire(TCL_args args) {
     return -1;
 
   Wire w(from, to);
-  args>>w.coords;
-  if (w.coords.size()<4)
+  w.coords(args);
+  if (w.Coords().size()<4)
     return -1;
   int id=PortManager::addWire(w);
   markEdited();
@@ -192,11 +207,11 @@ array<float> Minsky::wireCoords(TCL_args args)
       array<float> tmp;
       args>>tmp;
       if (tmp.size()>=4)
-        wire.coords=tmp;
+        wire.Coords(tmp);
       markEdited();
     }
-  assert(wire.coords.size()>=4);
-  return wire.coords;
+  assert(wire.Coords().size()>=4);
+  return wire.Coords();
 }
 
 
@@ -245,18 +260,22 @@ void Minsky::DeleteOperation(int opid)
     }
 }
 
-int Minsky::group(TCL_args args)
+int Minsky::Group(float x0, float y0, float x1, float y1)
 {
   int id=groupItems.empty()? 0: groupItems.rbegin()->first+1;
   GroupIcon& g=groupItems.insert(make_pair(id, GroupIcon(id))).first->second;
-  g.group(args[0], args[1], args[2], args[3]);
+  g.createGroup(x0,y0,x1,y1);
+  if (g.empty())
+    {
+      groupItems.erase(id);
+      return -1;
+    }
   markEdited();
   return id;
 }
 
-void Minsky::ungroup(TCL_args args)
+void Minsky::Ungroup(int id)
 {
-  int id=args;
   groupItems[id].ungroup();
   groupItems.erase(id);
   markEdited();
@@ -850,9 +869,33 @@ void Minsky::Load(const char* filename)
   for (GodleyItems::iterator g=godleyItems.begin(); g!=godleyItems.end(); ++g)
     g->second.update();
 
-  // Don't know why this is needed!!
   for (GroupIcons::iterator g=groupItems.begin(); g!=groupItems.end(); ++g)
-    g->second.computeDisplayZoom();
+    {
+      // Don't know why this is needed!!
+      g->second.computeDisplayZoom();
+      // ensure group attributes correctly set
+      const vector<int>& vars= g->second.variables();
+      for (vector<int>::const_iterator i=vars.begin(); i!=vars.end(); ++i)
+        {
+          VariablePtr& v=variables[*i];
+          v->group=g->first;
+          v->visible=g->second.displayContents();
+        }
+      const vector<int>& ops= g->second.operations();
+      for (vector<int>::const_iterator i=ops.begin(); i!=ops.end(); ++i)
+        {
+          OperationPtr& o=operations[*i];
+          o->group=g->first;
+          o->visible=g->second.displayContents();
+        }
+      const vector<int>& gwires= g->second.wires();
+      for (vector<int>::const_iterator i=gwires.begin(); i!=gwires.end(); ++i)
+        {
+          Wire& w=wires[*i];
+          w.group=g->first;
+          w.visible=g->second.displayContents();
+        }
+    }
 
   m_edited=false;
   reset_needed=true;
@@ -903,11 +946,112 @@ void Minsky::setZoom(float factor)
   for (VariableManager::iterator v=variables.begin(); v!=variables.end(); ++v)
     v->second->setZoom(factor);
   for (GroupIcons::iterator g=groupItems.begin(); g!=groupItems.end(); ++g)
-    g->second.setZoom(factor);
+    g->second.zoomFactor=factor;
   for (GodleyItems::iterator g=godleyItems.begin(); g!=godleyItems.end(); ++g)
     g->second.setZoom(factor);
   for (Plots::Map::iterator p=plots.plots.begin(); p!=plots.plots.end(); ++p)
     p->second.setZoom(factor);
   m_zoomFactor=factor;
   markEdited();
+}
+
+void Minsky::AddVariableToGroup(int groupId, int varId)
+{
+  GroupIcons::iterator g=groupItems.find(groupId);
+  VariableManager::iterator v=variables.find(varId);
+  if (g!=groupItems.end() && v!=variables.end())
+    {
+      if (v->second->group!=-1)
+        {
+          GroupIcons::iterator pg=groupItems.find(v->second->group);
+          if (pg!=groupItems.end())
+            pg->second.removeVariable(*v);
+        }
+      g->second.addVariable(*v);
+      g->second.addAnyWires(v->second->ports());
+    }
+}
+
+void Minsky::RemoveVariableFromGroup(int groupId, int varId)
+{
+  GroupIcons::iterator g=groupItems.find(groupId);
+  VariableManager::iterator v=variables.find(varId);
+  if (g!=groupItems.end() && v!=variables.end() && v->second->group==groupId)
+    {
+      g->second.removeVariable(*v);
+      g->second.removeAnyWires(v->second->ports());
+      if (g->second.parent()!=-1)
+        {
+          GroupIcons::iterator pg=groupItems.find(g->second.parent());
+          if (pg!=groupItems.end())
+            pg->second.addVariable(*v);
+        }
+    }
+}
+
+void Minsky::AddOperationToGroup(int groupId, int opId)
+{
+  GroupIcons::iterator g=groupItems.find(groupId);
+  Operations::iterator o=operations.find(opId);
+  if (g!=groupItems.end() && o!=operations.end() && o->second->group!=groupId)
+    {
+      if (o->second->group!=-1)
+        {
+          GroupIcons::iterator pg=groupItems.find(o->second->group);
+          if (pg!=groupItems.end())
+            pg->second.removeOperation(*o);
+        }
+      g->second.addOperation(*o);
+      g->second.addAnyWires(o->second->ports());
+    }
+}
+
+void Minsky::RemoveOperationFromGroup(int groupId, int opId)
+{
+  GroupIcons::iterator g=groupItems.find(groupId);
+  Operations::iterator o=operations.find(opId);
+  if (g!=groupItems.end() && o!=operations.end() && o->second->group==groupId)
+    {
+      g->second.removeOperation(*o);
+      g->second.removeAnyWires(o->second->ports());
+      if (g->second.parent()!=-1)
+        {
+          GroupIcons::iterator pg=groupItems.find(g->second.parent());
+          if (pg!=groupItems.end())
+            pg->second.addOperation(*o);
+        }
+    }
+}
+
+bool Minsky::AddGroupToGroup(int destGroup, int groupId)
+{
+  GroupIcons::iterator g=groupItems.find(groupId);
+  GroupIcons::iterator dg=groupItems.find(destGroup);
+  if (g!=groupItems.end() && dg!=groupItems.end())
+    {
+      if (g->second.parent()!=-1)
+        {
+          GroupIcons::iterator pg=groupItems.find(g->second.parent());
+          if (pg!=groupItems.end())
+            pg->second.removeGroup(*g);
+        }
+      return dg->second.addGroup(*g);
+    }
+  return false;
+}
+
+void Minsky::RemoveGroupFromGroup(int destGroup, int groupId)
+{
+  GroupIcons::iterator g=groupItems.find(groupId);
+  GroupIcons::iterator dg=groupItems.find(destGroup);
+  if (g!=groupItems.end() && dg!=groupItems.end())
+    {
+      dg->second.removeGroup(*g);
+      if (dg->second.parent()!=-1)
+        {
+          GroupIcons::iterator pg=groupItems.find(dg->second.parent());
+          if (pg!=groupItems.end())
+            pg->second.addGroup(*g);
+        }
+    }
 }

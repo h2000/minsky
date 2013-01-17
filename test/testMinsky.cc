@@ -24,11 +24,9 @@ namespace
 {
   struct TestFixture: public Minsky
   {
-    TestFixture()
+    LocalMinsky lm;
+    TestFixture(): lm(*this)
     {
-      setPortManager(*this);
-      setVariableManager(variables);
-      GodleyIcon::setMinsky(*this);
     }
     void addWire(const Wire& w)
     {
@@ -103,7 +101,7 @@ TEST_FIXTURE(TestFixture,constructEquationsEx1)
       CHECK(ports[w->second.to].input);
     }
 
-  Save("constructEquationsEx1.xml");
+  //Save("constructEquationsEx1.xml");
 
   constructEquations();
 
@@ -437,7 +435,7 @@ TEST_FIXTURE(TestFixture,multiVariableInputsAdd)
   op->MoveTo(50,150);
   intOp->MoveTo(150,150);
 
-  Save("multiVariableInputs.mky");
+  //Save("multiVariableInputs.mky");
 
   constructEquations();
   step();
@@ -469,7 +467,7 @@ TEST_FIXTURE(TestFixture,multiVariableInputsSubtract)
   op->MoveTo(50,150);
   intOp->MoveTo(150,150);
 
-  Save("multiVariableInputs.mky");
+  //Save("multiVariableInputs.mky");
 
   constructEquations();
   step();
@@ -501,7 +499,7 @@ TEST_FIXTURE(TestFixture,multiVariableInputsMultiply)
   op->MoveTo(50,150);
   intOp->MoveTo(150,150);
 
-  Save("multiVariableInputs.mky");
+  //Save("multiVariableInputs.mky");
 
   constructEquations();
   step();
@@ -532,7 +530,7 @@ TEST_FIXTURE(TestFixture,multiVariableInputsDivide)
   op->MoveTo(50,150);
   intOp->MoveTo(150,150);
 
-  Save("multiVariableInputs.mky");
+  //Save("multiVariableInputs.mky");
 
   constructEquations();
   step();

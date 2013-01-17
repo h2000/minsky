@@ -76,14 +76,17 @@ namespace minsky
 
     static void setPrivates
     (minsky::GroupIcon& g, const vector<int>& ops, const vector<int>& vars,
-     const vector<int>& wires, const vector<int>& inVariables, 
-     const vector<int>& outVariables)
+     const vector<int>& wires, const vector<int>& groups, 
+     const vector<int>& inVariables, const vector<int>& outVariables)
     {
       g.m_operations=ops;
       g.m_variables=vars;
       g.m_wires=wires;
-      g.inVariables=inVariables;
-      g.outVariables=outVariables;
+      g.m_groups=groups;
+      g.inVariables.clear();
+      g.inVariables.insert(inVariables.begin(), inVariables.end());
+      g.outVariables.clear();
+      g.outVariables.insert(outVariables.begin(), outVariables.end());
     }
 
     static void setPrivates(minsky::VariableManager& vm, 
@@ -91,6 +94,11 @@ namespace minsky
     {
       vm.wiredVariables=w;
       vm.portToVariable=p;
+    }
+
+    static void setParent(minsky::GroupIcon& g, int p)
+    {
+      g.m_parent=p;
     }
   };
 

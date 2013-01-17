@@ -42,6 +42,12 @@ namespace minsky
     vector<AssetClass> m_assetClass;
   
     void markEdited(); ///< mark model as having changed
+    void _resize(unsigned rows, unsigned cols) {
+      // resize existing
+      for (size_t i=0; i<data.size(); ++i) data[i].resize(cols);
+      data.resize(rows, vector<string>(cols));
+      m_assetClass.resize(cols, noAssetClass);
+    }
   public:
 
     bool doubleEntryCompliant;
@@ -51,7 +57,7 @@ namespace minsky
     static const char* initialConditions;
     GodleyTable(): doubleEntryCompliant(false)
     {
-      Dimension(2,2);
+      _resize(2,2);
       cell(0,0)="Flows V / Stock Variables ->";
       cell(1,0)=initialConditions;
     }
@@ -85,13 +91,7 @@ namespace minsky
     size_t cols() const {return data.empty()? 0: data[0].size();}
 
     void clear() {data.clear(); markEdited();}
-    void Resize(unsigned rows, unsigned cols) {
-      // resize existing
-      for (size_t i=0; i<data.size(); ++i) data[i].resize(cols);
-      data.resize(rows, vector<string>(cols));
-      m_assetClass.resize(cols, noAssetClass);
-      markEdited();
-    }
+    void Resize(unsigned rows, unsigned cols){_resize(rows,cols), markEdited();}
     void resize(TCL_args args) {Resize(args[0],args[1]);}
 
     void InsertRow(unsigned row);

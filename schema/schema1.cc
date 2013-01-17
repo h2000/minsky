@@ -107,7 +107,7 @@ namespace schema1
           w.from=w1.from;
           w.to=w1.to;
           w.visible=l->second.visible;
-          w.coords=toArray(l->second.coords);
+          w.Coords(toArray(l->second.coords));
         }
       return w;
     }
@@ -176,7 +176,7 @@ namespace schema1
           p.ports.resize(p1.ports.size());
           for (size_t i=0; i<p1.ports.size(); ++i)
             p.ports[i]=p1.ports[i];
-          p.MoveTo(l.x, l.y);
+          SchemaHelper::setXY(p,l.x,l.y);
         }
       return p;
     }
@@ -199,6 +199,7 @@ namespace schema1
           g.width=l.width;
           g.height=l.height;
           g.rotation=l.rotation;
+          g.visible=l.visible;
         }
       return g;
     }
@@ -341,7 +342,7 @@ namespace schema1
     minsky::Minsky m;
     Combine c(layout, m.variables);
     // override default minsky object for this method
-    minsky::GroupIcon::LocalMinsky lm(m);
+    minsky::LocalMinsky lm(m);
 
     c.populate(m.ports, model.ports);
     c.populate(m.wires, model.wires);
@@ -360,17 +361,22 @@ namespace schema1
     for (vector<Group>::const_iterator g=model.groups.begin(); 
          g!=model.groups.end(); ++g)
       {
-        vector<int> ports, wires, ops, vars;
+        vector<int> ports, wires, ops, vars, groups;
         for (vector<int>::const_iterator item=g->items.begin(); 
              item!=g->items.end(); ++item)
-          if (m.ports.count(*item))
-            ports.push_back(*item);
-          else if (m.wires.count(*item))
+          if (m.wires.count(*item))
             wires.push_back(*item);
           else if (m.operations.count(*item))
             ops.push_back(*item);
           else if (m.variables.count(*item))
             vars.push_back(*item);
+          else if (m.groupItems.count(*item))
+            groups.push_back(*item);
+        // because variables and operator create ports, duplicate
+        // entries in the port map may already exist, so we must place
+        // the port check last
+          else if (m.ports.count(*item))
+            ports.push_back(*item);
         minsky::GroupIcon& gi=m.groupItems[g->id];
 
         vector<int> inVars, outVars;
@@ -383,20 +389,17 @@ namespace schema1
               else
                 outVars.push_back(varId);
           }
-        SchemaHelper::setPrivates(gi, ops, vars, wires, inVars, outVars);
+        SchemaHelper::setPrivates(gi, ops, vars, wires, groups, inVars, outVars);
+        // set the parent attribute of all child groups
+        for (vector<int>::const_iterator i=groups.begin(); i!=groups.end(); ++i)
+          SchemaHelper::setParent(m.groupItems[*i], g->id);
+
         for (vector<int>::const_iterator o=ops.begin(); o!=ops.end(); ++o)
           m.operations[*o]->group=g->id;
         for (vector<int>::const_iterator v=vars.begin(); v!=vars.end(); ++v)
           m.variables[*v]->group=g->id;
-//        float zoomRatio = 1/gi.computeDisplayZoom();
-//        // compute zoom factors of contained variables etc, if visible
-//        for (vector<int>::const_iterator o=ops.begin(); o!=ops.end(); ++o)
-//          m.operations[*o]->setZoom(zoomRatio);
-//      
-//        set<int> eVars(gi.edgeSet());
-//        for (vector<int>::const_iterator v=vars.begin(); v!=vars.end(); ++v)
-//          if (eVars.count(*v)==0)
-//            m.variables[*v]->setZoom(zoomRatio);;
+        for (vector<int>::const_iterator w=wires.begin(); w!=wires.end(); ++w)
+          m.wires[*w].group=g->id;
         gi.computeDisplayZoom();
         gi.computeDisplayZoom();
       }
@@ -420,6 +423,7 @@ namespace schema1
     ItemMap wireMap;
     ItemMap opMap;
     ItemMap varMap;
+    ItemMap groupMap;
     
     for (minsky::Minsky::Ports::const_iterator p=m.ports.begin(); 
          p!=m.ports.end(); ++p, ++id)
@@ -468,7 +472,7 @@ namespace schema1
         layout.push_back(layoutFactory(id, g->second));
       }
 
-      for (minsky::Minsky::GroupIcons::const_iterator g=m.groupItems.begin(); 
+      for (minsky::GroupIcons::const_iterator g=m.groupItems.begin(); 
            g!=m.groupItems.end(); ++g, ++id)
       {
         model.groups.push_back(Group(id, g->second));
@@ -486,8 +490,20 @@ namespace schema1
         for (size_t i=0; i<g1.variables().size(); ++i)
           group.items.push_back(varMap[g1.variables()[i]]);
 
+        groupMap[g->first]=id;
         layout.push_back(layoutFactory(id, g->second));
       }
+
+      // second pass to add in the child group ids, now that they're renumbered
+      int j=0;
+      for (minsky::GroupIcons::const_iterator g=m.groupItems.begin(); 
+           g!=m.groupItems.end(); ++g, ++j)
+        {
+          Group& group=model.groups[j];
+          const minsky::GroupIcon& g1=g->second;
+          for (size_t i=0; i<g1.groups().size(); ++i)
+            group.items.push_back(groupMap[g1.groups()[i]]);
+        }
 
       for (minsky::Plots::Map::const_iterator p=m.plots.plots.begin(); 
            p!=m.plots.plots.end(); ++p, ++id)

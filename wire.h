@@ -20,11 +20,16 @@
 #define WIRE_H
 
 #include <arrays.h>
+#include <TCL_obj_base.h>
+#include "classdesc_access.h"
 
 namespace minsky
 {
-  struct Wire
+  class Wire
   {
+    ecolab::array<float> m_coords;
+    CLASSDESC_ACCESS(Wire);
+  public:
     /// ports this wire connects
     int from, to;
     // for use in sets, etc
@@ -32,12 +37,25 @@ namespace minsky
       return from < x.from || from==x.from && to<x.to;
     }
     bool visible; ///<whether wire is visible on Canvas 
-    /// display coordinates
-    ecolab::array<float> coords;
+    int group;
+    /// display coordinates 
+    ecolab::array<float> coords(ecolab::TCL_args args) {
+      if (args.count)
+        {
+          ecolab::array<float> coords;
+          args>>coords;
+          return Coords(coords);
+        }
+      return Coords();
+    }
+    /// C++ accessor
+    ecolab::array<float> Coords() const;
+    ecolab::array<float> Coords(const ecolab::array<float>& coords);
+
     Wire(int from=0, int to=0, 
          const ecolab::array<float>& coords=ecolab::array<float>(), 
          bool visible=true): 
-      from(from), to(to), coords(coords), visible(visible) {}
+      from(from), to(to), m_coords(coords), visible(visible), group(-1) {}
     /// zoom by \a factor, scaling all widget's coordinates, using (\a
     /// xOrigin, \a yOrigin) as the origin of the zoom transformation
     void zoom(float xOrigin, float yOrigin, float factor);

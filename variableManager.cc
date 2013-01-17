@@ -25,13 +25,7 @@
 using namespace std;
 using namespace minsky;
 
-namespace 
-{
-  VariableManager* theVariableManager=&minsky::minsky.variables;
-}
-
-VariableManager& minsky::variableManager() {return *theVariableManager;}
-void minsky::setVariableManager(VariableManager& pm) {theVariableManager=&pm;}
+VariableManager& minsky::variableManager() {return minsky().variables;}
 
 array<int> VariableManager::visibleVariables() const
 {

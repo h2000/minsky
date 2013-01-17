@@ -22,14 +22,21 @@ using namespace minsky;
 
 namespace
 {
+  void pWireCoords()
+  {
+    cout << "------------------------------------"<<endl;
+    for (PortManager::Wires::const_iterator w=minsky::minsky().wires.begin();
+           w!=minsky::minsky().wires.end(); ++w)
+      cout <<"Wire "<<w->first<<": "<<w->second.Coords()<<endl;
+  }
+
   struct TestFixture: public Minsky
   {
-    GroupIcon::LocalMinsky lm;
+    LocalMinsky lm;
     VariablePtr a,b,c;
     int ab,bc; // wire ids
     TestFixture(): lm(*this)
     {
-      setPortManager(*this);
       // create 3 variables, wire them and add first two to a group,
       // leaving 3rd external
       a=variables[variables.newVariable("a")];
@@ -41,20 +48,45 @@ namespace
       ab=PortManager::addWire(Wire(a->outPort(),b->inPort()));
       bc=PortManager::addWire(Wire(b->outPort(),c->inPort()));
       GroupIcon& g=groupItems[0]=GroupIcon(0);      
-      g.group(50,50,250,150);
+
+      // add a couple of time operators, to ensure the group has finite size
+      operations[AddOperation("time")]->MoveTo(100,75);
+      operations[AddOperation("time")]->MoveTo(200,125);
+      g.createGroup(50,50,250,150);
       CHECK_EQUAL(2, g.variables().size());
       CHECK_EQUAL(1, g.wires().size());
       CHECK_EQUAL(0, a->group);
       CHECK(!a->visible);
       CHECK_EQUAL(0, b->group);
-      CHECK(!b->visible);
+      CHECK(!b->visible); 
       CHECK_EQUAL(-1, c->group);
       CHECK(c->visible);
       CHECK(!wires[ab].visible);
       CHECK(wires[bc].visible);
       CHECK_EQUAL(ab, g.wires()[0]); 
+      CHECK(uniqueGroupMembership());
     }
-    ~TestFixture() {setPortManager(minsky::minsky);}
+    bool insert(set<int>& items, const vector<int>& itemList)
+    {
+      for (size_t i=0; i<itemList.size(); ++i)
+        if (!items.insert(itemList[i]).second)
+          return false;
+      return true;
+    }
+
+    bool uniqueGroupMembership()
+    {
+      set<int> varItems, opItems, wireItems, groupIds;
+      for (GroupIcons::const_iterator g=groupItems.begin();
+           g!=groupItems.end(); ++g)
+        if (!insert(varItems, g->second.variables()) ||
+            !insert(opItems, g->second.operations()) ||
+            !insert(wireItems, g->second.wires()) ||
+            !insert(groupIds, g->second.groups()))
+          return false;
+      return true;
+    }
+        
   };
 }
 
@@ -63,7 +95,7 @@ SUITE(Group)
   TEST_FIXTURE(TestFixture, AddVariable)
   {
     GroupIcon& g=groupItems[0];
-    g.AddVariable(variables.getIDFromVariable(c));
+    AddVariableToGroup(0, variables.getIDFromVariable(c));
     CHECK_EQUAL(3, g.variables().size());
     CHECK_EQUAL(0, c->group);
     CHECK_EQUAL(variables.getIDFromVariable(c), g.variables().back());
@@ -72,14 +104,17 @@ SUITE(Group)
     CHECK(!wires[ab].visible);
     CHECK(!wires[bc].visible);
     
+    CHECK(uniqueGroupMembership());
+
     // now check removal
-    g.RemoveVariable(variables.getIDFromVariable(a));
+    RemoveVariableFromGroup(0, variables.getIDFromVariable(a));
     CHECK_EQUAL(2, g.variables().size());
     CHECK_EQUAL(-1, a->group);
     CHECK_EQUAL(1, g.wires().size());
-    CHECK_EQUAL(bc, g.wires()[0]);
+    CHECK_EQUAL(bc, g.wires().back());
     CHECK(wires[ab].visible);
     CHECK(!wires[bc].visible);
+    CHECK(uniqueGroupMembership());
   }
 
   TEST_FIXTURE(TestFixture, AddOperation)
@@ -100,8 +135,8 @@ SUITE(Group)
     GroupIcon& g=groupItems[0];
 
     CHECK_EQUAL(1, g.wires().size());
-    g.AddOperation(addOpId);
-    CHECK_EQUAL(1, g.operations().size());
+    AddOperationToGroup(0, addOpId);
+    CHECK_EQUAL(3, g.operations().size());
     CHECK_EQUAL(addOpId, g.operations().back());
     CHECK_EQUAL(2, g.wires().size());
     CHECK_EQUAL(bAdd,  g.wires().back());
@@ -113,8 +148,10 @@ SUITE(Group)
     CHECK(!wires[bAdd].visible);
     CHECK(wires[timeA].visible);
 
-    g.AddOperation(timeOpId);
-    CHECK_EQUAL(2, g.operations().size());
+    CHECK(uniqueGroupMembership());
+
+    AddOperationToGroup(0, timeOpId);
+    CHECK_EQUAL(4, g.operations().size());
     CHECK_EQUAL(timeOpId, g.operations().back());
     CHECK_EQUAL(3, g.wires().size());
     CHECK_EQUAL(timeA,  g.wires().back());
@@ -125,9 +162,10 @@ SUITE(Group)
     CHECK_EQUAL(0,timeOp->group);
     CHECK(!wires[bAdd].visible);
     CHECK(!wires[timeA].visible);
+    CHECK(uniqueGroupMembership());
    
-    g.RemoveOperation(addOpId);
-    CHECK_EQUAL(1, g.operations().size());
+    RemoveOperationFromGroup(0, addOpId);
+    CHECK_EQUAL(3, g.operations().size());
     CHECK_EQUAL(timeOpId, g.operations().back());
     CHECK_EQUAL(2, g.wires().size());
     CHECK_EQUAL(timeA,  g.wires().back());
@@ -138,5 +176,78 @@ SUITE(Group)
     CHECK_EQUAL(0,timeOp->group);
     CHECK(wires[bAdd].visible);
     CHECK(!wires[timeA].visible);
+    CHECK(uniqueGroupMembership());
+  }
+
+  TEST_FIXTURE(TestFixture, AddGroup)
+  {
+    GroupIcon& g=groupItems[0];
+    GroupIcon& g1=groupItems[1]=GroupIcon(1);
+    g1.createGroup(250,50,350,150);
+    AddGroupToGroup(0,1);
+    CHECK(g1.visible==g.displayContents());
+    CHECK_EQUAL(1,g.groups().size());
+    CHECK_EQUAL(1,g.groups()[0]);
+    CHECK_EQUAL(g.localZoom(), g1.zoomFactor);
+    CHECK(uniqueGroupMembership());
+
+    RemoveGroupFromGroup(0,1);
+    CHECK(g1.visible);
+    CHECK_EQUAL(0,g.groups().size());
+    CHECK_EQUAL(zoomFactor(), g1.zoomFactor);
+    CHECK(uniqueGroupMembership());
+  }
+
+
+  TEST_FIXTURE(TestFixture, NestedGroupUngroup)
+  {
+    GroupIcon& g=groupItems[0];
+    GroupIcon& g1=groupItems[CopyGroup(0)];
+    g1.MoveTo(300,300);
+    GroupIcon& g2=groupItems[Group(100,0,450,400)];
+    CHECK_EQUAL(1,g2.variables().size());
+    CHECK_EQUAL(1,g2.numPorts());
+    CHECK_EQUAL(0,g2.operations().size());
+    CHECK_EQUAL(1,g2.groups().size());
+    CHECK_EQUAL(1,g2.groups()[0]);
+    CHECK_EQUAL(0,g2.wires().size()); //TODO - not sure what the number of wires should be
+    CHECK(uniqueGroupMembership());
+
+    
+    // now ungroup g1
+    Ungroup(1);
+    CHECK_EQUAL(0,g2.groups().size());
+    CHECK_EQUAL(3, g2.variables().size());
+    CHECK_EQUAL(2,g2.operations().size());
+    CHECK_EQUAL(1,g2.wires().size());
+    CHECK(uniqueGroupMembership());
+
+    // now try to regroup within g2
+    g2.computeDisplayZoom();
+    while (!g2.displayContents()) 
+      {
+        Zoom(g2.x(),g2.y(),1.1);
+      }
+
+    float x0=g2.x()-0.5*g2.width*g2.zoomFactor,
+      x1=g2.x()+0.5*g2.width*g2.zoomFactor,
+      y0=g2.y()-0.5*g2.height*g2.zoomFactor,
+      y1=g2.y()+0.5*g2.height*g2.zoomFactor;
+    float b0,b1,b2,b3;
+    g2.contentBounds(b0,b1,b2,b3);
+    CHECK(b0>=x0 && b1>=y0 && b2<=x1 && b3<=y1);
+
+    Save("NestedGroupUngroup.mky");
+    GroupIcon& g3=groupItems[Group(x0, y0, x1, y1)]; 
+    //TODO: this doesn't work correctly, possibly because some items
+    //are being misplaced.
+    CHECK_EQUAL(3,g3.variables().size());
+    CHECK_EQUAL(2,g3.operations().size());
+    CHECK_EQUAL(1,g3.wires().size());
+    CHECK_EQUAL(0,g2.variables().size());
+    CHECK_EQUAL(0,g2.operations().size());
+    CHECK_EQUAL(0,g2.wires().size());
+    CHECK_EQUAL(1,g2.groups().size());
+    CHECK(uniqueGroupMembership());
   }
 }
