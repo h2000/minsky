@@ -44,79 +44,82 @@ radiobutton .wiring.menubar.movemode -value 2 -variable interactionMode -command
 radiobutton .wiring.menubar.panmode -value 3 -variable interactionMode -command setInteractionMode -text pan
 radiobutton .wiring.menubar.lassomode -value 4 -variable interactionMode -command setInteractionMode -text lasso
 
+set menubarLine 0
+frame .wiring.menubar.line0
+
 image create photo zoomOutImg -file $minskyHome/icons/zoomOut.gif
-button .wiring.menubar.zoomOut -image zoomOutImg -height 24 -width 37 \
+button .wiring.menubar.line0.zoomOut -image zoomOutImg -height 24 -width 37 \
     -command {zoom 0.91}
-tooltip .wiring.menubar.zoomOut "Zoom Out"
+tooltip .wiring.menubar.line0.zoomOut "Zoom Out"
 
 image create photo zoomInImg -file $minskyHome/icons/zoomIn.gif
-button .wiring.menubar.zoomIn -image zoomInImg -height 24 -width 37 \
+button .wiring.menubar.line0.zoomIn -image zoomInImg -height 24 -width 37 \
     -command {zoom 1.1}
-tooltip .wiring.menubar.zoomIn "Zoom In"
+tooltip .wiring.menubar.line0.zoomIn "Zoom In"
 
 image create photo zoomOrigImg -file $minskyHome/icons/zoomOrig.gif
-button .wiring.menubar.zoomOrig -image zoomOrigImg -height 24 -width 37 \
+button .wiring.menubar.line0.zoomOrig -image zoomOrigImg -height 24 -width 37 \
     -command {zoom [expr 1/[zoomFactor]]}
-tooltip .wiring.menubar.zoomOrig "Reset Zoom"
+tooltip .wiring.menubar.line0.zoomOrig "Reset Zoom"
 
 image create photo godleyImg -file $minskyHome/icons/bank.gif
-button .wiring.menubar.godley -image godleyImg -height 24 -width 37 \
+button .wiring.menubar.line0.godley -image godleyImg -height 24 -width 37 \
     -command {addNewGodleyItem [addGodleyTable 10 10]}
-tooltip .wiring.menubar.godley "Godley table"
+tooltip .wiring.menubar.line0.godley "Godley table"
 
 image create photo varImg -file $minskyHome/icons/var.gif
-button .wiring.menubar.var -image varImg -height 24 -width 37 \
+button .wiring.menubar.line0.var -image varImg -height 24 -width 37 \
     -command addVariable
-tooltip .wiring.menubar.var "variable"
+tooltip .wiring.menubar.line0.var "variable"
 
 image create photo constImg -file $minskyHome/icons/const.gif
-button .wiring.menubar.const -height 24 -width 37 -image constImg -command {
+button .wiring.menubar.line0.const -height 24 -width 37 -image constImg -command {
     addOperation constant}
-tooltip .wiring.menubar.const "constant"
-
-image create photo timeImg -file $minskyHome/icons/time.gif
-button .wiring.menubar.time -height 24 -image timeImg -command {
-    addOperation "time"}
-tooltip .wiring.menubar.time "time"
+tooltip .wiring.menubar.line0.const "constant"
 
 image create photo integrateImg -file $minskyHome/icons/integrate.gif
-button .wiring.menubar.integrate -image integrateImg -command {
+button .wiring.menubar.line0.integrate -image integrateImg -command {
     addOperation integrate}
-tooltip .wiring.menubar.integrate integrate
+tooltip .wiring.menubar.line0.integrate integrate
 
-image create photo expImg -file $minskyHome/icons/exp.gif
-button .wiring.menubar.exp -image expImg -command {addOperation exp}
-tooltip .wiring.menubar.exp exp
+pack .wiring.menubar.movemode .wiring.menubar.wiringmode .wiring.menubar.lassomode .wiring.menubar.panmode -side left
 
-image create photo addImg -file $minskyHome/icons/add.gif
-button .wiring.menubar.add -image addImg -command {addOperation add}
-tooltip .wiring.menubar.add add
+pack .wiring.menubar.line0.zoomOut .wiring.menubar.line0.zoomIn .wiring.menubar.line0.zoomOrig .wiring.menubar.line0.godley .wiring.menubar.line0.var .wiring.menubar.line0.const .wiring.menubar.line0.integrate -side left
 
-image create photo subtractImg -file $minskyHome/icons/subtract.gif
-button .wiring.menubar.subtract -image subtractImg -command {
-    addOperation subtract}
-tooltip .wiring.menubar.subtract subtract
+# create buttons for all available operations (aside from those
+# handled especially)
+foreach op [availableOperations] {
+    if {$op=="numOps"} break
+    # ignore some operations
+    switch $op {
+        "constant" -
+        "copy" -
+        "integrate"  continue 
+    }
+    # advance to next line in menubar
+    if {$op=="time"} {
+        incr menubarLine
+        frame .wiring.menubar.line$menubarLine
+    }
+    image create photo [set op]Img -width 24 -height 24
+    operationIcon [set op]Img $op
+    button .wiring.menubar.line$menubarLine.$op -height 24 -image [set op]Img -command "addOperation $op"
+    tooltip .wiring.menubar.line$menubarLine.$op $op
 
-image create photo multiplyImg -file $minskyHome/icons/multiply.gif
-button .wiring.menubar.multiply -image multiplyImg -command {
-    addOperation multiply}
-tooltip .wiring.menubar.multiply multiply
+    pack .wiring.menubar.line$menubarLine.$op -side left 
+}
 
-image create photo divideImg -file $minskyHome/icons/divide.gif
-button .wiring.menubar.divide -image divideImg -command {addOperation divide}
-tooltip .wiring.menubar.divide divide
 
 image create photo plotImg -file $minskyHome/icons/plot.gif
-button .wiring.menubar.plot -image plotImg -height 24 -width 37 \
-    -command {newPlot}
-tooltip .wiring.menubar.plot "Plot"
+button .wiring.menubar.line$menubarLine.plot -image plotImg \
+    -height 24 -width 37 -command {newPlot}
+tooltip .wiring.menubar.line$menubarLine.plot "Plot"
 
-pack .wiring.menubar.wiringmode .wiring.menubar.movemode .wiring.menubar.panmode .wiring.menubar.lassomode -side left
-
-pack .wiring.menubar.zoomOut .wiring.menubar.zoomIn .wiring.menubar.zoomOrig .wiring.menubar.godley .wiring.menubar.var .wiring.menubar.const .wiring.menubar.time -side left
-
-
-pack .wiring.menubar.integrate .wiring.menubar.exp .wiring.menubar.add .wiring.menubar.subtract .wiring.menubar.multiply .wiring.menubar.divide .wiring.menubar.plot -side left
+pack .wiring.menubar.line$menubarLine.plot -side left 
+# pack menubar lines
+for {set i 0} {$i<=$menubarLine} {incr i} {
+    pack .wiring.menubar.line$i -side top -anchor w
+}
 pack .wiring.menubar -fill x
 
 canvas .wiring.canvas -height $canvasHeight -width $canvasWidth -scrollregion {-10000 -10000 10000 10000} \
@@ -162,14 +165,26 @@ proc zoom {factor} {
     } else {
         minsky.zoom $x0 $y0 $factor
         .wiring.canvas scale all $x0 $y0 $factor $factor
-    }        
+    }  
+    # sliders need to be readjusted, because zooming doesn't do the right thing
+    foreach op [operations.visibleOperations] {
+        op.get $op
+        foreach item [.wiring.canvas find withtag slider$op] {
+            set coords [.wiring.canvas coords $item]
+            # should be only one of these anyway...
+            .wiring.canvas coords $item [op.x] [sliderYCoord [op.y]]
+        }
+    }
+  
+      
     enableEventProcessing
 }
 
 .menubar.ops.menu add command -label "Godley Table" -command {addNewGodleyItem [addGodleyTable 10 10]}
 
 .menubar.ops.menu add command -label "Variable" -command "addVariable" 
-foreach var [availableOperations] { 
+foreach var [availableOperations] {
+    if {$var=="numOps"} break
     .menubar.ops.menu add command -label $var -command "addOperation $var"
 }
 
@@ -258,6 +273,7 @@ proc placeNewOp {opid} {
 proc cancelPlaceNewOp {id} {
     bind .wiring.canvas <Motion> {}
     bind .wiring.canvas <Enter> {}
+    bind .wiring.canvas <Button> {}
     .wiring.canvas delete op$id
     deleteOperation $id
     updateCanvas
@@ -344,23 +360,12 @@ proc move {item id tag x y} {
         "op" {
             foreach item [.wiring.canvas find withtag slider$id] {
                 set coords [.wiring.canvas coords $item]
-                .wiring.canvas move $item [expr $x-[lindex $coords 0]] [expr $y-[lindex $coords 1]-25]
+                # should be only one of these anyway...
+                .wiring.canvas coords $item [.wiring.canvas canvasx $x] \
+                    [sliderYCoord [.wiring.canvas canvasy $y]]
             }
         }
     }
-        # check is variable is an I/O variable, and mark it differently
-#        "var" {
-#            .wiring.canvas delete iomarker
-#            set gid [groupTest.containingGroup [$item.x] [$item.y]]
-#            if {$gid>-1} {
-#                groupItem.get $gid
-#                if [groupItem.inIORegion [$item.x] [$item.y]] {
-#                    .wiring.canvas create oval [$item.x] [$item.y] \
-#                        [expr [$item.x]+3] [expr [$item.y]+3] \
-#                        -outline red  -tag iomarker
-#                }
-#            }
-#        }
 }
 
 # create a new canvas item for var id
@@ -475,7 +480,9 @@ proc updateCoords {wire handle pos x y} {
     lset coords $pos $x
     lset coords [expr $pos+1] $y
     .wiring.canvas coords wire$wire $coords
-    wireCoords $wire $coords
+    wire.get $wire
+    wire.coords $coords
+    wire.set
 }
 
 proc insertCoords {wire handle pos x y} {
@@ -502,9 +509,12 @@ proc createHandle {x y} {
 
 proc deleteHandle {wire handle pos} {
     .wiring.canvas delete $handle
-    set coords [lreplace [.wiring.canvas coords $wire] $pos [expr $pos+1]]
-    .wiring.canvas coords $wire $coords        
-    wireCoords $wire $coords
+    set coords [lreplace [.wiring.canvas coords wire$wire] $pos [expr $pos+1]]
+    .wiring.canvas coords wire$wire $coords        
+    puts "deleteHandle: $coords"
+    wire.get $wire
+    wire.coords $coords
+    wire.set
     decorateWire $wire
 }
     
@@ -723,7 +733,8 @@ proc updateCanvas {} {
     # add wires to canvas
     foreach w [visibleWires] {
         if {[llength [.wiring.canvas find withtag wire$w]]==0} {
-            set id [createWire [wireCoords $w]]
+            wire.get $w
+            set id [createWire [wire.coords]]
             newWire $id $w 
         }
     }
@@ -791,6 +802,7 @@ proc contextMenu {item x y} {
             set tag [lindex $tags [lsearch -regexp $tags {var[0-9]+}]]
             set id [string range $tag 3 end]
 	    .wiring.context delete 0 end
+            .wiring.context add command -label Help -command {help Variable}
             .wiring.context add command -label "Edit" -command "editItem $id $tag"
             .wiring.context add command -label "Copy" -command "copyVar $id"
             .wiring.context add command -label "Flip" -command "rotateVar $id 180; flip_default"
@@ -802,6 +814,7 @@ proc contextMenu {item x y} {
             set id [string range $tag 2 end]
             op.get $id
             .wiring.context delete 0 end
+            .wiring.context add command -label Help -command "help [string totitle [op.name]]"
             .wiring.context add command -label "Edit" -command "editItem $id $tag"             
             if {[op.name]=="integrate"} {
                 integral.get $id
@@ -828,6 +841,7 @@ proc contextMenu {item x y} {
             set tag [lindex $tags [lsearch -regexp $tags {wire[0-9]+}]]
             set id [string range $tag 4 end]
             .wiring.context delete 0 end
+            .wiring.context add command -label Help -command {help Wires}
             .wiring.context add command -label "Straighten" -command "straightenWire $id"
             .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.wires.@elem $id].*"
             .wiring.context add command -label "Delete" -command "deleteItem $id $tag"
@@ -836,6 +850,7 @@ proc contextMenu {item x y} {
             set tag [lindex $tags [lsearch -regexp $tags {plot#.+}]]
             set id [string range $tag 5 end]
             .wiring.context delete 0 end
+            .wiring.context add command -label Help -command {help Plot}
             .wiring.context add command -label "Expand" -command "plotDoubleClick $id"
             .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.plots.plots.@elem $id].*"
             .wiring.context add command -label "Delete" -command "deletePlot $item $id"
@@ -844,6 +859,7 @@ proc contextMenu {item x y} {
             set tag [lindex $tags [lsearch -regexp $tags {godley[0-9]+}]]
             set id [string range $tag 6 end]
             .wiring.context delete 0 end
+            .wiring.context add command -label Help -command {help GodleyTable}
             .wiring.context add command -label "Open Godley Table" -command "openGodley $id"
             .wiring.context add command -label "Browse object" -command "obj_browser [eval minsky.godleyItems.@elem $id].*"
             .wiring.context add command -label "Delete Godley Table" -command "deleteItem $id $tag"
@@ -880,6 +896,7 @@ proc deleteItem {id tag} {
         }
         "^godley" {
             deleteGodleyTable $id
+            destroy .godley$id
             updateCanvas
         }
     }
@@ -934,6 +951,7 @@ grid [label .wiring.editVar.title -textvariable editVarInput(title)] -row $row -
 
 set row 10
 foreach var {
+    "Name"
     "Initial Value"
     "Rotation"
 } {
@@ -947,6 +965,7 @@ set editVarInput(initial_focus_rotation) .wiring.editVar.entry$rowdict(Rotation)
 
 frame .wiring.editVar.buttonBar
 button .wiring.editVar.buttonBar.ok -text OK -command {
+                    setItem var name {set "editVarInput(Name)"}
                     setItem value init {set "editVarInput(Initial Value)"}
                     setItem var rotation  {set editVarInput(Rotation)}
                     closeEditWindow .wiring.editVar
@@ -988,7 +1007,7 @@ set varInput(initial_focus) .wiring.initVar.entry$rowdict(Name)
 
 toplevel .wiring.editConstant
 wm resizable .wiring.editConstant 0 0
-wm title .wiring.editConstant "Edit Constant"
+#wm title .wiring.editConstant "Edit Constant"
 wm withdraw .wiring.editConstant
 wm transient .wiring.editConstant .wiring
 
@@ -1097,6 +1116,7 @@ proc editItem {id tag} {
             var.get $id
             wm title .wiring.editVar "Edit [var.name]"
             value.get [var.name]
+            set "editVarInput(Name)" [var.name]
             set "editVarInput(Initial Value)" [value.init]
             set "editVarInput(Rotation)" [var.rotation]
             if {[value.godleyOverridden] || [variables.inputWired [var.name]]} {
@@ -1121,6 +1141,7 @@ proc editItem {id tag} {
                 set "constInput(Slider Step Size)" ""
                 switch [op.name] {
                     constant {
+                        wm title .wiring.editConstant "Edit Constant"
                         constant.get $id
                         set constInput(Name) [constant.description]
                         set constInput(ValueLabel) "Value"
@@ -1133,6 +1154,7 @@ proc editItem {id tag} {
                         set setValue setConstantValue
                     }
                     integrate {
+                        wm title .wiring.editConstant "Edit Integral"
                         integral.get $id
                         set constInput(ValueLabel) "Initial Value"
                         value.get [integral.description]
@@ -1141,7 +1163,7 @@ proc editItem {id tag} {
                         set constInput(Name) [integral.description]
                     }
                 }
-                set constInput(title) [op.name]
+                set constInput(title) $constInput(Name)
                 set constInput(Rotation) [op.rotation]
                 # value needs to be regotten, as var name may have changed
                 set constInput(command) "
@@ -1176,6 +1198,8 @@ proc setOpVal {op x} {
     constant.get $op
     if {$x!=[constant.value]} {
         constant.value $x
+        # override the reset flag, to prevent simulation being set to t=0
+        resetNotNeeded
     }
 }
 
@@ -1201,12 +1225,16 @@ proc setSliderProperties {id} {
         # ensure slider does not override value
         constant.adjustSliderBounds
 
-        #set origValue [constant.value]
         .wiring.slider$id configure -to [constant.sliderMax] \
             -from [constant.sliderMin] -resolution $res
         .wiring.slider$id set [constant.value]
-        #constant.value $origValue
     }
+}
+
+# if y is the y-coordinate of the constant, then return a y-coordinate
+# for an attached slider
+proc sliderYCoord {y} {
+    return [expr $y-15-10*[zoomFactor]]
 }
 
 proc drawSlider {op x y} {
@@ -1234,7 +1262,7 @@ proc drawSlider {op x y} {
         # constructed.
         .wiring.slider$op configure -command "setOpVal $op"
 
-        .wiring.canvas create window [op.x] [expr [op.y]-25] -window .wiring.slider$op -tag slider$op
+        .wiring.canvas create window [op.x] [sliderYCoord [op.y]] -window .wiring.slider$op -tag slider$op
         # this is needed to ensure the setOpVal is fired _before_
         # moving on to processing the next operation in updateCanvas
         update

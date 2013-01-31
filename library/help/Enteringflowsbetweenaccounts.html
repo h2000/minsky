@@ -1,0 +1,83 @@
+﻿<html>
+	
+<head>
+	<title>Entering flows between accounts</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 3.7.1.482">
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "Minsky.html?" + sTopicUrl;
+			}
+			else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+			{
+				top.FrameTOC.SelectTocItem("Enteringflowsbetweenaccounts");
+			}
+		});
+	</script>
+</head>
+
+<body>
+
+	<div id="topic_header">
+			<div id="topic_header_content">
+				<h1>Entering flows between accounts</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="GettingStarted.html">Getting Started</a> &rsaquo;&rsaquo; <a href="WorkingwithMinsky.html">Working with Minsky</a> &rsaquo;&rsaquo; <a href="Creatingabankingmodel.html">Creating a banking model</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Creatingabankingmodel.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Definingaccounttypes.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Definingflows.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts6">Flows between accounts are entered by typing text labels in the accounts involved. The source label is entered as a simple name--for example, if Patient is lending money to Impatient, the word "Lend" could be used to describe this action. Firstly you need to create a row beneath the "Initial Conditions" row (which records the amount of money in each account when the simulation begins). You do this by clicking on the </span><img alt="" style="padding : 1px;" src="lib/NewItem166.png"/><span class="rvts6"> key on the Initial Conditions row. This creates a blank row for recording a flow between accounts.</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem167.png"/></p>
+<p class="rvps2"><span class="rvts6">The cell below "Initial Conditions" is used to give a verbal description of what the flow is:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem168.png"/></p>
+<p class="rvps2"><span class="rvts6">The flows between accounts are then recorded in the relevant cells underneath the columns. Here we will start with putting the label "Lend" into the Patient column.</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem142.png"/></p>
+<p class="rvps2"><span class="rvts6">Notice that the program shows that the Row Sum for this transaction is currently "Lend", when it should be zero to obey the double-entry bookkeeping rule that all rows must sum to zero. THis is because a destination for "Lend" has not yet been specified. The destination is Impatient's account, and to balance the row to zero this part of the transaction must be entered as "-Lend":</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem143.png"/></p>
+<p class="rvps2"><span class="rvts6">This might appear strange if you are not used to accounting standards--"shouldn't the Patient account fall because of the loan, while the Impatient account should rise?"--but what is shown in the table makes sense, because all accounts are perceived from the Bank's point of view. Deposits at a bank are liabilities for the bank, and are shown as a negative amount, while assets are recorded as a positive amount. So a loan from Patient to Impatient decreases the Bank's liabilities to Patient, and increases the Bank's liabilities to Impatient.</span></p>
+<p class="rvps2"><span class="rvts6">The same rule applies to the Initial Conditions (the amount of money in each of the accounts prior to the flows between accounts): the Initial Conditions must sum to zero. This requires that there are entries on the Asset side of the Banking ledger that exactly match the sum of Liabilities and Equity (Equity is also shown as a negative in double-entry bookkeeping):</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem144.png"/></p>
+<p class="rvps2"><span class="rvts6">As you enter flows, these appear on the left hand side of the bank block:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem147.png"/></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Steve Keen 2013</div>
+		</div>
+	</body>
+	
+</html>
+

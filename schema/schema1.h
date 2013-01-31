@@ -76,7 +76,7 @@ namespace schema1
     Variable(): type(VariableType::undefined), init(0) {}
     Variable(int id, const minsky::VariablePtr& v): 
       Item(id), type(v->type()), init(v->Init()), ports(toVector(v->ports())), 
-      name(v->name) {}
+      name(v->Name()) {}
   };
 
   struct Plot: public Item
@@ -176,11 +176,12 @@ namespace schema1
   /// group layouts also have a width & height
   struct GroupLayout: public virtual ItemLayout
   {
-    float width, height;
-    GroupLayout() {}
+    float width, height, displayZoom;
+    GroupLayout(): displayZoom(1) {}
     GroupLayout(int id, const minsky::GroupIcon& g):
       Layout(id), PositionLayout(id,g), VisibilityLayout(id, g),
-      ItemLayout(id, g), width(g.width), height(g.height) {}
+      ItemLayout(id, g), width(g.width), height(g.height), 
+      displayZoom(g.displayZoom) {}
     void xml_pack(xml_pack_t& x, const string& d) const
     {xml_pack_layout(x,d,*this);}
   };

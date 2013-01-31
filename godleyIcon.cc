@@ -39,7 +39,7 @@ namespace
   struct OrderByName
   {
     bool operator()(const VariablePtr& x, const VariablePtr& y) const
-    {assert(x&&y); return x->name<y->name;}
+    {assert(x&&y); return x->Name() < y->Name();}
   };
 
   struct GodleyIconItem: public XGLItem
@@ -91,7 +91,7 @@ namespace
           // render the variables
           cairo_identity_matrix(cairo);
           cairo_translate(cairo,0.5*cairoSurface->width(),0.5*cairoSurface->height());
-          DrawVars drawVars(cairo, gIcon.x(), gIcon.y(), gIcon.zoomFactor());
+          DrawVars drawVars(cairo, gIcon.x(), gIcon.y(), gIcon.zoomFactor);
           drawVars(gIcon.flowVars); 
           drawVars(gIcon.stockVars); 
 
@@ -219,7 +219,7 @@ namespace
     // remove any previously existing variables
     set<string> svName(varNames.begin(),varNames.end()) ;
     for (set<VariablePtr>::iterator v=oldVars.begin(); v!=oldVars.end(); ++v)
-      if (svName.count((*v)->name)==0)
+      if (svName.count((*v)->Name())==0)
         minsky::minsky().variables.erase(*v);
   }
 
@@ -292,17 +292,17 @@ void GodleyIcon::update()
   iconSize=max(100.0, 1.8*height);
 
   // position of margin in absolute canvas coordinate
-  float x= this->x() - 0.5*(0.8*iconSize-flowMargin)*zoomFactor();
-  float y= this->y() - 0.37*iconSize*zoomFactor();
+  float x= this->x() - 0.5*(0.8*iconSize-flowMargin)*zoomFactor;
+  float y= this->y() - 0.37*iconSize*zoomFactor;
   for (Variables::iterator v=flowVars.begin(); v!=flowVars.end(); ++v)
     {
       // right justification
       RenderVariable rv(*v);
-      const_cast<VariablePtr&>(*v)->MoveTo(x-rv.width()*zoomFactor(),y);
-      y+=2*RenderVariable(*v).height()*zoomFactor();
+      const_cast<VariablePtr&>(*v)->MoveTo(x-rv.width()*zoomFactor,y);
+      y+=2*RenderVariable(*v).height()*zoomFactor;
     }
-  x=this->x() - 0.5*(0.85*iconSize-flowMargin)*zoomFactor();
-  y=this->y() + 0.5*(iconSize-stockMargin)*zoomFactor();
+  x=this->x() - 0.5*(0.85*iconSize-flowMargin)*zoomFactor;
+  y=this->y() + 0.5*(iconSize-stockMargin)*zoomFactor;
 
   for (Variables::iterator v=stockVars.begin(); v!=stockVars.end(); ++v)
     {
@@ -310,9 +310,9 @@ void GodleyIcon::update()
       RenderVariable rv(*v);
       //OK because we're not changing variable name
       VariableBase& vv=const_cast<VariableBase&>(**v); 
-      vv.MoveTo(x,y+rv.width()*zoomFactor());
+      vv.MoveTo(x,y+rv.width()*zoomFactor);
       vv.rotation=90;
-      x+=2*rv.height()*zoomFactor();
+      x+=2*rv.height()*zoomFactor;
     }
 }
 
@@ -362,7 +362,7 @@ int GodleyIcon::Select(float x, float y)
 void GodleyIcon::zoom(float xOrigin, float yOrigin,float factor) {
   minsky::zoom(m_x, xOrigin, factor);
   minsky::zoom(m_y, yOrigin, factor);
-  m_zoomFactor*=factor;
+  zoomFactor*=factor;
   update();
   array<int> pp=ports();
 }

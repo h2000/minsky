@@ -118,7 +118,7 @@ namespace minsky
       else
         return "";
     }
-    void setCell(TCL_args args) {cell(args[0],args[1])=(char*)args[2]; markEdited();}
+    void setCell(TCL_args args);
 
     /// get the set of column labels, in column order
     vector<string> getColumnVariables() const;

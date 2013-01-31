@@ -48,9 +48,11 @@ namespace minsky
     std::vector<int> m_groups;
     /// input and output port variables of this group
     std::set<int> inVariables, outVariables;
+    /// used for ensuring that only one reference to a given variable
+    /// is included
+    std::set<std::string> inVarNames, outVarNames;
     float m_x, m_y; ///< icon position
     float m_localZoom;
-    float displayZoom; ///< zoom at which contents are displayed
     int id, m_parent;
 
     friend struct SchemaHelper;
@@ -58,14 +60,14 @@ namespace minsky
     /// add variable to one of the edge lists, connected to port \a
     /// port. If the operation results in addition wires being
     /// created, these are returned in \a additionalWires
-    void addEdgeVariable(std::set<int>& varVector, 
+    void addEdgeVariable(std::set<int>& vars, std::set<string>& varNames,
                          std::vector<Wire>& additionalWires, int port);
 
     void drawVar(cairo_t*, const VariablePtr&, float, float) const;
 
   public:
 
-   std::string name;
+    std::string name;
     float width, height; // size of icon
     float rotation; // orientation of icon
     bool visible;
@@ -80,6 +82,8 @@ namespace minsky
       r.insert(outVariables.begin(), outVariables.end());
       return r;
     }
+    /// eliminate any duplicate I/O variable references
+    void eliminateIOduplicates();
 
     const std::vector<int>& operations() const {return m_operations;}
     const std::vector<int>& variables() const {return m_variables;}
@@ -154,14 +158,22 @@ namespace minsky
     /// xOrigin, \a yOrigin) as the origin of the zoom transformation
     void zoom(float xOrigin, float yOrigin,float factor);
     float zoomFactor;
+    /// sets the zoomFactor, and the appropriate zoom factors for all
+    /// contained items
+    void setZoom(float factor);
 
     /// delete contents, leaving an empty group
     void deleteContents();
 
     /// computes the zoom at which to show contents, given current
     /// contentBounds and width
+    float displayZoom; ///< zoom at which contents are displayed
     float computeDisplayZoom();
-    float localZoom() const {return m_localZoom;}
+    //    float localZoom() const {return m_localZoom;}
+    float localZoom() const {
+      return (displayZoom>0 && zoomFactor>displayZoom)
+        ? zoomFactor/displayZoom: 1;
+    }
 
     /// returns 1 if x,y is located in the in margin, 2 if in the out
     /// margin, 0 otherwise
@@ -200,6 +212,14 @@ namespace minsky
       float angle=args;
       Rotate(angle-rotation);
     }
+
+    /// returns the name of a variable if point (x,y) is within a
+    /// variable icon, "@" otherwise, indicating that the Godley table
+    /// has been selected.
+    int Select(float x, float y) const;
+    int select(TCL_args args) const {return Select(args[0],args[1]);}
+
+
   };
 
   struct GroupIcons: public std::map<int, GroupIcon>

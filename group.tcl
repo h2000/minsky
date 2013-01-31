@@ -39,10 +39,30 @@ proc newGroupItem {id} {
         "wires::extendConnect \[closestOutPort %x %y \] groupItem$id %x %y"
     .wiring.canvas bind groupItem$id <<middleMouse-ButtonRelease>> \
         "wires::finishConnect groupItem$id %x %y"
-    .wiring.canvas bind groupItem$id  <<contextMenu>> "contextMenu groupItem$id %X %Y"
+    .wiring.canvas bind groupItem$id  <<contextMenu>> "rightMouseGroup $id %x %y %X %Y"
     .wiring.canvas bind groupItem$id  <Double-Button-1> "groupEdit $id"
     enableEventProcessing
 }
+
+proc rightMouseGroup {id x y X Y} {
+    groupItem.get $id
+    set var [groupItem.select [.wiring.canvas canvasx $x] [.wiring.canvas canvasy $y]]
+    if {$var==-1} {
+        contextMenu groupItem$id $X $Y
+    } else {
+        .wiring.context delete 0 end
+        .wiring.context add command -label "Edit" -command "editItem $var var"
+        var.get $var
+        .wiring.context add command -label "Copy" -command "
+           copyVar $var
+           var.rotation 0
+           var.set
+        "
+        .wiring.context post $X $Y
+
+    }
+}
+
 
 proc deleteGroupItem {id} {
     deleteGroup $id
@@ -83,6 +103,7 @@ proc lassoEnd {x y} {
 
 proc groupContext {id x y} {
     .wiring.context delete 0 end
+    .wiring.context add command -label Help -command {help Group}
     .wiring.context add command -label "Edit" -command "groupEdit $id"
     .wiring.context add command -label "Resize" -command "group::resize $id"
     .wiring.context add command -label "Copy" -command "group::copy $id"
@@ -241,7 +262,7 @@ namespace eval group {
         setInteractionMode
         groupItem.get $newId
         moveSet groupItem $newId groupItem$newId [groupItem.x] [groupItem.y]
-        bind .wiring.canvas <Motion> "move groupItemItem $newId groupItem$newId %x %y"
+        bind .wiring.canvas <Motion> "move groupItem $newId groupItem$newId %x %y"
         bind .wiring.canvas <ButtonRelease> {
             bind .wiring.canvas <Motion> {}
             bind .wiring.canvas <ButtonRelease> {}

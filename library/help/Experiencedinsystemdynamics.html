@@ -1,0 +1,96 @@
+﻿<html>
+	
+<head>
+	<title>Experienced in system dynamics?</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 3.7.1.482">
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "Minsky.html?" + sTopicUrl;
+			}
+			else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+			{
+				top.FrameTOC.SelectTocItem("Experiencedinsystemdynamics");
+			}
+		});
+	</script>
+</head>
+
+<body>
+
+	<div id="topic_header">
+			<div id="topic_header_content">
+				<h1>Experienced in system dynamics?</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Introduction.html">Introduction</a> &rsaquo;&rsaquo; <a href="Welcome.html">Welcome</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Welcome.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Newtosystemdynamics.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Whatsnew.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts6">As an experienced system dynamics user (or if you've just read "</span><a class="rvts11" href="Newtosystemdynamics.html">New to system dynamics?</a><span class="rvts6">"), what you need to know is what's does Minsky provide that other system dynamics programs don't. That boils down to one feature: The Godley Table that enables a dynamic model of financial flows to be derived from a table that is very similar to the accountant's double-entry bookkeeping table.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">The dynamics in financial flows </span><span class="rvts12">could</span><span class="rvts6"> be modeled using the flowchart paradigm. But it would also be very, very easy to make a mistake modeling financial flows in such a system, for one simple reason: every financial flow needs to be entered at least twice in a system--once as a source, and once as a sink.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">For example, if you go shopping and buy a new computer with your credit card, you increase your debt to a bank and simultaneously increase the deposit account of the retailer from whom you buy the computer. The two system states in this model--your credit card ("BuyerCredit") and the retailer's deposit account ("SellerDeposit")--therefore have to have the same entry (let's call this "Card") made into them. In Vissim, such a transaction would look like this:</span></p>
+<p class="rvps2"><img width="489" height="99" alt="" style="padding : 1px;" src="lib/NewItem11.png"/></p>
+<p class="rvps2"><span class="rvts6">That would work, but there's nothing in the program that warns you if you make a mistake like, for example, wiring up the BuyerCredit entry, but forgetting the SellerDeposit one:</span></p>
+<p class="rvps2"><img width="489" height="99" alt="" style="padding : 1px;" src="lib/NewItem12.png"/></p>
+<p class="rvps2"><span class="rvts6">Or, perhaps, wiring up both blocks, but giving one the wrong sign:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem51.png"/></p>
+<p class="rvps2"><span class="rvts6">In a very complex model, you might make a mistake like one of the above, run the simulation and get nonsense results, and yet be unable to locate your mistake.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">Minsky avoids this problem by using the paradigm that accountants developed half a millennium ago to keep financial accounts accurately: double-entry bookkeeping. Here is the same model in Minsky:</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem13.png"/></p>
+<p class="rvps2"><span class="rvts6">This is an inherently better way to generate a dynamic model of financial flows, for at least two reasons:</span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li class="rvps2"><span class="rvts6">All financial transactions are flows between entities. The tabular layout captures this in a very natural way: each row shows where a flow originates, and where it ends up</span></li>
+<li class="rvps2"><span class="rvts6">The program adopts the accounting practice of double-entry bookkeeping, in which entries on each row sum to zero. The source is shown as a "+", the sink is shown as a "-", and assets are shown as a positive sum while liabilities are shown as a negative. If you don't ensure that each flow starts somewhere and ends somewhere--say you make the same mistake as in the flowchart examples above, then the program will identify your mistake.</span></li>
+</ul>
+<p class="rvps2"><span class="rvts6">If you forget to enter the recipient in this transaction, then the Row Sum identifies your mistake by showing that the row sums to "Card" rather than zero:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem52.png"/></p>
+<p class="rvps2"><span class="rvts6">And it also identifies if you give the wrong sign to one entry:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem53.png"/></p>
+<p class="rvps2"><span class="rvts6">Minsky thus adds an element to the system dynamics toolkit which is fundamental for modeling the monetary flows that are an intrinsic aspect of a market economy. Future releases will dramatically extend this capability.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Steve Keen 2013</div>
+		</div>
+	</body>
+	
+</html>
+

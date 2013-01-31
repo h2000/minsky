@@ -30,6 +30,18 @@ void GodleyTable::markEdited()
   minsky::minsky().markEdited();
 }
 
+void GodleyTable::setCell(TCL_args args) 
+{
+  // if this operation is clearing an initial condition cell, set it to 0
+  string& c=cell(args[0],args[1]);
+  string newVal((char*)args[2]);
+  if (newVal.empty() && !c.empty() && initialConditionRow(args[0]))
+    c="0";
+  else
+    c=newVal; 
+  markEdited();
+}
+
 bool GodleyTable::initialConditionRow(unsigned row) const
 {
   const string& label=cell(row,0);

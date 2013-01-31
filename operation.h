@@ -27,6 +27,7 @@
 #include "variableManager.h"
 
 #include <vector>
+#include <cairo/cairo.h>
 
 #include <arrays.h>
 
@@ -35,11 +36,18 @@
 
 struct OperationType
 {
-  enum Type {constant, time, // zero input port ops
-             copy, integrate, exp,     // single input port ops
+  enum Type {constant, 
              add, subtract, multiply, divide, // dual input port ops
+             log, pow,
+             time, // zero input port ops
+             copy, integrate,      // single input port ops
+             // functions
+             sqrt, exp, ln, sin, cos, tan, asin, acos, atan,
+             sinh, cosh, tanh,
              numOps // last operation, for iteration purposes
   };
+  /// return the symbolic name of \a type
+  static string typeName(int type);
 };
 
 namespace minsky
@@ -88,12 +96,13 @@ namespace minsky
     OperationBase(const vector<int>& ports): m_ports(ports) {}
     virtual ~OperationBase() {}
 
+    /// visual representation of operation on the canvas
+    virtual void draw(cairo_t *) const=0;
+
     /// return the symbolic name of this operation's type
-    string name() const;
+    string name() const {return typeName(type());}
     /// return the symbolic name of \a type
-    static string OpName(int type);
-    /// return the symbolic name of \a type
-    static string opName(TCL_args args) {return OpName(args);}
+    static string opName(TCL_args args) {return typeName(args);}
 
     /// override of coordinate attributes, allowing group offsets to
     /// be converted to canvas coordinates
@@ -128,7 +137,7 @@ namespace minsky
     void delPorts();
 
     vector<int> m_ports;
-    friend struct EvalOp;
+    friend struct EvalOpBase;
   };
 
   template <OperationType::Type T>
@@ -138,6 +147,7 @@ namespace minsky
   public:
     typedef OperationType::Type Type;
     Type type() const {return T;}
+    virtual void draw(cairo_t *) const;
 
     // ensure copies create new ports
     Operation(const Operation& x): Super(x) {this->addPorts();}
@@ -257,56 +267,6 @@ namespace minsky
   };
 
 
-  /// represents the operation when evaluating the equations
-  struct EvalOp
-  {
-    OperationType::Type op;
-    /// indexes into the Godley variables vector
-    int out, in1, in2;
-    ///indicate whether in1/in2 are flow variables (out is always a flow variable)
-    bool flow1, flow2; 
-
-    /// state data (for those ops that need it)
-    OperationPtr state;
-
-    EvalOp() {}
-    EvalOp(OperationType::Type op, int out, int in1=0, int in2=0, 
-           bool flow1=true, bool flow2=true): 
-      op(op), out(out), in1(in1), in2(in2), flow1(flow1), flow2(flow2) 
-    {}
-
-    /// reset state to initial values
-    void reset();
-    /// number of arguments to this operation
-    int numArgs();
-    /// evaluate expression on sv and current value of fv, storing result
-    /// in output variable (of \a fv)
-    void eval(double fv[]=&ValueVector::flowVars[0], 
-              const double sv[]=&ValueVector::stockVars[0]); 
-    /// evaluate expression on given arguments, returning result
-    double evaluate(double in1=0, double in2=0, 
-                    const double v[]=&ValueVector::flowVars[0]) const;
-    /**
-       total derivate with respect to a variable, which is a function of the stock variables.
-       @param sv - stock variables
-       @param fv - flow variables (function of stock variables, computed by eval)
-       @param ds - derivative of stock variables
-       @param df - derivative of flow variables (updated by this function)
-
-       To compute the partial derivatives with respect to stock variable
-       i, seed ds with 1 in the ith position, 0 every else, and
-       initialise df to zero.
-    */
-    void deriv(double df[], const double ds[], 
-               const double sv[], const double fv[]);
-    /**
-       @{
-       derivatives with respect to 1st and second argument
-    */
-    double d1(double x1=0, double x2=0);
-    double d2(double x1=0, double x2=0);
-    /// @}
-  };
 
   struct Operations: public map<int, OperationPtr>
   {
@@ -323,13 +283,6 @@ inline std::ostream& operator<<(std::ostream& x, const std::vector<int>& y)
   return x;
 }
 
-
-#ifdef _CLASSDESC
-#pragma omit pack minsky::EvalOp
-#pragma omit unpack minsky::EvalOp 
-#pragma omit xml_pack minsky::EvalOp
-#pragma omit xml_unpack minsky::EvalOp
-#endif
 
 inline void pack(classdesc::pack_t&,const classdesc::string&,classdesc::ref<urand>&) {}
 inline void unpack(classdesc::pack_t&,const classdesc::string&,classdesc::ref<urand>&) {}

@@ -1,0 +1,195 @@
+﻿/* ========== Text Styles ========== */
+hr { color: #000000}
+body, table, span.rvts0 /* Normal text */
+{
+ font-size: 10pt;
+ font-family: 'Arial', 'Helvetica', sans-serif;
+ font-style: normal;
+ font-weight: normal;
+ color: #000000;
+ text-decoration: none;
+}
+span.rvts1 /* Heading */
+{
+ font-weight: bold;
+ color: #0000ff;
+}
+span.rvts2 /* Subheading */
+{
+ font-weight: bold;
+ color: #000080;
+}
+span.rvts3 /* Keywords */
+{
+ font-style: italic;
+ color: #800000;
+}
+a.rvts4, span.rvts4 /* Jump 1 */
+{
+ color: #008000;
+ text-decoration: underline;
+}
+a.rvts5, span.rvts5 /* Jump 2 */
+{
+ color: #008000;
+ text-decoration: underline;
+}
+span.rvts6 /* Font Style */
+{
+}
+span.rvts7 /* Font Style */
+{
+ font-size: 14pt;
+ font-weight: bold;
+ color: #365f91;
+}
+span.rvts8 /* Font Style */
+{
+ font-family: 'Tahoma', 'Geneva', sans-serif;
+ font-style: italic;
+ color: #c0c0c0;
+}
+a.rvts9, span.rvts9 /* Font Style */
+{
+ font-family: 'Tahoma', 'Geneva', sans-serif;
+ font-style: italic;
+ color: #6666ff;
+ text-decoration: underline;
+}
+span.rvts10 /* Font Style */
+{
+ font-size: 13pt;
+ font-weight: bold;
+ color: #4f81bd;
+}
+a.rvts11, span.rvts11
+{
+ color: #0000ff;
+ text-decoration: underline;
+}
+a.rvts11:hover { color: #0000ff; }
+span.rvts12
+{
+ font-style: italic;
+}
+span.rvts13
+{
+ font-style: italic;
+ font-weight: bold;
+}
+span.rvts14
+{
+ font-family: 'Arial Unicode MS', 'Lucida Sans Unicode', 'Arial', 'Helvetica', sans-serif;
+}
+span.rvts15
+{
+ font-size: 12pt;
+ font-family: 'Times New Roman', 'Times', serif;
+ font-style: italic;
+}
+span.rvts16
+{
+ font-size: 11pt;
+ font-family: 'calibri';
+}
+span.rvts17
+{
+ font-family: 'Courier New', 'Courier', monospace;
+ font-style: italic;
+ color: #666666;
+}
+span.rvts18
+{
+ font-family: 'Courier New', 'Courier', monospace;
+ color: #000000;
+}
+span.rvts19
+{
+ font-family: 'Courier New', 'Courier', monospace;
+ color: #cc66cc;
+}
+span.rvts20
+{
+ font-family: 'Courier New', 'Courier', monospace;
+ color: #009900;
+}
+span.rvts21
+{
+ font-family: 'Courier New', 'Courier', monospace;
+ color: #b1b100;
+}
+span.rvts22
+{
+ font-family: 'Courier New', 'Courier', monospace;
+ color: #339933;
+}
+span.rvts23
+{
+ font-family: 'Courier New', 'Courier', monospace;
+ color: #993333;
+}
+a.rvts24, span.rvts24
+{
+ color: #0000ff;
+ text-decoration: underline;
+}
+/* ========== Para Styles ========== */
+p,ul,ol /* Paragraph Style */
+{
+ text-align: left;
+ text-indent: 0px;
+ padding: 0px 0px 0px 0px;
+ margin: 0px 0px 0px 0px;
+}
+.rvps1 /* Centered */
+{
+ text-align: center;
+}
+.rvps2 /* Paragraph Style */
+{
+}
+.rvps3 /* Paragraph Style */
+{
+}
+.rvps4 /* Paragraph Style */
+{
+ text-align: center;
+ border-color: #c0c0c0;
+ border-style: solid;
+ border-width: 1px;
+ border-right: none;
+ border-left: none;
+ padding: 2px 0px 2px 0px;
+ margin: 7px 0px 7px 0px;
+}
+.rvps5 /* Paragraph Style */
+{
+}
+.rvps6
+{
+ line-height: 1.15;
+ margin: 0px 0px 13px 0px;
+}
+.rvps7
+{
+ text-align: justify;
+ line-height: 1.15;
+ margin: 0px 0px 13px 0px;
+}
+.rvps8
+{
+ margin: 0px 0px 0px 24px;
+}
+.rvps9
+{
+ text-align: center;
+}
+.rvps10
+{
+ margin: 0px 0px 0px 200px;
+}
+.rvps11
+{
+ line-height: 19px;
+ background: #f9f9f9;
+}

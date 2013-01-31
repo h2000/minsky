@@ -154,7 +154,7 @@ namespace schema1
         {
           const UnionLayout& l=li->second;
           v->Init(v1.init);
-          v->name=v1.name;
+          v->Name(v1.name);
           v->rotation=l.rotation;
           v->visible=l.visible;
           int out=v1.ports.size()>0? v1.ports[0]: -1;
@@ -194,10 +194,10 @@ namespace schema1
 //          SchemaHelper::setPrivates
 //            (g, g1.operations, g1.variables, g1.wires, g1.ports);
           g.name=g1.name;
-          // moveTo needs to called later as well
           minsky::SchemaHelper::setXY(g, l.x, l.y);
           g.width=l.width;
           g.height=l.height;
+          g.displayZoom=l.displayZoom;
           g.rotation=l.rotation;
           g.visible=l.visible;
         }
@@ -353,8 +353,6 @@ namespace schema1
     c.populate(m.groupItems, model.groups);
     c.populate(m.plots, model.plots);
 
-    m.setZoom(zoomFactor);
-
     // separate the group item list into ports, wires, operations and
     // variables. Then set the Minsky model group item list to these
     // appropriate sublists.
@@ -400,9 +398,9 @@ namespace schema1
           m.variables[*v]->group=g->id;
         for (vector<int>::const_iterator w=wires.begin(); w!=wires.end(); ++w)
           m.wires[*w].group=g->id;
-        gi.computeDisplayZoom();
-        gi.computeDisplayZoom();
       }
+
+    m.setZoom(zoomFactor);
 
     m.stepMin=model.rungeKutta.stepMin; 
     m.stepMax=model.rungeKutta.stepMax; 

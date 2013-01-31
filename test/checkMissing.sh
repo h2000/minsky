@@ -23,13 +23,13 @@ checkAegis()
         fi
 }
 
-# for use in recusively descending directories. Not used, because too expensive
-for f in *.tcl *.bat *.sh *.pl examples/* icons/* library/* library/Xecolab/*; do 
+for f in *.tcl *.bat *.sh *.pl examples/* icons/* library/* library/Xecolab/* library/help; do 
     if [ ! -d $f ]; then 
         checkAegis $f
     fi
 done
 
+# for use in recusively descending directories. Not used, because too expensive
 for dir in $DIRS; do
   for f in `find $dir \( ! -name "*,D" -a ! -name "*~" -a ! -name "*~" -a ! -type d \) -print`; do
       checkAegis $f

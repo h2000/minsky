@@ -110,7 +110,7 @@ namespace minsky
       return undefined;
     }
     VariableValue& getVariableValueFromPort(int port)  {
-      return getVariableValue(getVariableFromPort(port)->name);
+      return getVariableValue(getVariableFromPort(port)->Name());
     }
 
     const VariableValue& getVariableValue(const string& name) const {
@@ -119,7 +119,7 @@ namespace minsky
       return undefined;
     }
     const VariableValue& getVariableValueFromPort(int port) const {
-      return getVariableValue(getVariableFromPort(port)->name);
+      return getVariableValue(getVariableFromPort(port)->Name());
     }
   
     int getIDFromVariable(const VariablePtr& v) const {

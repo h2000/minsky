@@ -1,0 +1,95 @@
+﻿<html>
+	
+<head>
+	<title>Brief History of system dynamics</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 3.7.1.482">
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "Minsky.html?" + sTopicUrl;
+			}
+			else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+			{
+				top.FrameTOC.SelectTocItem("BriefHistoryofsystemdynamics");
+			}
+		});
+	</script>
+</head>
+
+<body>
+
+	<div id="topic_header">
+			<div id="topic_header_content">
+				<h1>Brief History of system dynamics</h1>
+				
+				</div>
+			<div id="topic_header_nav">
+				<a href="BasicCombinedModel.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="FAQs.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts6">System dynamics programs express equations using a visual metaphor. Before this metaphor was developed, anyone who wanted to simulate a system or procedure had to write a computer program (normally in </span><a class="rvts24" href="http://en.wikipedia.org/wiki/FORTRAN">FORTRAN</a><span class="rvts6">). The program might well replicate the system accurately, but only the author of the program would know that—everyone else had to take it on faith, because the program code would be indecipherable to everyone but the author.</span></p>
+<p class="rvps2"><span class="rvts16"><br/></span></p>
+<p class="rvps2"><span class="rvts6">For example, below is the Wikipedia’s example of a simple FORTRAN II program to calculate the area of a triangle. Enjoy the “My Eyes Glaze Over” effect of trying to understand what it does at your leisure.</span></p>
+<p class="rvps11"><span class="rvts17">LISTING</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp; &nbsp; &nbsp;READ INPUT TAPE </span><span class="rvts19">5</span><span class="rvts18">, </span><span class="rvts19">501</span><span class="rvts18">, IA, IB, IC</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp;</span><span class="rvts19">501</span><span class="rvts18"> FORMAT </span><span class="rvts20">(</span><span class="rvts18">3I5</span><span class="rvts20">)</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp; &nbsp; &nbsp;</span><span class="rvts21">IF</span><span class="rvts18"> </span><span class="rvts20">(</span><span class="rvts18">IA</span><span class="rvts20">)</span><span class="rvts18"> </span><span class="rvts19">777</span><span class="rvts18">, </span><span class="rvts19">777</span><span class="rvts18">, </span><span class="rvts19">701</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp;</span><span class="rvts19">701</span><span class="rvts18"> </span><span class="rvts21">IF</span><span class="rvts18"> </span><span class="rvts20">(</span><span class="rvts18">IB</span><span class="rvts20">)</span><span class="rvts18"> </span><span class="rvts19">777</span><span class="rvts18">, </span><span class="rvts19">777</span><span class="rvts18">, </span><span class="rvts19">702</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp;</span><span class="rvts19">702</span><span class="rvts18"> </span><span class="rvts21">IF</span><span class="rvts18"> </span><span class="rvts20">(</span><span class="rvts18">IC</span><span class="rvts20">)</span><span class="rvts18"> </span><span class="rvts19">777</span><span class="rvts18">, </span><span class="rvts19">777</span><span class="rvts18">, </span><span class="rvts19">703</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp;</span><span class="rvts19">703</span><span class="rvts18"> </span><span class="rvts21">IF</span><span class="rvts18"> </span><span class="rvts20">(</span><span class="rvts18">IA</span><span class="rvts22">+</span><span class="rvts18">IB</span><span class="rvts22">-</span><span class="rvts18">IC</span><span class="rvts20">)</span><span class="rvts18"> </span><span class="rvts19">777</span><span class="rvts18">,</span><span class="rvts19">777</span><span class="rvts18">,</span><span class="rvts19">704</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp;</span><span class="rvts19">704</span><span class="rvts18"> </span><span class="rvts21">IF</span><span class="rvts18"> </span><span class="rvts20">(</span><span class="rvts18">IA</span><span class="rvts22">+</span><span class="rvts18">IC</span><span class="rvts22">-</span><span class="rvts18">IB</span><span class="rvts20">)</span><span class="rvts18"> </span><span class="rvts19">777</span><span class="rvts18">,</span><span class="rvts19">777</span><span class="rvts18">,</span><span class="rvts19">705</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp;</span><span class="rvts19">705</span><span class="rvts18"> </span><span class="rvts21">IF</span><span class="rvts18"> </span><span class="rvts20">(</span><span class="rvts18">IB</span><span class="rvts22">+</span><span class="rvts18">IC</span><span class="rvts22">-</span><span class="rvts18">IA</span><span class="rvts20">)</span><span class="rvts18"> </span><span class="rvts19">777</span><span class="rvts18">,</span><span class="rvts19">777</span><span class="rvts18">,</span><span class="rvts19">799</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp;</span><span class="rvts19">777</span><span class="rvts18"> </span><span class="rvts21">STOP</span><span class="rvts18"> </span><span class="rvts19">1</span></p>
+<p class="rvps11"><span class="rvts17"><br/></span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp;</span><span class="rvts19">799</span><span class="rvts18"> S </span><span class="rvts22">=</span><span class="rvts18"> FLOATF </span><span class="rvts20">(</span><span class="rvts18">IA </span><span class="rvts22">+</span><span class="rvts18"> IB </span><span class="rvts22">+</span><span class="rvts18"> IC</span><span class="rvts20">)</span><span class="rvts18"> </span><span class="rvts22">/</span><span class="rvts18"> </span><span class="rvts19">2.0</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp; &nbsp; &nbsp;AREA </span><span class="rvts22">=</span><span class="rvts18"> </span><span class="rvts23">SQRT</span><span class="rvts20">(</span><span class="rvts18"> S </span><span class="rvts22">*</span><span class="rvts18"> </span><span class="rvts20">(</span><span class="rvts18">S </span><span class="rvts22">-</span><span class="rvts18"> FLOATF</span><span class="rvts20">(</span><span class="rvts18">IA</span><span class="rvts20">))</span><span class="rvts18"> </span><span class="rvts22">*</span><span class="rvts18"> </span><span class="rvts20">(</span><span class="rvts18">S </span><span class="rvts22">-</span><span class="rvts18"> FLOATF</span><span class="rvts20">(</span><span class="rvts18">IB</span><span class="rvts20">))</span><span class="rvts18"> </span><span class="rvts22">*</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp; &nbsp; </span><span class="rvts22">+</span><span class="rvts18"> &nbsp; &nbsp; </span><span class="rvts20">(</span><span class="rvts18">S </span><span class="rvts22">-</span><span class="rvts18"> FLOATF</span><span class="rvts20">(</span><span class="rvts18">IC</span><span class="rvts20">)))</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp; &nbsp; &nbsp;WRITE OUTPUT TAPE </span><span class="rvts19">6</span><span class="rvts18">, </span><span class="rvts19">601</span><span class="rvts18">, IA, IB, IC, AREA</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp;</span><span class="rvts19">601</span><span class="rvts18"> FORMAT </span><span class="rvts20">(</span><span class="rvts18">4H A</span><span class="rvts22">=</span><span class="rvts18"> ,I5,5H &nbsp;B</span><span class="rvts22">=</span><span class="rvts18"> ,I5,5H &nbsp;C</span><span class="rvts22">=</span><span class="rvts18"> ,I5,8H &nbsp;AREA</span><span class="rvts22">=</span><span class="rvts18"> ,F10.2,</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp; &nbsp; </span><span class="rvts22">+</span><span class="rvts18"> &nbsp; &nbsp; &nbsp; &nbsp;13H SQUARE UNITS</span><span class="rvts20">)</span></p>
+<p class="rvps11"><span class="rvts18"> &nbsp; &nbsp; &nbsp;</span><span class="rvts21">STOP</span></p>
+<p class="rvps6"><span class="rvts18"> &nbsp; &nbsp; &nbsp;</span><span class="rvts21">END</span></p>
+<p class="rvps2"><span class="rvts6">A more complex problem would involve hundreds of pages of computer code that no-one could understand (bar, one hoped, the person who wrote it). </span><a class="rvts24" href="http://en.wikipedia.org/wiki/Jay_Forrester">Jay Forrester</a><span class="rvts6">, an engineer who had designed </span><a class="rvts24" href="http://en.wikipedia.org/wiki/Whirlwind_(computer)">Whirlwind</a><span class="rvts6"> (the first computer with a video display for output), was confronted with such a problem: working out for GE why a Kentucky appliance factory had a regular three-year cycle in its employment. He developed a diagrammatic representation of the manufacturing and hiring processes at the factory, and showed that its internal hiring practices generated the cycle.</span></p>
+<p class="rvps2"><span class="rvts6">System dynamics was thus born as a visual way of understanding a complex system. With his background in developing computers that produced visual output on a </span><a class="rvts24" href="http://en.wikipedia.org/wiki/Cathode_ray_tube">CRT</a><span class="rvts6"> (“cathode ray tube”; before Whirlwind—and for some time after it—most computers printed their results on line printers), it was a logical step for Forrester to move from hand-drawn diagrams to visual representations of a complex model on a computer screen.</span></p>
+<p class="rvps2"><span class="rvts6">The first such program had a hoot of a name: SIMPLE, which stood for “Simulation of Industrial Management Problems with Lots of Equations” (it therefore qualifies for the annual COCOA award, given by the </span><a class="rvts24" href="http://www.acronymfinder.com/Committee-to-Outlaw-Contrived-and-Outrageous-Acronyms-(COCOA).html">Committee to Outlaw Contrived and Outrageous Acronyms</a><span class="rvts6">). After SIMPLE came </span><a class="rvts24" href="http://en.wikipedia.org/wiki/DYNAMO_(programming_language)">DYNAMO</a><span class="rvts6"> (based on the slightly less outrageous acronym DYNAmic MOdels), and ultimately the proliferation of modern commercial and Open Source system dynamics programs.</span></p>
+<p class="rvps2"><span class="rvts6">Now there are many programs--both commercial and Open Source--which have built on the initial ideas in SIMPLE and DYNAMO, and they are the workhorse tools of engineers all over the world. Here, for example, is a simple model of a 4 cylinder car (one of the example files supplied with Vissim). Real-world projects are substantially more complicated, but this gives an idea of the complexity of tasks that can be modelled, and the capability for breaking a complex system into sub-units for design purposes.</span></p>
+<p class="rvps7"><img alt="" style="padding : 1px;" src="lib/NewItem2.png"/></p>
+<p class="rvps2"><span class="rvts6">Management., marketing and social science disciplines use a related class of programs, like Stella. Here is a marketing model of customers switching from one product to another:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem3.png"/></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Steve Keen 2013</div>
+		</div>
+	</body>
+	
+</html>
+

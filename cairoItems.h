@@ -33,11 +33,11 @@ namespace minsky
     float w, h;
     double xScale, yScale;
 
-    void drawPlus() const;
-    void drawMinus() const;
-    void drawMultiply() const;
-    void drawDivide() const;
-    void drawPort(void (RenderOperation::*symbol)() const, float x, float y) const;
+//    void drawPlus() const;
+//    void drawMinus() const;
+//    void drawMultiply() const;
+//    void drawDivide() const;
+//    void drawPort(void (RenderOperation::*symbol)() const, float x, float y) const;
 
   public:
     // render a variable to a given cairo context

@@ -25,6 +25,10 @@ using namespace classdesc;
 
 using namespace minsky;
 
+string VariableType::typeName(int t)
+{return enumKey<Type>(t);}
+  
+
 void VariableBase::addPorts()
 {
   if (numPorts()>0)
@@ -62,20 +66,34 @@ VariableBase* VariableBase::create(VariableType::Type type)
     case stock: return new Variable<stock>; break;
     case tempFlow: return new Variable<tempFlow>; break;
     case integral: return new Variable<integral>; break;
-    default: assert( false && "invalid variable type");
-      return NULL;
+    default: 
+      throw error("unknown variable type %s", typeName(type).c_str());
     }
+}
+
+string VariableBase::Name(const std::string& name) 
+{
+  // ensure an associated variableValue exists
+  if (variableManager().values.count(name)==0)
+    variableManager().values.insert(make_pair(name,VariableValue(type())));
+  return m_name=name;
 }
 
 double VariableBase::Init() const
 {
-  return variableManager().getVariableValue(name).init;
+  return variableManager().getVariableValue(m_name).init;
 }
 
 double VariableBase::Init(double x)
 {
-  return variableManager().getVariableValue(name).init=x;
+  return variableManager().getVariableValue(m_name).init=x;
 }
+
+double VariableBase::value() const
+{
+  return minsky::minsky().variables.getVariableValue(m_name).value();
+}
+
 
 namespace minsky
 {

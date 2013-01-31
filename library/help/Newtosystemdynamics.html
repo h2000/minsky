@@ -1,0 +1,95 @@
+﻿<html>
+	
+<head>
+	<title>New to system dynamics?</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 3.7.1.482">
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "Minsky.html?" + sTopicUrl;
+			}
+			else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+			{
+				top.FrameTOC.SelectTocItem("Newtosystemdynamics");
+			}
+		});
+	</script>
+</head>
+
+<body>
+
+	<div id="topic_header">
+			<div id="topic_header_content">
+				<h1>New to system dynamics?</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Introduction.html">Introduction</a> &rsaquo;&rsaquo; <a href="Welcome.html">Welcome</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Welcome.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Welcome.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Experiencedinsystemdynamics.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts6">Minsky is one of a family of "system dynamics" computer programs. These programs allow a dynamic model to be constructed, not by writing mathematical equations or numerous lines of computer code, but by laying out a model of a system in a flowchart, which can then simulate the system. These programs are now the main tool used by engineers to design complex products, ranging from small electrical components right up to passenger jets.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">Minsky adds another means to create the dynamic equations that are needed to define monetary flows--the "Godley Table"--which is discussed in the next help topic for users who are </span><a class="rvts11" href="Experiencedinsystemdynamics.html">experienced in system dynamics</a><span class="rvts6">. In this section, we'll give you a quick overview of the generic system dynamics approach to building a model.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">Though they differ in appearance, they all work the same way: variables in a set of equations are linked by wires to mathematical operators. What would otherwise be a long list of equations is converted into a flowchart, and the flowchart makes the causal chain in the equations explicit and visually obvious.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">For example, say you wanted to define the rate of employment as depending on output (GDP), labor productivity and population. Then you could define a set of equations in a suitable program (like Mathcad):</span></p>
+<p class="rvps7"><img alt="" style="padding : 1px;" src="lib/NewItem.png"/></p>
+<p class="rvps2"><span class="rvts6">Or you could define it in a flowchart, using a program like Vissim:</span></p>
+<p class="rvps6"><img alt="" style="padding : 1px;" src="lib/NewItem1.png"/></p>
+<p class="rvps2"><span class="rvts6">For a simple algebraic equation like this, modern computer algebra programs like Mathcad are just as good as a flowchart program like Vissim. But the visual metaphor excels when you want to describe a complex causal chain.</span></p>
+<p class="rvps2"><span class="rvts6"></span><br/><span class="rvts6">These causal chains always involve a relationship between stocks and flows. Economists normally model stocks and flows by adding an increment to a stock in equations like this for the level of Capital, where capital in year "t" is shown as being capital in year "t-1" plus the investment that took place that year:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem5.png"/></p>
+<p class="rvps2"><span class="rvts6">For reasons that are explained in the FAQ "</span><a class="rvts11" href="Whynodifferenceequations.html">Why no difference equations?</a><span class="rvts6">", all stocks and flows in Minsky are handled instead as integral equations. The amount of capital at time "t" is shown as the integral of net investment between time "0" and today:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem6.png"/></p>
+<p class="rvps2"><span class="rvts6">However, rather than being shown as an equation, the relationship is shown as a flowchart:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem7.png"/></p>
+<p class="rvps2"><span class="rvts6">The advantages of the flowchart representation of dynamic equations over a list of equations are:</span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li class="rvps2"><span class="rvts6">They make the causal relationships in a complex model obvious. It takes a specialized mind to be able to see the causal relations in a large set of mathematical equations; the same equations laid out as flowcharts can be read by anyone who can read a flowchart--and that's most of us;</span></li>
+<li class="rvps2"><span class="rvts6">The flowchart paradigm makes it possible to store components of a complex flowchart in a group. For example, the fuel delivery system in a car can be treated as one group, the engine as another, the exhaust as yet another. This reduces visual complexity and also makes it possible for different components of a complex model to be designed by different groups and then "wired together" at a later stage.</span></li>
+</ul>
+<p class="rvps2"><span class="rvts6">For example, here's a model of a 4 cylinder engine car--one of the simple examples distributed with the program Vissim:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem8.png"/></p>
+<p class="rvps2"><span class="rvts6">Programs like Vissim and Simulink have been in existence for almost 2 decades, and they are now mature products that provide everything their user-base of engineers want for modeling and analyzing complex dynamic systems. </span><a class="rvts11" href="Experiencedinsystemdynamics.html">So why has Minsky been developed</a><span class="rvts6">?</span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Steve Keen 2013</div>
+		</div>
+	</body>
+	
+</html>
+

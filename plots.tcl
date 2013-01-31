@@ -29,7 +29,7 @@ proc newPlotItem {image x y} {
     
     set id [.wiring.canvas create plot $x $y -image $image -scale 1 -rotation 0\
                 -tags "plots plot#$image"]
-    setM1Binding plot $image plots#$image
+    setM1Binding plot $image plot#$image
     .wiring.canvas bind $id <Double-Button-1> "plotDoubleClick $image"
     .wiring.canvas bind $id <<contextMenu>> "contextMenu $id %X %Y"
 }
@@ -39,6 +39,9 @@ proc newPlot {} {
 
     set image [plots.nextPlotID]
     set id [eval newPlotItem $image 0 0 ]
+    plot.get $image
+    plot.zoomFactor [zoomFactor]
+    plot.set
 
     bind .wiring.canvas <Enter> "movePlot $image %x %y"
     bind .wiring.canvas <Motion> "movePlot $image %x %y"

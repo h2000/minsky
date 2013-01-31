@@ -35,7 +35,6 @@ namespace minsky
   class PlotWidget: public ecolab::Plot
   {
     float m_x, m_y;
-    float m_zoomFactor;
     CLASSDESC_ACCESS(PlotWidget);
     friend class SchemaHelper;
   public:
@@ -59,7 +58,7 @@ namespace minsky
     float y() const {return m_y;}
     /// @}
 
-    PlotWidget(): m_x(0), m_y(0), m_zoomFactor(1), 
+    PlotWidget(): m_x(0), m_y(0), zoomFactor(1), 
                   displayNTicks(3), displayFontSize(3) {grid=true;}
 
     void MoveTo(float x, float y);
@@ -78,10 +77,9 @@ namespace minsky
     void zoom(float xOrigin, float yOrigin, float factor) {
       minsky::zoom(m_x, xOrigin, factor);
       minsky::zoom(m_y, yOrigin, factor);
-      m_zoomFactor*=factor;
+      zoomFactor*=factor;
     }
-    void setZoom(float factor) {m_zoomFactor=factor;}
-    float zoomFactor() const {return m_zoomFactor;}
+    float zoomFactor;
   };
 
   /// global register of plot widgets, indexed by the item image name

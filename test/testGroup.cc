@@ -250,4 +250,27 @@ SUITE(Group)
     CHECK_EQUAL(1,g2.groups().size());
     CHECK(uniqueGroupMembership());
   }
+
+  // test that the new IO variables created do not introduce
+  // extraneous references
+  TEST_FIXTURE(Minsky, NewIOVariables)
+  {
+    LocalMinsky lm(*this);
+    operations[AddOperation("exp")]->MoveTo(100,100);
+    operations[AddOperation("exp")]->MoveTo(200,100);
+    operations[AddOperation("exp")]->MoveTo(300,100);
+    operations[AddOperation("exp")]->MoveTo(100,200);
+    operations[AddOperation("exp")]->MoveTo(200,200);
+    operations[AddOperation("exp")]->MoveTo(300,200);
+    // following assume ports are allocated starting at 0
+    PortManager::addWire(Wire(0,3));
+    PortManager::addWire(Wire(2,5));
+    PortManager::addWire(Wire(6,9));
+    PortManager::addWire(Wire(8,11));
+    Group(150,50,250,150);
+    Group(150,150,250,250);
+    Save("NewIOVariables.mky");
+    CHECK(variables.size()==variables.values.size());
+  }
+
 }

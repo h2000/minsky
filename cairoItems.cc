@@ -270,61 +270,273 @@ RenderOperation::RenderOperation(const OperationPtr& op, cairo_t* cairo,
     }
 }
 
-void RenderOperation::drawPlus() const
+namespace
 {
-  cairo_move_to(cairo,0,-5);
-  cairo_line_to(cairo,0,5);
-  cairo_move_to(cairo,-5,0);
-  cairo_line_to(cairo,5,0);
-  cairo_stroke(cairo);
+  struct DrawBinOp
+  {
+    cairo_t *cairo;
+    DrawBinOp(cairo_t *cairo): cairo(cairo) {}
+
+    void drawPlus() const
+    {
+      cairo_move_to(cairo,0,-5);
+      cairo_line_to(cairo,0,5);
+      cairo_move_to(cairo,-5,0);
+      cairo_line_to(cairo,5,0);
+      cairo_stroke(cairo);
+    }
+
+    void drawMinus() const
+    {
+      cairo_move_to(cairo,-5,0);
+      cairo_line_to(cairo,5,0);
+      cairo_stroke(cairo);
+    }
+
+    void drawMultiply() const
+    {
+      cairo_move_to(cairo,-5,-5);
+      cairo_line_to(cairo,5,5);
+      cairo_move_to(cairo,-5,5);
+      cairo_line_to(cairo,5,-5);
+      cairo_stroke(cairo);
+    }
+
+    void drawDivide() const
+    {
+      cairo_move_to(cairo,-5,0);
+      cairo_line_to(cairo,5,0);
+      cairo_new_sub_path(cairo);
+      cairo_arc(cairo,0,3,1,0,2*M_PI);
+      cairo_new_sub_path(cairo);
+      cairo_arc(cairo,0,-3,1,0,2*M_PI);
+      cairo_stroke(cairo);
+    }
+
+    // puts a small symbol to identify port
+    // x, y = position of symbol
+    void drawPort(void (DrawBinOp::*symbol)() const, float x, float y, float rotation)  const
+    {
+      cairo_save(cairo);
+      
+      double angle=rotation * M_PI / 180.0;
+      double fm=std::fmod(rotation,360);
+      if (!(fm>-90 && fm<90 || fm>270 || fm<-270))
+        y=-y;
+      cairo_rotate(cairo, angle);
+      
+      cairo_translate(cairo,0.7*x,0.6*y);
+      cairo_scale(cairo,0.5,0.5);
+      
+      // and counter-rotate
+      cairo_rotate(cairo, -angle);
+      (this->*symbol)();
+      cairo_restore(cairo);
+    }
+  };
 }
 
-void RenderOperation::drawMinus() const
+namespace minsky
 {
-  cairo_move_to(cairo,-5,0);
-  cairo_line_to(cairo,5,0);
-  cairo_stroke(cairo);
-}
 
-void RenderOperation::drawMultiply() const
-{
-  cairo_move_to(cairo,-5,-5);
-  cairo_line_to(cairo,5,5);
-  cairo_move_to(cairo,-5,5);
-  cairo_line_to(cairo,5,-5);
-  cairo_stroke(cairo);
-}
+  // virtual draw methods for operations - defined here rather than
+  // operations.cc because it is more related to the functionality in
+  // this file.
 
-void RenderOperation::drawDivide() const
-{
-  cairo_move_to(cairo,-5,0);
-  cairo_line_to(cairo,5,0);
-  cairo_new_sub_path(cairo);
-  cairo_arc(cairo,0,3,1,0,2*M_PI);
-  cairo_new_sub_path(cairo);
-  cairo_arc(cairo,0,-3,1,0,2*M_PI);
-  cairo_stroke(cairo);
-}
+  template <> void Operation<OperationType::constant>::draw(cairo_t* cairo) const
+  {
+    assert(false); //shouldn't be here
+  }
 
-// puts a small symbol to identify port
-// x, y = position of symbol
-void RenderOperation::drawPort(void (RenderOperation::*symbol)() const, float x, float y)  const
-{
-  cairo_save(cairo);
-        
-  double angle=op->rotation * M_PI / 180.0;
-  double fm=std::fmod(op->rotation,360);
-  if (!(fm>-90 && fm<90 || fm>270 || fm<-270))
-    y=-y;
-  cairo_rotate(cairo, angle);
+  template <> void Operation<OperationType::time>::draw(cairo_t* cairo) const
+  {
+    cairo_move_to(cairo,-4,2);
+    cairo_show_text(cairo,"t");
+  }
 
-  cairo_translate(cairo,0.7*x,0.6*y);
-  cairo_scale(cairo,0.5,0.5);
+  template <> void Operation<OperationType::copy>::draw(cairo_t* cairo) const
+  {
+    cairo_move_to(cairo,-4,2);
+    cairo_show_text(cairo,"=");
+  }
 
-  // and counter-rotate
-  cairo_rotate(cairo, -angle);
-  (this->*symbol)();
-  cairo_restore(cairo);
+  template <> void Operation<OperationType::integrate>::draw(cairo_t* cairo) const
+  {
+    cairo_move_to(cairo,-7,4.5);
+    cairo_show_text(cairo,"\xE2\x88\xAB");
+    cairo_show_text(cairo,"dt");
+  }
+
+  template <> void Operation<OperationType::sqrt>::draw(cairo_t* cairo) const
+  {
+    cairo_set_font_size(cairo,10);   
+    cairo_move_to(cairo,-7,6);
+    cairo_show_text(cairo,"\xE2\x88\x9a");
+    cairo_set_line_width(cairo,0.5);
+    cairo_rel_move_to(cairo,0,-9);
+    cairo_rel_line_to(cairo,5,0);
+    cairo_save(cairo);
+    cairo_set_source_rgb(cairo,0,0,0);
+    cairo_stroke(cairo);
+    cairo_restore(cairo);
+    //    cairo_show_text(cairo,"sqrt");
+  }
+
+  template <> void Operation<OperationType::exp>::draw(cairo_t* cairo) const
+  {
+    cairo_move_to(cairo,-7,3);
+    cairo_show_text(cairo,"e");
+    cairo_rel_move_to(cairo,0,-4);
+    cairo_set_font_size(cairo,7);
+    cairo_show_text(cairo,"x");
+  }
+
+  template <> void Operation<OperationType::pow>::draw(cairo_t* cairo) const
+  {
+    cairo_move_to(cairo,-6,3);
+    cairo_show_text(cairo,"x");
+    cairo_rel_move_to(cairo,0,-4);
+    cairo_set_font_size(cairo,7);
+    cairo_show_text(cairo,"y");
+    cairo_set_font_size(cairo,5);
+    cairo_move_to(cairo, l+1, -h+6);
+    cairo_show_text(cairo,"x");
+    cairo_move_to(cairo, l+1, h-3);
+    cairo_show_text(cairo,"y");
+  }
+
+  template <> void Operation<OperationType::ln>::draw(cairo_t* cairo) const
+  {
+    cairo_move_to(cairo,-9,3);
+    cairo_show_text(cairo," ln");
+  }
+
+  template <> void Operation<OperationType::log>::draw(cairo_t* cairo) const
+  {
+    cairo_set_font_size(cairo,10);
+    cairo_move_to(cairo,-9,3);
+    cairo_show_text(cairo,"log");
+    cairo_rel_move_to(cairo,0,3);
+    cairo_set_font_size(cairo,7);
+    cairo_show_text(cairo,"b");
+    cairo_set_font_size(cairo,5);
+    cairo_move_to(cairo, l+1, -h+6);
+    cairo_show_text(cairo,"x");
+    cairo_move_to(cairo, l+1, h-3);
+    cairo_show_text(cairo,"b");
+  
+  }
+
+  template <> void Operation<OperationType::sin>::draw(cairo_t* cairo) const
+  {
+    cairo_set_font_size(cairo,10);
+    cairo_move_to(cairo,-9,3);
+    cairo_show_text(cairo,"sin");
+  }
+
+  template <> void Operation<OperationType::cos>::draw(cairo_t* cairo) const
+  {
+    cairo_set_font_size(cairo,10);
+    cairo_move_to(cairo,-9,3);
+    cairo_show_text(cairo,"cos");
+  }
+
+  template <> void Operation<OperationType::tan>::draw(cairo_t* cairo) const
+  {
+    cairo_set_font_size(cairo,10);
+    cairo_move_to(cairo,-9,3);
+    cairo_show_text(cairo,"tan");
+  }
+
+  template <> void Operation<OperationType::asin>::draw(cairo_t* cairo) const
+  {
+    cairo_set_font_size(cairo,9);
+    cairo_move_to(cairo,-9,3);
+    cairo_show_text(cairo,"sin");
+    cairo_rel_move_to(cairo,0,-3);
+    cairo_set_font_size(cairo,7);
+    cairo_show_text(cairo,"-1");
+    cairo_rel_move_to(cairo,0,-2);
+  }
+
+  template <> void Operation<OperationType::acos>::draw(cairo_t* cairo) const
+  {
+    cairo_set_font_size(cairo,9);
+    cairo_move_to(cairo,-9,3);
+    cairo_show_text(cairo,"cos");
+    cairo_rel_move_to(cairo,0,-3);
+    cairo_set_font_size(cairo,7);
+    cairo_show_text(cairo,"-1");
+    cairo_rel_move_to(cairo,0,-2);
+  }
+
+  template <> void Operation<OperationType::atan>::draw(cairo_t* cairo) const
+  {
+    cairo_set_font_size(cairo,9);
+    cairo_move_to(cairo,-9,3);
+    cairo_show_text(cairo,"tan");
+    cairo_rel_move_to(cairo,0,-3);
+    cairo_set_font_size(cairo,7);
+    cairo_show_text(cairo,"-1");
+    cairo_rel_move_to(cairo,0,-2);
+  }
+
+  template <> void Operation<OperationType::sinh>::draw(cairo_t* cairo) const
+  {
+    cairo_set_font_size(cairo,8);
+    cairo_move_to(cairo,-9,3);
+    cairo_show_text(cairo,"sinh");
+  }
+
+  template <> void Operation<OperationType::cosh>::draw(cairo_t* cairo) const
+  {
+    cairo_set_font_size(cairo,8);
+    cairo_move_to(cairo,-9,3);
+    cairo_show_text(cairo,"cosh");
+  }
+
+  template <> void Operation<OperationType::tanh>::draw(cairo_t* cairo) const
+  {
+    cairo_set_font_size(cairo,8);
+    cairo_move_to(cairo,-9,3);
+    cairo_show_text(cairo,"tanh");
+  }
+
+  template <> void Operation<OperationType::add>::draw(cairo_t* cairo) const
+  {
+    DrawBinOp d(cairo);
+    d.drawPlus();
+    d.drawPort(&DrawBinOp::drawPlus, l, h, rotation);
+    d.drawPort(&DrawBinOp::drawPlus, l, -h, rotation);
+  }
+
+  template <> void Operation<OperationType::subtract>::draw(cairo_t* cairo) const
+  {
+    DrawBinOp d(cairo);
+    d.drawMinus();
+    d.drawPort(&DrawBinOp::drawPlus, l, -h, rotation);
+    d.drawPort(&DrawBinOp::drawMinus, l, h, rotation);
+  }
+
+  template <> void Operation<OperationType::multiply>::draw(cairo_t* cairo) const
+  {
+    DrawBinOp d(cairo);
+    d.drawMultiply();
+    d.drawPort(&DrawBinOp::drawMultiply, l, h, rotation);
+    d.drawPort(&DrawBinOp::drawMultiply, l, -h, rotation);
+  }
+
+  template <> void Operation<OperationType::divide>::draw(cairo_t* cairo) const
+  {
+    DrawBinOp d(cairo);
+    d.drawDivide();
+    d.drawPort(&DrawBinOp::drawMultiply, l, -h, rotation);
+    d.drawPort(&DrawBinOp::drawDivide, l, h, rotation);
+  }
+
+  template <> void Operation<OperationType::numOps>::draw(cairo_t* cairo) const
+  {/* needs to be here, and is actually called */}
+
 }
 
 void RenderOperation::draw()
@@ -335,8 +547,11 @@ void RenderOperation::draw()
   double angle=op->rotation * M_PI / 180.0;
   double fm=std::fmod(op->rotation,360);
   bool textFlipped=!(fm>-90 && fm<90 || fm>270 || fm<-270);
+  
   switch (op->type())
     {
+      // at the moment its too tricky to get all the information
+      // together for rendering constants
     case OperationType::constant:
       {
         Constant *c=dynamic_cast<Constant*>(op.get());
@@ -374,50 +589,24 @@ void RenderOperation::draw()
         portManager().movePortTo
           (op->ports()[0], op->x()+x, op->y()+y);
         return;
-      }
-    case OperationType::time:
-      cairo_move_to(cairo,-4,2);
-      cairo_show_text(cairo,"t");
-      break;
-    case OperationType::copy:
-      cairo_move_to(cairo,-4,2);
-      cairo_show_text(cairo,"=");
-      break;
+    }
     case OperationType::integrate:
-      cairo_move_to(cairo,-7,4.5);
-      cairo_show_text(cairo,"\xE2\x88\xAB");
-      cairo_show_text(cairo,"dt");
+      if (IntOp* i=dynamic_cast<IntOp*>(op.get()))
+        if (i->coupled())
+          {
+            // we need to add some translation if the variable is bound
+            RenderVariable rv(i->getIntVar(),cairo);
+            cairo_rotate(cairo,op->rotation*M_PI/180.0);
+            cairo_translate(cairo, -0.5*(i->intVarOffset+2*rv.width()+2+r),0);
+            cairo_rotate(cairo,-op->rotation*M_PI/180.0);
+          }
+      op->draw(cairo);
       break;
-    case OperationType::exp:
-      cairo_move_to(cairo,-9,3);
-      cairo_show_text(cairo,"e");
-      cairo_rel_move_to(cairo,0,-2);
-      cairo_show_text(cairo,"x");
-      break;
-    case OperationType::add:
-      drawPlus();
-      drawPort(&RenderOperation::drawPlus, l, h);
-      drawPort(&RenderOperation::drawPlus, l, -h);
-      break;
-    case OperationType::subtract:
-      //label="\xA2\x80\x92"; //doesn't display
-      drawMinus();
-      drawPort(&RenderOperation::drawPlus, l, -h);
-      drawPort(&RenderOperation::drawMinus, l, h);
-      break;
-    case OperationType::multiply:
-      //label="\xE0\x83\x97";
-      drawMultiply();
-      drawPort(&RenderOperation::drawMultiply, l, h);
-      drawPort(&RenderOperation::drawMultiply, l, -h);
-      break;
-    case OperationType::divide:
-      //              label="\xE0\x83\xB7";
-      drawDivide();
-      drawPort(&RenderOperation::drawMultiply, l, -h);
-      drawPort(&RenderOperation::drawDivide, l, h);
+    default:
+      op->draw(cairo);
       break;
     }
+
   int intVarWidth=0, intVarHeight=0;
   cairo_rotate(cairo, angle);
   if (IntOp* i=dynamic_cast<IntOp*>(op.get()))
@@ -517,7 +706,7 @@ RenderVariable::RenderVariable(const VariablePtr& var, cairo_t* cairo,
                          CAIRO_FONT_WEIGHT_NORMAL);
   cairo_set_font_size(lcairo,12);
   cairo_text_extents_t bbox;
-  cairo_text_extents(lcairo,var->name.c_str(),&bbox);
+  cairo_text_extents(lcairo,var->Name().c_str(),&bbox);
   w=0.5*bbox.width+2; 
   h=0.5*bbox.height+2;
 
@@ -544,7 +733,7 @@ void RenderVariable::draw()
         cairo_rotate(cairo, angle+M_PI);
 
       cairo_move_to(cairo,-w+1,h-2);
-      cairo_show_text(cairo,var->name.c_str());
+      cairo_show_text(cairo,var->Name().c_str());
       cairo_restore(cairo);
       cairo_rotate(cairo, angle);
       cairo_set_source_rgb(cairo,1,0,0);

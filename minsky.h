@@ -33,6 +33,7 @@ using namespace classdesc;
 
 #include "godleyIcon.h"
 #include "operation.h"
+#include "evalOp.h"
 #include "wire.h"
 #include "portManager.h"
 #include "plotWidget.h"
@@ -63,7 +64,17 @@ namespace minsky
   // be serialised.
   struct MinskyExclude
   {
-    vector<EvalOp> equations;
+    struct EvalOpVector: public vector<EvalOpPtr>
+    {
+      // override push_back for diagnostic purposes
+//      void push_back(const EvalOpPtr& x) {
+//        vector<EvalOpPtr>::push_back(x);
+//        cout << OperationType::typeName(x->type())<<"("<<x->in1<<","
+//                                        <<x->in2<<")->"<<x->out<<endl;
+//      }
+    };
+
+    EvalOpVector equations;
     vector<Integral> integrals;
     shared_ptr<RKdata> ode;
   };
@@ -160,7 +171,7 @@ namespace minsky
 
     /// add the extra copy operations performed when variableValue idx
     /// is updated.  Use idx=-1 for the initial set
-    void addCopies(const map<int, vector<EvalOp> >& extraCopies, 
+    void addCopies(const map<int, vector<EvalOpPtr> >& extraCopies, 
                    int idx);
 
     /// update the inputFrom map, allowing for multi-input binary
@@ -170,14 +181,17 @@ namespace minsky
      const map<int,int>& operationIdFromInputsPort);
 
     float m_zoomFactor;
-    bool reset_needed; // if a new model, or loaded from disk
+    bool reset_needed; ///< if a new model, or loaded from disk
     bool m_edited;
   public:
     /// reflects whether the model has been changed since last save
     bool edited() const {return m_edited;}
     bool markEdited() {m_edited=true; reset_needed=true;}
+    /// override automatic reset on model update
+    void resetNotNeeded() {reset_needed=false;}
+    /// resets the edited (dirty) flags
+    void resetEdited() {m_edited=false;}
 
-    //    GodleyTable godley; // deprecated - needed for Minsky.1 capability
     typedef std::map<int, GodleyIcon> GodleyItems;
     GodleyItems godleyItems;
 
@@ -210,15 +224,10 @@ namespace minsky
     using PortManager::closestOutPort;
     using PortManager::closestInPort;
 
-    //bool portInput(TCL_args);
-
     /// add a new wire connecting \a from port to \a to port with \a coordinates
     /// @return wireid, or -1 if wire is invalid
     int addWire(TCL_args args);
     void deleteWire(TCL_args args); 
-    // get/set coordinates of a particular wire
-    array<float> wireCoords(TCL_args args);
-
 
     /// list the possible string values of an enum (for TCL)
     template <class E> void enumVals()
@@ -244,6 +253,11 @@ namespace minsky
 
     void DeleteOperation(int op);
     void deleteOperation(TCL_args args) {DeleteOperation(args);}
+
+    /// fill in an image with the icon for a specific operation
+    /// @param imageName
+    /// @param operationName
+    void operationIcon(TCL_args) const;
 
     /// useful for debugging wiring diagrams
     array<int> unwiredOperations() const;
@@ -284,7 +298,7 @@ namespace minsky
           for (GodleyIcon::Variables::iterator v=g->second.stockVars.begin();
                v!=g->second.stockVars.end(); ++v)
             variables.erase(*v);
-          godleyItems.erase((int)args);
+          godleyItems.erase(g);
         }
     }
 
@@ -299,7 +313,7 @@ namespace minsky
     void deleteGroup(TCL_args args) {
       int id=args;
       groupItems[id].deleteContents();
-      groupItems.erase(args);
+      groupItems.erase(id);
     }
 
     /// add variable \a varid to group \a gid
@@ -364,11 +378,17 @@ namespace minsky
     // runs over all ports and variables removing those not in use
     void garbageCollect();
 
+    /// checks for presence of illegal cycles in network
+    bool cycleCheck() const;
+
     /// construct the equations based on input data
     /// @throws ecolab::error if the data is inconsistent
     void constructEquations();
     /// evaluate the equations (stockVars.size() of them)
     void evalEquations(double result[], const double vars[]);
+
+    /// returns number of equations
+    size_t numEquations() const {return equations.size();}
 
     typedef MinskyMatrix Matrix; 
     void jacobian(Matrix& jac, const double vars[]);
@@ -400,6 +420,7 @@ namespace minsky
     }
 
     void latex(TCL_args args) {
+      if (cycleCheck()) throw error("cyclic network detected");
       ofstream f(args);
       f<<"\\documentclass{article}\n\\begin{document}\n";
       MathDAG::SystemOfEquations(*this).latex(f);

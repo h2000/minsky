@@ -25,7 +25,7 @@ using namespace ecolab;
 
 void Wire::zoom(float xOrigin, float yOrigin, float factor)
 {
-  if (group>=-1)
+  if (group>-1)
     {
       GroupIcon& g=minsky().groupItems[group];
       xOrigin-=g.x();

@@ -31,7 +31,7 @@ namespace minsky
 
   class GodleyIcon
   {
-    float m_x, m_y, m_zoomFactor; ///< position of Godley icon
+    float m_x, m_y; ///< position of Godley icon
     /// for placement of bank icon within complex
     float flowMargin, stockMargin, iconSize; 
     CLASSDESC_ACCESS(GodleyIcon);
@@ -39,16 +39,16 @@ namespace minsky
   public:
 
     /// width of Godley icon in screen coordinates
-    float width() const {return (flowMargin+iconSize)*m_zoomFactor;}
+    float width() const {return (flowMargin+iconSize)*zoomFactor;}
     /// height of Godley icon in screen coordinates
-    float height() const {return (stockMargin+iconSize)*m_zoomFactor;}
+    float height() const {return (stockMargin+iconSize)*zoomFactor;}
     /// left margin of bank icon with Godley icon
-    float leftMargin() const {return flowMargin*m_zoomFactor;}
+    float leftMargin() const {return flowMargin*zoomFactor;}
     /// bottom margin of bank icon with Godley icon
-    float bottomMargin() const {return stockMargin*m_zoomFactor;}
+    float bottomMargin() const {return stockMargin*zoomFactor;}
 
     //    float adjustHoriz, adjustVert; // difference between where variables are displayed and screen coordinates
-    GodleyIcon(): m_x(0), m_y(0), m_zoomFactor(1)/*, adjustHoriz(0), adjustVert(0)*/ {}
+    GodleyIcon(): m_x(0), m_y(0), zoomFactor(1)/*, adjustHoriz(0), adjustVert(0)*/ {}
 
     /// @{ position of Godley icon
     float x() const {return m_x;}
@@ -75,8 +75,7 @@ namespace minsky
     /// zoom by \a factor, scaling all widget's coordinates, using (\a
     /// xOrigin, \a yOrigin) as the origin of the zoom transformation
     void zoom(float xOrigin, float yOrigin,float factor);
-    void setZoom(float factor) {m_zoomFactor=factor;}
-    float zoomFactor() const {return m_zoomFactor;}
+    float zoomFactor;
 
 
   };

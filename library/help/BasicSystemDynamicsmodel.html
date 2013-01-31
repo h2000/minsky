@@ -1,0 +1,185 @@
+﻿<html>
+	
+<head>
+	<title>Basic System Dynamics model</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 3.7.1.482">
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "Minsky.html?" + sTopicUrl;
+			}
+			else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+			{
+				top.FrameTOC.SelectTocItem("BasicSystemDynamicsmodel");
+			}
+		});
+	</script>
+</head>
+
+<body>
+
+	<div id="topic_header">
+			<div id="topic_header_content">
+				<h1>Basic System Dynamics model</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Tutorial.html">Tutorial</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Tutorial.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Tutorial.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="BasicBankingmodel.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts6">In 1965, Richard Goodwin, the great pioneer of complexity in economics, presented the paper "</span><a class="rvts11" href="http://en.wikipedia.org/wiki/Goodwin_model_(economics)">A Growth Cycle</a><span class="rvts6">" to the First World Congress of the Econometric Society in Rome. It was later published in a book collection (Goodwin, Richard M. 1967. "A Growth Cycle," in C. H. Feinstein, </span><span class="rvts12">Socialism, Capitalism and Economic Growth</span><span class="rvts6">. Cambridge: Cambridge University Press, pp. 54-58.); to my knowledge it was never published in a journal.</span></p>
+<p class="rvps2"><span class="rvts6">Goodwin's model has been subjected to much critical literature about implying stable cycles, not matching empirical data, etc., but Goodwin himself emphasized that it was a "starkly schematized and hence quite unrealistic model of cycles in growth rates". He argued however that it was a better foundation for a more realistic model that "the more usual treatment of growth theory or of cycle theory, separately or in combination."</span></p>
+<p class="rvps2"><span class="rvts6">Goodwin emphasized the similarity of this model to the Lokta-Volterra model of interacting predator and prey, which can make it seem as if it was derived by analogy to the biological model. But in fact it can easily be derived from a highly simplified causal chain:</span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li class="rvps2"><span class="rvts6">The level of output (Y) determines the level of employment (L), with L=Y/a where a is a measure of labor productivity;</span></li>
+<li class="rvps2"><span class="rvts6">Given a population N, the employment rate </span><span class="rvts14">&lambda;</span><span class="rvts6">=L/N plays a role in determining the </span><span class="rvts13">rate of change</span><span class="rvts6"> of the wage w: Goodwin used a linear approximation to a non-linear "Phillips Curve":</span></li>
+</ul>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem55.png"/></p>
+<p class="rvps2"><span class="rvts6">His linear approximation was:</span></p>
+<p class="rvps9"><img alt="" style="padding : 1px;" src="lib/NewItem56.png"/></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li class="rvps2"><span class="rvts6">In a simple two-class model, profits </span><span class="rvts14">&Pi;</span><span class="rvts6"> equal the level of output Y minus the wage bill: </span><span class="rvts14">&Pi;</span><span class="rvts6">=Y-w.L</span></li>
+<li class="rvps2"><span class="rvts6">For simplicity, Goodwin assumed that all profits were invested, so that Investment equals profits: I=</span><span class="rvts14">&Pi;</span></li>
+<li class="rvps2"><span class="rvts6">Investment is the </span><span class="rvts13">rate of change</span><span class="rvts6"> of the capital stock K;</span></li>
+<li class="rvps2"><span class="rvts6">The level of output is, to a first approximation, determined by the level of capital stock (K). A simple way of stating this is that Y is proportional to K: Y=K/v, where v is a constant (Goodwin notes that this relation "could be softened but it would mean a serious complicating of the structure of the model"); and finally</span></li>
+<li class="rvps2"><span class="rvts6">Goodwin assumed that labor productivity grew at a constant rate </span><span class="rvts14">&alpha;</span><span class="rvts6">, while population grew at a constant rate </span><span class="rvts14">&beta;</span><span class="rvts6">.</span></li>
+</ul>
+<p class="rvps2"><span class="rvts6">Goodwin published the model as a reduced form equation in the two system states the employment rate (</span><span class="rvts14">&lambda;</span><span class="rvts6">) and the workers' share of output (</span><span class="rvts14">&omega;</span><span class="rvts6">):</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem57.png"/></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">This form is useful for analytic reasons, but it obscures the causal chain that actually lies behind the model. With modern system dynamic software, this can be laid out explicitly, and we can also use much more meaningful names. We'll start with defining output (which is a variable). Click on </span><img alt="" style="padding : 1px;" src="lib/NewItem58.png"/><span class="rvts6"> on the Icon Palette, or click on the Operations menu and choose "Variable". This will open up the "Specify Variable Name" window:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem63.png"/></p>
+<p class="rvps2"><span class="rvts6">Enter "</span><span class="rvts13">GDP</span><span class="rvts6">" into the "Name" field, and leave the other fields blank--since </span><span class="rvts13">GDP</span><span class="rvts6"> is a variable and we're defining a dynamic system, the value of </span><span class="rvts13">GDP</span><span class="rvts6"> at any particular point in time will depend on the other entities in the model. Now Click OK (or press "Enter"). The variable will now appear, attached to the cursor. Move to a point near the top of the screen and click, which will place the variable at that location:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem64.png"/></p>
+<p class="rvps2"><span class="rvts6">We are now going to write the first part of the model, that Labor (</span><span class="rvts13">Labor</span><span class="rvts6">) equals output (</span><span class="rvts13">GDP</span><span class="rvts6">) divided by labor productivity (</span><span class="rvts13">LabProd</span><span class="rvts6">). Just for the sake of illustration, we'll make </span><span class="rvts13">a</span><span class="rvts6"> a constant (this can easily be modified later). For this we need to add a constant by clicking on </span><img alt="" style="padding : 1px;" src="lib/NewItem61.png"/><span class="rvts6"> on the Palette, or by choosing Operations/constant from the menu. This will pop-up the Edit Constant window:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem66.png"/></p>
+<p class="rvps2"><span class="rvts6">Give the variable the name "</span><span class="rvts13">LabProd</span><span class="rvts6">" and the value of 1 (i.e., one unit of output per worker). Click OK or press Enter and the constant </span><img alt="" style="padding : 1px;" src="lib/NewItem67.png"/><span class="rvts6">will now be attached to the cursor. Place it below </span><span class="rvts13">GDP</span><span class="rvts6">:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem68.png"/></p>
+<p class="rvps2"><span class="rvts6">Now we need to divide </span><span class="rvts13">GDP</span><span class="rvts6"> by </span><span class="rvts13">LabProd</span><span class="rvts6">. Click on the </span><img alt="" style="padding : 1px;" src="lib/NewItem69.png"/><span class="rvts6"> symbol on the palette and the symbol will be attached to the cursor. Drag it near the other two objects and click. Your Canvas will now look something like this:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem70.png"/></p>
+<p class="rvps2"><span class="rvts6">Now to complete the equation, you have to attach </span><span class="rvts13">GDP</span><span class="rvts6"> to the top of the divide block and </span><span class="rvts13">LabProd</span><span class="rvts6"> to the bottom. Go to the Mode buttons and click on Wire:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem71.png"/></p>
+<p class="rvps2"><span class="rvts6">Now move your cursor to the right hand side of </span><img alt="" style="padding : 1px;" src="lib/NewItem72.png"/><span class="rvts6"> and click, hold the mouse button down, and drag. An arrow will come out from </span><img alt="" style="padding : 1px;" src="lib/NewItem73.png"/><span class="rvts6">. Drag this arrow to the top of the divide block (where you'll see a tiny multiply sign) and release the mouse. You should then see this:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem74.png"/></p>
+<p class="rvps2"><span class="rvts6">The program will "snap" to the nearest object when you're in Wire mode, so this should be easy to do. But if you have any problems, go to the File menu and click on "Show Ports". You will then see little circles that identify the input and output ports on all objects:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem75.png"/></p>
+<p class="rvps2"><span class="rvts6">Those are the connection points for wires, so start dragging from one and release on the other. Now wire LabProd to the bottom of the Divide block (where you'll see a miniature divide symbol (blown up below):</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem76.png"/></p>
+<p class="rvps2"><span class="rvts6">To complete the equation, click on "Move" in the Mode buttons:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem77.png"/></p>
+<p class="rvps2"><span class="rvts6">Then click on </span><img alt="" style="padding : 1px;" src="lib/NewItem78.png"/><span class="rvts6"> in the Design Icons to create a new variable, call it Labor, place it the the right of the Divide block, change back to Wire mode again, and wire the output port from the Divide block to the input port for </span><span class="rvts13">Labor</span><span class="rvts6">:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem79.png"/></p>
+<p class="rvps2"><span class="rvts6">To show the correspondence between the flowchart above and a standard modeling equation, click on the File menu and choose "Output LaTeX". Give the file a suitable name (say "Labor Equation") and save it to disk. Then if you have a LaTeX program, or if you know how to import LaTeX equations into MathType, you will see that you have created the following equations:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem80.png"/></p>
+<p class="rvps2"><span class="rvts6">If you don't have either LaTeX, or MathType, you will see a text file with the following content:</span></p>
+<p class="rvps10"><span class="rvts15">\documentclass{article}</span></p>
+<p class="rvps10"><span class="rvts15">\begin{document}</span></p>
+<p class="rvps10"><span class="rvts15">\begin{eqnarray*}</span></p>
+<p class="rvps10"><span class="rvts15">\mathrm{GDP}&amp;=&amp;\\</span></p>
+<p class="rvps10"><span class="rvts15">\mathrm{Labor}&amp;=&amp;\frac{\mathrm{GDP}}{\mathrm{LabProd}}\\</span></p>
+<p class="rvps10"><span class="rvts15">\end{eqnarray*}</span></p>
+<p class="rvps10"><span class="rvts15">\end{document}</span></p>
+<p class="rvps2"><span class="rvts6">This is LaTeX code, which is processed by a LaTeX interpreter to produce beautifully formatted equations. A future release of Minsky will incorporate a LaTeX processor, so that you will be able to see the equations within the program.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">Now let's keep going with the model. With </span><span class="rvts13">Labor</span><span class="rvts6"> defined, the employment rate will be Labor divided by </span><span class="rvts13">Population</span><span class="rvts6">. Define </span><span class="rvts13">Population</span><span class="rvts6"> as a constant (we'll later change it to a variable), and give it a value of 100.</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem81.png"/></p>
+<p class="rvps2"><span class="rvts6">Add it to the Canvas and you are now ready to define the employment rate--another variable. Click on </span><img alt="" style="padding : 1px;" src="lib/NewItem82.png"/><span class="rvts6">, give it the name "</span><span class="rvts13">\lambda</span><span class="rvts6">" (be sure to include the backslash symbol), put another Divide block on the canvas, choose Wire mode and wire this next part of the model up. You should now have:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem83.png"/></p>
+<p class="rvps2"><span class="rvts6">Now choose "</span><span class="rvts12">File/Output Latex</span><span class="rvts6">" again, give it an appropriate name (say "EmploymentEquation"), and load this into your LaTeX processor. You will see</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem85.png"/></p>
+<p class="rvps2"><span class="rvts6">Notice that Minsky outputs a Greek </span><span class="rvts14">&lambda;</span><span class="rvts6"> in the equation. In a later release, we'll allow the inputing of Greek and other symbols directly--for now, this is our workaround.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">With the employment rate defined, we are now ready to define a "Phillips Curve" relationship between the level of employment and the </span><span class="rvts13">rate of change </span><span class="rvts6">of wages. There was far more to Phillips than this (he actually tried to introduce economists to system dynamics back in the 1950s), and far more to his employment-wage change relation too, and he insisted that the relationship was nonlinear (as in Goodwin's figure above). But again for simplicity we'll define a linear relationship between employment and the rate of change of wages.</span></p>
+<p class="rvps2"><span class="rvts6">Here we need to manipulate the basic linear equation that Goodwin used:</span></p>
+<p class="rvps9"><img alt="" style="padding : 1px;" src="lib/NewItem56.png"/></p>
+<p class="rvps2"><span class="rvts6">Firstly multiply both sides by </span><span class="rvts13">w</span><span class="rvts6">:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem86.png"/></p>
+<p class="rvps2"><span class="rvts6">Then integrate both sides (because integration is a numerically much more stable process than differentiation, all system dynamics programs use integration rather than differentiation):</span></p>
+<p class="rvps2"><a name="IntegralPhillipsEquation"></a>
+<img alt="" style="padding : 1px;" src="lib/NewItem87.png"/></p>
+<p class="rvps2"><span class="rvts6">In English, this says that the wage now is the initial wage plus the integral of the wage multiplied by its rate of change function. That's what we now need to add to the Canvas, and the first step is to spell out the wage change function itself. Firstly, since we're using a linear wage response function, the rate of employment has to be referenced to a rate of employment at which the rate of changes is zero. &nbsp;I suggest using Milton Friedman's concept of a "Non-Accelerating-Inflation-Rate-of-Unemployment), or NAIRU. We need to define this constant, subtract it from 1, and subtract the result from the actual employment rate </span><span class="rvts14">&lambda;</span><span class="rvts6">. To enter 1, click on </span><img alt="" style="padding : 1px;" src="lib/NewItem89.png"/><span class="rvts6">, define a constant called 1, and give it a value of 1 (we'll have a more elegant way of doing this in a later release). Then define another constant NAIRU, and give it a value of 0.05 (5% unemployment). Subtract this from 1 and subtract the result from </span><span class="rvts14">&lambda;</span><span class="rvts6">. You should have the following:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem108.png"/></p>
+<p class="rvps2"><span class="rvts6">Now we need to multiply this gap between the actual employment rate and the "NAIRE" rate by a constant that represents the response of wages to this gap. Let's call this constant </span><span class="rvts13">Emp_Response</span><span class="rvts6"> (remember to include the underscore). Define the constant, give it a value of 10, and multiply (</span><span class="rvts14">&lambda;</span><span class="rvts6"> minus NAIRE) by it:</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem109.png"/></p>
+<p class="rvps2"><span class="rvts6">Now we are ready to add a crucial component of a dynamic model: the integral block, which takes a flow as its input and has the integral of that flow as the output. The wage rate </span><span class="rvts13">w</span><span class="rvts6"> is such a variable, and we define it by clicking on the </span><img alt="" style="padding : 1px;" src="lib/NewItem91.png"/><span class="rvts6"> symbol in the Icon Palette (or by choosing Operations/Integrate from the menu). This then attaches the following block to the cursor:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem92.png"/></p>
+<p class="rvps2"><span class="rvts6">Now we need to rename this from the default name of "int" to "</span><span class="rvts13">w</span><span class="rvts6">" for the wage rate. Either right click or double-click on "int" and this will bring up the edit window (currently wrongly named "Edit Constant"--this will be fixed soon!). Rename it to "w" and give it a value of 1:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem93.png"/></p>
+<p class="rvps2"><span class="rvts6">To compete the integral equation, we need to multiply the linear employment response function by the current wage before we integrate it (see the last equation above). There are two ways to do this. First, place a multiply block between the wage change function and the integral block, wire the function up to one input on the multiply block, and then either:</span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li class="rvps2"><span class="rvts6">wire the output of the </span><span class="rvts13">w</span><span class="rvts6"> block back to the other input on multiply block; or</span></li>
+<li class="rvps2"><span class="rvts6">Right-click on </span><span class="rvts13">w</span><span class="rvts6">, choose "Copy Var", place that copy before the multiply block, and wire it up.</span></li>
+</ul>
+<p class="rvps2"><span class="rvts6">The first method gives you this initial result:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem110.png"/></p>
+<p class="rvps2"><span class="rvts6">That looks messy, but notice the blue dot on the wire? Click and drag on that and you will turn the straight line connector into a curve:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem111.png"/></p>
+<p class="rvps2"><span class="rvts6">The second approach, which I personally prefer (it's neater, and it precisely emulates the integral equation), yields this result:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem112.png"/></p>
+<p class="rvps2"><span class="rvts6">From this point on the model develops easily--"like money for old rope", as one of my maths lecturers used to say. Firstly if we multiply the wage rate </span><span class="rvts13">w</span><span class="rvts6"> by </span><span class="rvts13">Labor</span><span class="rvts6"> we get the </span><span class="rvts13">Wage Bill</span><span class="rvts6">. To do this, firstly create the variable Wage Bill, and put will well below where w currently is on your diagram:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem113.png"/></p>
+<p class="rvps2"><span class="rvts6">Now right-click on </span><span class="rvts13">WageBill</span><span class="rvts6"> and choose "Flip". This rotates the block through 180 degrees (any arbitrary rotation can be applied from the variable definition window itself). Now right-click on </span><span class="rvts13">Labor</span><span class="rvts6">, which you've already defined some time ago, and choose "Copy". Place the copy of </span><span class="rvts13">Labor</span><span class="rvts6"> to the right of </span><span class="rvts13">WageBill</span><span class="rvts6">:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem98.png"/></p>
+<p class="rvps2"><span class="rvts6">Now insert a multiply block before </span><span class="rvts13">WageBill</span><span class="rvts6">, and wire </span><span class="rvts13">w</span><span class="rvts6"> and </span><span class="rvts13">Labor</span><span class="rvts6"> up to it. Curve the wire from </span><span class="rvts13">w</span><span class="rvts6"> using the blue dots (you can do this multiple times to create a very curved path: each time you create a curve, another 2 curve points are added that you can also manipulate, as I have done below:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem114.png"/></p>
+<p class="rvps2"><span class="rvts6">The next step is to subtract the </span><span class="rvts13">WageBill</span><span class="rvts6"> from </span><span class="rvts13">GDP </span><span class="rvts6">to define </span><span class="rvts13">Profits</span><span class="rvts6">. Take a copy of </span><span class="rvts13">GDP</span><span class="rvts6">, insert it before WageBill, insert a subtract block, and wire it up to define the variable </span><span class="rvts13">Profits</span><span class="rvts6">:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem100.png"/></p>
+<p class="rvps2"><span class="rvts6">In the simple Goodwin model, all Profits are invested, and investment of course is the rate of change of the capital stock Capital. Create a variable called Investment, wire this up to Profits, and then create a new integral variable Capital using the </span><img alt="" style="padding : 1px;" src="lib/NewItem101.png"/><span class="rvts6"> icon. Right-click or double-click on to rename int2 to Capital, and give it an initial value of 330:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem102.png"/></p>
+<p class="rvps2"><span class="rvts6">Wire this up to Investment:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem104.png"/></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">Now there's only one step left to complete the model: define a constant CapOutputRatio and give it a value of 3:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem103.png"/></p>
+<p class="rvps2"><span class="rvts6">Divide Capital by this, and wire the result up to the input on GDP. You have now built your first dynamic model in Minsky:</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">Before you attempt to run it, do two things. Firstly from the RUnge Kutta menu item, change the Max Step Size to 0.01--to get a smoother simulation.</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem107.png"/></p>
+<p class="rvps2"><span class="rvts6">Secondly, add some graphs by clicking on the </span><img alt="" style="padding : 1px;" src="lib/NewItem106.png"/><span class="rvts6"> icon, placing the graph in the middle of the flowchart, and wiring up /lambda and w to two of the four inputs on the left hand side. You will now see that, rather than reaching equilibrium, the model cycles constantly:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem116.png"/></p>
+<p class="rvps2"><span class="rvts6">If you choose File/Output LaTeX and load the file into a LaTeX processor, you will see that you have defined the following system of equations:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem132.png"/></p>
+<p class="rvps2"><span class="rvts6">At this level of complexity, the equation form--if you're accustomed to working in equations--is as accessible as the flowchart model from which it was generated. But at much higher levels of complexity, the flowchart is far easier to understand since it displays the causal links in the model clearly, and can be structured in sub-groups that focus on particular parts of the system.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Steve Keen 2013</div>
+		</div>
+	</body>
+	
+</html>
+

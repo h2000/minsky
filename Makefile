@@ -12,6 +12,8 @@ MAC_DIST_DIR=minsky.app/Contents/MacOS
 
 # Use the TCL stub libraries to be consistent with TkTable
 
+#TCLLIBS+=$(shell grep ITCL_STUB_LIB_SPEC\
+#    $(call search,lib*/itclConfig.sh) | cut -f2 -d\')
 TCLLIBS+=$(shell grep TK_STUB_LIB_FLAG\
     $(call search,lib*/tkConfig.sh) | cut -f2 -d\')
 TCLLIBS+=$(shell grep TCL_STUB_LIB_FLAG\
@@ -32,7 +34,7 @@ MODELS=minsky
 # custom one that picks up its scripts from a relative library
 # directory
 MODLINK=$(LIBMODS:%=$(ECOLAB_HOME)/lib/%)
-OTHER_OBJS=tclmain.o godley.o portManager.o wire.o variable.o variableManager.o variableValue.o operation.o plotWidget.o cairoItems.o XGLItem.o godleyIcon.o groupIcon.o equations.o schema0.o schema1.o inGroupTest.o
+OTHER_OBJS=tclmain.o godley.o portManager.o wire.o variable.o variableManager.o variableValue.o operation.o evalOp.o plotWidget.o cairoItems.o XGLItem.o godleyIcon.o groupIcon.o equations.o schema0.o schema1.o inGroupTest.o
 MODLINK+=$(OTHER_OBJS)
 FLAGS+=-Ischema -DTR1 $(OPT) -UECOLAB_LIB -DECOLAB_LIB=\"library\"
 
@@ -117,9 +119,9 @@ endif
 
 win-dist: all
 	mkdir -p $(WIN_DIST_DIR)/Minsky
-	cp -r examples icons library windows $(WIN_DIST_DIR)/Minsky
+	cp -r examples icons library $(WIN_DIST_DIR)/Minsky
 	cp -rf /usr/local/lib/tcl8.5 /usr/local/lib/tk8.5 $(WIN_DIST_DIR)/Minsky/library
-	cp minsky.exe *.tcl *.bat $(WIN_DIST_DIR)/Minsky
+	cp minsky.exe *.tcl $(WIN_DIST_DIR)/Minsky
 	cp $(DLLS:%=/bin/%) $(WIN_DIST_DIR)/Minsky
 	cp accountingRules $(WIN_DIST_DIR)/Minsky
 	sh makeMsi.sh
@@ -140,8 +142,8 @@ mac-dist:
 	cp -r $(HOME)/usr/lib/tcl8.5 $(HOME)/usr/lib/tk8.5 $(MAC_DIST_DIR)/library
 	cp $(HOME)/usr/lib/libTktable2.11.dylib $(MAC_DIST_DIR)/library
 	cp -r icons $(MAC_DIST_DIR)
-	pkgbuild --root minsky.app --install-location /Applications/Minsky.app --identifier Minsky minsky.pkg
 	cp accountingRules $(MAC_DIST_DIR)
+	pkgbuild --root minsky.app --install-location /Applications/Minsky.app --identifier Minsky minsky.pkg
 
 checkMissing:
 	sh test/checkMissing.sh

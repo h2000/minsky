@@ -87,6 +87,7 @@ namespace minsky
       g.inVariables.insert(inVariables.begin(), inVariables.end());
       g.outVariables.clear();
       g.outVariables.insert(outVariables.begin(), outVariables.end());
+      g.eliminateIOduplicates();
     }
 
     static void setPrivates(minsky::VariableManager& vm, 

@@ -27,6 +27,14 @@
 
 #include <math.h>
 
+string OperationType::typeName(int op) 
+{return enumKey<Type>(op);}
+
+namespace
+{
+  inline double sqr(double x) {return x*x;}
+}
+
 namespace minsky
 {
 
@@ -35,12 +43,6 @@ namespace minsky
   const float OpAttributes::l;
   const float OpAttributes::h;
   const float OpAttributes::r;
-
-  string OperationBase::name() const 
-  {return enumKey<Type>(type());}
-
-  string OperationBase::OpName(int op) 
-  {return enumKey<Type>(op);}
 
   float OperationBase::x() const
   {
@@ -82,13 +84,17 @@ namespace minsky
         m_ports.push_back(portManager().addPort(Port()));
         break;
         // single input port case
-      case copy: case exp:
+      case copy: case sqrt: case exp: case ln:
+      case sin: case cos: case tan:
+      case asin: case acos: case atan:
+      case sinh: case cosh: case tanh:
         m_ports.push_back(portManager().addPort(Port()));
         m_ports.push_back(portManager().addPort(Port(0,0,true)));
         break;
         // dual input port case
       case add: case subtract: 
       case multiply: case divide:
+      case pow: case log:
         m_ports.push_back(portManager().addPort(Port()));
         m_ports.push_back(portManager().addPort(Port(0,0,true)));
         assert(portManager().ports[m_ports.back()].input);
@@ -96,6 +102,10 @@ namespace minsky
         assert(portManager().ports[m_ports.back()].input);
         assert(portManager().ports.size()>2);
         break;
+      case numOps: case integrate:
+        break;
+      default:
+        throw error("unhandled OperationBase::addPorts case %s",name().c_str());
       }
 
   }
@@ -150,8 +160,8 @@ namespace minsky
         VariablePtr& v=variableManager()[intVar];
         if (!m_ports.empty() && m_ports[0]!=v->outPort())
           portManager().delPort(m_ports[0]);
-        if (v->name!=m_description)
-          variableManager().removeVariable(variableManager()[intVar]->name);
+        if (v->Name()!=m_description)
+          variableManager().removeVariable(variableManager()[intVar]->Name());
         else
           return; // nothing to be done
       }
@@ -212,8 +222,34 @@ namespace minsky
         return new Operation<copy>(ports);
       case integrate:
         return new IntOp(ports);
+      case sqrt:
+        return new Operation<sqrt>(ports);
       case exp:
         return new Operation<exp>(ports);
+      case ln:
+        return new Operation<ln>(ports);
+      case log:
+        return new Operation<log>(ports);
+      case pow:
+        return new Operation<pow>(ports);
+      case sin:
+        return new Operation<sin>(ports);
+      case cos:
+        return new Operation<cos>(ports);
+      case tan:
+        return new Operation<tan>(ports);
+      case asin:
+        return new Operation<asin>(ports);
+      case acos:
+        return new Operation<acos>(ports);
+      case atan:
+        return new Operation<atan>(ports);
+      case sinh:
+        return new Operation<sinh>(ports);
+      case cosh:
+        return new Operation<cosh>(ports);
+      case tanh:
+        return new Operation<tanh>(ports);
       case add:
         return new Operation<add>(ports);
       case subtract:
@@ -225,149 +261,8 @@ namespace minsky
       case numOps:  // default, do nothing op
         return new Operation<numOps>(ports);
       default:
-        assert("Invalid operation type requested" && false);
-        return NULL;
+        throw error("unknown variable type %s", typeName(type).c_str());
       }
-  }
-
-
-  void EvalOp::reset()
-  {
-    if (Constant* c=dynamic_cast<Constant*>(state.get()))
-      ValueVector::flowVars[out]=c->value;
-  }
-
-  int EvalOp::numArgs()
-  {
-    switch (op)
-      {
-      case OperationType::constant:
-      case OperationType::time:
-        return 0;
-      case OperationType::copy:
-      case OperationType::integrate:
-      case OperationType::exp:
-        return 1;      
-      case OperationType::add:
-      case OperationType::subtract:
-      case OperationType::multiply:
-      case OperationType::divide:
-        return 2;
-      }
-    assert(false); //shouldn't be here
-    return 0;
-  }
-
-
-  void EvalOp::eval(double fv[], const double sv[])
-  {
-    fv[out]=evaluate(flow1? fv[in1]: sv[in1], flow2? fv[in2]: sv[in2], fv);
-  };
-
-  void EvalOp::deriv(double df[], const double ds[], 
-                     const double sv[], const double fv[])
-  {
-    assert(out>=0 && out<ValueVector::flowVars.size());
-    switch (numArgs()) 
-      {
-      case 0:
-        df[out]=0;
-        return;
-      case 1:
-        {
-          assert(flow1 && in1<ValueVector::flowVars.size() || !flow1&&in1<ValueVector::stockVars.size());
-          double x1=flow1? fv[in1]: sv[in1];
-          double dx1=flow1? df[in1]: ds[in1];
-          df[out] = dx1!=0? dx1 * d1(x1,0): 0;
-          return;
-        }
-      case 2:
-        {
-          assert(flow1 && in1<ValueVector::flowVars.size() || !flow1&&in1<ValueVector::stockVars.size());
-          assert(flow2 && in2<ValueVector::flowVars.size() || !flow2&&in2<ValueVector::stockVars.size());
-          double x1=flow1? fv[in1]: sv[in1];
-          double x2=flow2? fv[in2]: sv[in2];
-          double dx1=flow1? df[in1]: ds[in1];
-          double dx2=flow2? df[in2]: ds[in2];
-          df[out] = (dx1!=0? dx1 * d1(x1,x2): 0) + 
-            (dx2!=0? dx2 * d2(x1,x2): 0);
-          return;
-        }
-      }
-  }
-
-  double EvalOp::evaluate(double in1, double in2, const double v[]) const
-  {
-    assert(op != OperationType::integrate);
-    switch (op)
-      {
-      case OperationType::constant:
-        return dynamic_cast<Constant&>(*state).value;
-      case OperationType::time:
-        return minsky().t;
-      case OperationType::copy:
-        return in1;
-      case OperationType::exp:
-        return exp(in1);      
-      case OperationType::add:
-        return in1+in2;
-      case OperationType::subtract:
-        return in1-in2;
-      case OperationType::multiply:
-        return in1*in2;
-      case OperationType::divide:
-        return in1/in2;
-      default:
-        return 0;
-      }
-  };
-
-  double EvalOp::d1(double x1, double x2)
-  {
-    switch (op)
-      {
-      case OperationType::constant:
-      case OperationType::time:
-        return 0;
-      case OperationType::copy:
-        return 1;
-      case OperationType::integrate:
-        return x1;
-      case OperationType::exp:
-        return exp(in1);      
-      case OperationType::add:
-      case OperationType::subtract:
-        return 1;
-      case OperationType::multiply:
-        return x2;
-      case OperationType::divide:
-        return 1/x2;
-      }
-    assert(false); // shouldn't be here
-    return 0;
-  }
-
-  double EvalOp::d2(double x1, double x2)
-  {
-    switch (op)
-      {
-      case OperationType::constant:
-      case OperationType::time:
-      case OperationType::copy:
-      case OperationType::integrate:
-      case OperationType::exp:
-        return 0;
-      case OperationType::add:
-        return 1;
-      case OperationType::subtract:
-        return -1;
-      case OperationType::multiply:
-        return x1;
-      case OperationType::divide:
-        return -x1/(x2*x2);
-      }
-    assert(false); // shouldn't be here
-    return 0;
   }
 
   array<int> Operations::visibleOperations() const
@@ -399,7 +294,7 @@ namespace minsky
         v->rotation=rotation;
         float angle=rotation*M_PI/180;
         float xoffs=r+intVarOffset+RenderVariable(v).width();
-        v->MoveTo(x()+xoffs*cos(angle), y()+xoffs*sin(angle));
+        v->MoveTo(x()+xoffs*::cos(angle), y()+xoffs*::sin(angle));
       }
     else
       {
@@ -432,7 +327,7 @@ namespace minsky
   void Constant::adjustSliderBounds()
   {
     if (sliderMax<value) sliderMax=value;
-    if (sliderMin<value) sliderMin=value;
+    if (sliderMin>value) sliderMin=value;
   }
 
   void Constant::initOpSliderBounds()

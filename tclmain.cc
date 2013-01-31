@@ -14,7 +14,7 @@
 
 #include <ecolab_epilogue.h>
 #include <fstream>
-//#include <signal.h>
+
 extern "C" 
 {
   typedef void (*__sighandler_t) (int);
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 
   if (Tk_Init(interp())==TCL_ERROR)
     {
-      fprintf(stderr,"Error initialising Tk: %s",interp()->result);
+      fprintf(stderr,"Error initialising Tk: %s",Tcl_GetStringResult(interp()));
       fprintf(stderr,"%s\n",Tcl_GetVar(interp(),"errorInfo",0)); 
       /* If Tk_Init fails, it is not necessarily a fatal error. For
          example, on unpatched macs, we get an error from the attempt
@@ -77,8 +77,8 @@ int main(int argc, char* argv[])
   minskyHome << "file dirname [info nameofexecutable]\n";
 
   if (Tcl_EvalFile(interp(), (minskyHome.result+"/minsky.tcl").c_str())!=TCL_OK)
-  {
-      fprintf(stderr,"%s\n",interp()->result);
+    {
+      fprintf(stderr,"%s\n",Tcl_GetStringResult(interp()));
       fprintf(stderr,"%s\n",Tcl_GetVar(interp(),"errorInfo",0)); /* print out trace */
       return 1;  /* not a clean execution */
     }
@@ -236,6 +236,15 @@ namespace TCLcmd
       }
     cmd << "restorebgerror\n";
   }
+
+#ifdef WIN32
+#include <windef.h>
+#include <shellapi.h>
+  NEWCMD(shellOpen,1)
+  {
+    ShellExecute(NULL,"open",argv[1],NULL,NULL,1);
+  }
+#endif
 
 
 }

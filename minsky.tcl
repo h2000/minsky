@@ -44,10 +44,7 @@ if [file exists $rcfile] {
   source $rcfile
 }
 
-
-
-if {![file exists [file join $tcl_library init.tcl]]
-} {
+if {![file exists [file join $tcl_library init.tcl]]} {
     set tcl_library $minskyHome/library/tcl8.5
 }
 
@@ -100,6 +97,23 @@ if {[string equal unix $tcl_platform(platform)]} {
     }
 } else {
     load Tktable211.dll
+}
+
+if {[tk windowingsystem]=="win32"} {
+    # redirect the mousewheel event to the actual window that should
+    # receive the event - see ticket #114 
+    bind . <MouseWheel> {
+        switch [winfo containing %X %Y] {
+            .wiring.canvas {
+                if {%D>=0} {
+                    # on Winblows, min val of |%D| is 120, so just use sign
+                    zoom 1.1
+                } {
+                    zoom [expr 1.0/1.1]
+                } 
+            }
+        }
+    }
 }
 
 source $minskyHome/library/tooltip.tcl
@@ -169,6 +183,10 @@ if {$classicMode} {
         tooltip .menubar.step "Step simulation"
 }
 
+label .menubar.slowSpeed -text "slow"
+label .menubar.fastSpeed -text "fast"
+scale .menubar.simSpeed -variable delay -to 0 -from 1000 -length 150 -label "Simulation Speed" -orient horizontal -showvalue 0
+
 menubutton .menubar.options -menu .menubar.options.menu -text Options -underline 0
 menu .menubar.options.menu
 .menubar.options.menu add command -label "Preferences" -command {
@@ -188,13 +206,19 @@ menu .menubar.options.menu
     tk_setPalette $backgroundColour
 }
 
+button .menubar.help -text Help -relief flat -command {help Introduction}
+bind . <F1> topLevelHelp
+bind .menubar.file <F1> {help File}
+
+
 # placement of menu items in menubar
 pack .menubar.file -side left
 pack .menubar.ops -side left
 pack .menubar.options -side left
 pack .menubar.rkData -side left
+pack .menubar.help -side left
 
-pack .menubar.run .menubar.reset .menubar.step -side left
+pack .menubar.run .menubar.reset .menubar.step .menubar.slowSpeed .menubar.simSpeed .menubar.fastSpeed -side left
 pack .menubar.statusbar -side right -fill x
 
 grid .menubar -row 0 -column 0 -columnspan 1000 -sticky ew
@@ -264,7 +288,8 @@ proc step {} {
 proc simulate {} {
     uplevel #0 {
       if {$running} {
-          after $delay {step; simulate; update}
+#          after $delay {step; simulate; update}
+          after $delay {step; simulate}
         }
     }
 }
@@ -304,6 +329,8 @@ proc openFile {} {
 	    godleyItem.get $g
 	    set preferences(godleyDE) [godleyItem.table.doubleEntryCompliant]
 	}
+        # setting preferences(godleyDE) causes the edited (dirty) flag to be set
+        resetEdited
     }
 }
 
@@ -515,6 +542,89 @@ button .aboutMinsky.ok -text OK -command {
 wm withdraw .aboutMinsky
 pack .aboutMinsky.text .aboutMinsky.ok
 
+# context sensitive help topics associations
+set helpTopics(.menubar.file) File
+set helpTopics(.menubar.ops) Operations
+set helpTopics(.menubar.options) Options
+set helpTopics(.menubar.rkData) RungeKutta
+set helpTopics(.menubar.help) Gettinghelp
+set helpTopics(.menubar.run) RunButtons
+set helpTopics(.menubar.reset) RunButtons
+set helpTopics(.menubar.step) RunButtons
+set helpTopics(.menubar.simSpeed) Speedslider
+set helpTopics(.wiring.menubar.line0.integrate) Integrate
+set helpTopics(.wiring.menubar.line1.exp) Exp
+set helpTopics(.wiring.menubar.line0.add) Add
+set helpTopics(.wiring.menubar.line0.subtract) Subtract
+set helpTopics(.wiring.menubar.line0.multiply) Multiply
+set helpTopics(.wiring.menubar.line0.divide) Divide
+set helpTopics(.wiring.menubar.line1.plot) Plot
+set helpTopics(.wiring.menubar.movemode) ModeButtons
+set helpTopics(.wiring.menubar.wiringmode) ModeButtons
+set helpTopics(.wiring.menubar.lassomode) ModeButtons
+set helpTopics(.wiring.menubar.panmode) ModeButtons
+set helpTopics(.wiring.menubar.line0.zoomOut) ZoomButtons
+set helpTopics(.wiring.menubar.line0.zoomIn) ZoomButtons
+set helpTopics(.wiring.menubar.line0.zoomOrig)  ZoomButtons
+set helpTopics(.wiring.menubar.line0.godley)  GodleyTable
+set helpTopics(.wiring.menubar.line0.var) Variable
+set helpTopics(.wiring.menubar.line0.const) Constant 
+set helpTopics(.wiring.menubar.line1.time) Time
+# TODO - the following association interferes with canvas item context menus
+#set helpTopics(.wiring.canvas) DesignCanvas
+
+menu .contextHelp -tearoff 0
+foreach win [array names helpTopics] {
+    bind $win <<contextMenu>> {helpContext %X %Y}
+}
+
+# for binding to F1
+proc topLevelHelp {} {
+    helpFor [winfo pointerx .] [winfo pointery .]
+}
+
+# for binding to context menus
+proc helpContext {x y} {
+    .contextHelp delete 0 end
+    .contextHelp add command -label Help -command "helpFor $x $y"
+    tk_popup .contextHelp $x $y
+}
+
+# implements context sensistive help
+proc helpFor {x y} {
+    global helpTopics
+    set win [winfo containing $x $y]
+    if [info exists helpTopics($win)] {
+        help $helpTopics($win)
+    } else {
+        help Introduction
+    }
+}
+
+proc help {topic} {
+    global minskyHome 
+    set URL file://$minskyHome/library/help/$topic.html
+    switch [tk windowingsystem] {
+        "win32" {
+            shellOpen $URL
+        }
+        "aqua" {
+            exec open $URL
+        }
+        default {
+            # try a few likely suspects
+            foreach browser {firefox konqueror seamonkey opera} {
+                set browserNotFound [catch {exec firefox $URL &}]
+                if {!$browserNotFound} break
+            }
+            if $browserNotFound {
+                tk_messageBox -detail "Unable to find a working web browser, 
+please consult http://minsky.sf.net/help/$topic.html" -type ok -icon warning
+            }
+        }
+    }
+}
+
 proc aboutMinsky {} {
     .aboutMinsky.text configure -text "
    Minsky [minskyVersion]\n
@@ -601,5 +711,7 @@ if {$argc>1 && ![string match "*.tcl" $argv(1)]} {
         godleyItem.get $g
         set preferences(godleyDE) [godleyItem.table.doubleEntryCompliant]
     }
+    # setting preferences(godleyDE) causes the edited (dirty) flag to be set
+    resetEdited
 }
 

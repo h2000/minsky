@@ -1,0 +1,85 @@
+﻿<html>
+	
+<head>
+	<title>Defining flows</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 3.7.1.482">
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "Minsky.html?" + sTopicUrl;
+			}
+			else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+			{
+				top.FrameTOC.SelectTocItem("Definingflows");
+			}
+		});
+	</script>
+</head>
+
+<body>
+
+	<div id="topic_header">
+			<div id="topic_header_content">
+				<h1>Defining flows</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="GettingStarted.html">Getting Started</a> &rsaquo;&rsaquo; <a href="WorkingwithMinsky.html">Working with Minsky</a> &rsaquo;&rsaquo; <a href="Creatingabankingmodel.html">Creating a banking model</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Creatingabankingmodel.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Enteringflowsbetweenaccounts.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="CopyingGodleyTableinputoutputs.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts6">The entries in the Godley Table represent flows of money, which are denominated in money units per unit of time. The relevant time dimension for an economic simulation is a year (whereas in engineering applications, the relevant time dimension is a second), so whatever you enter there represents a flow of money per year. </span></p>
+<p class="rvps2"><span class="rvts6">You define the value of flows by attaching a constant or variable to the input side of the flow into the bank as shown on the Canvas. For example, you could assign Lend a value of 10 (which would represent a loan of $10 per year by Patient to Impatient) by:</span></p>
+<p class="rvps2"><span class="rvts6">Creating a constant called 10, with a value of 10:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem148.png"/></p>
+<p class="rvps2"><span class="rvts6">And attaching this to the input side of Lend:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem149.png"/></p>
+<p class="rvps2"><span class="rvts6">What you have now defined is an annual flow from Patient to Impatient of $10. In the dynamic equations this model generates, Minsky converts all amounts in accounts to positive sums--it shows the financial system from the point of the overall economy, rather than from the point of view of the bank:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem150.png"/></p>
+<p class="rvps2"><span class="rvts6">If you attach a graph to the accounts at the bottom of the bank block, you will see the impact of this flow over time on the balances of the two accounts. Patient's account begins at $100 and falls at $10 per year, while Patient's account begins at $0 and rises by $10 per year.</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem151.png"/></p>
+<p class="rvps2"><span class="rvts6">Obviously this will result in a negative total worth for Patient after 10 years, so it is not a realistic model. A more sensible simple model would relate lending to the amount left in Patient's account (and a more complex model would relate this to many other variables in the model). That is done in the next example, where a constant "lendrate" has been defined and given the value of 0.1, and Lend is now defined as 0.1 times the balance in Patient's account. This now results in a smooth exponential decay of the amount in the Patient account, matched by a rise in the amount in Impatient account.</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem152.png"/></p>
+<p class="rvps2"><span class="rvts6">This is because the equation you have defined is identical to a radioactive decay equation, with the amount in the Patient account falling at 10 percent per year:</span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/NewItem156.png"/></p>
+<p class="rvps2"><span class="rvts6">Note however that there are now wires crossing over other wires? There is a neater way to define flows.</span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Steve Keen 2013</div>
+		</div>
+	</body>
+	
+</html>
+

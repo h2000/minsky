@@ -47,10 +47,11 @@ int VariableManager::addVariable(const VariablePtr& var, int id)
   insert(value_type(id,var));
   if (var->lhs()) portToVariable[var->inPort()]=id;
   portToVariable[var->outPort()]=id;
-  if (!values.count(var->name) && !var->name.empty())
+  if (!values.count(var->Name()) && !var->Name().empty())
     values.insert
-      (VariableValues::value_type(var->name, VariableValue(var->type())));
-  assert(var->type()==values[var->name].type());
+      (VariableValues::value_type(var->Name(), VariableValue(var->type())));
+  if(var->type()!=values[var->Name()].type())
+    throw error("variable %s is invalid for this position",var->Name().c_str());
 
   return id;
 }
@@ -103,11 +104,11 @@ void VariableManager::erase(int i)
       // see if any other instance of this variable exists
       iterator j;
       for (j=begin(); j!=end(); ++j)
-        if (j->second->name == it->second->name && 
+        if (j->second->Name() == it->second->Name() && 
             j->second->outPort()!=it->second->outPort())
           break;
       if (j==end()) // didn't find any others
-        values.erase(it->second->name);
+        values.erase(it->second->Name());
       portManager().delPort(it->second->outPort());
       if (it->second->lhs()) portManager().delPort(it->second->inPort());
       erase(it);
@@ -125,7 +126,7 @@ int VariableManager::wireToVariable(const string& name) const
 {
   if (!InputWired(name)) return -1;
   for (const_iterator i=begin(); i!=end(); ++i)
-    if (i->second->inPort()>-1 && i->second->name==name)
+    if (i->second->inPort()>-1 && i->second->Name()==name)
       {
         array<int> wires=portManager().WiresAttachedToPort(i->second->inPort());
         if (wires.size()>0) 
@@ -138,7 +139,7 @@ array<int> VariableManager::wiresFromVariable(const string& name) const
 {
   array<int> wires;
   for (const_iterator i=begin(); i!=end(); ++i)
-    if (i->second->outPort()>-1 && i->second->name==name)
+    if (i->second->outPort()>-1 && i->second->Name()==name)
       wires<<=portManager().WiresAttachedToPort(i->second->outPort());
   return wires;
 }
@@ -147,7 +148,7 @@ array<int> VariableManager::wiresFromVariable(const string& name) const
 void VariableManager::removeVariable(string name)
 {
   for (Variables::iterator it=Variables::begin(); it!=Variables::end(); )
-    if (it->second->name==name)
+    if (it->second->Name()==name)
       erase(it++);
     else
       ++it;
@@ -165,7 +166,7 @@ bool VariableManager::addWire(int from, int to)
         if (from==v->second->outPort())
           return false;
         else
-          return wiredVariables.insert(v->second->name).second;
+          return wiredVariables.insert(v->second->Name()).second;
     }
   return true;
 }
@@ -177,7 +178,7 @@ void VariableManager::deleteWire(int port)
     {
       Variables::iterator v=find(it->second);
       if (v!=Variables::end())
-        wiredVariables.erase(v->second->name);
+        wiredVariables.erase(v->second->Name());
     }
 }
 
@@ -216,7 +217,7 @@ void VariableManager::makeConsistent()
   // remove variableValues not in variables
   set<string> existingNames;
   for (iterator i=begin(); i!=end(); ++i)
-    existingNames.insert(i->second->name);
+    existingNames.insert(i->second->Name());
   for (VariableValues::iterator i=values.begin(); i!=values.end(); )
     if (existingNames.count(i->first))
       ++i;
@@ -240,7 +241,7 @@ void VariableManager::makeConsistent()
     {
       PortMap::iterator v=portToVariable.find(w->second.to);
       if (v!=portToVariable.end())
-        wiredVariables.insert((*this)[v->second]->name);
+        wiredVariables.insert((*this)[v->second]->Name());
     }
 }
 

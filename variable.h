@@ -38,7 +38,8 @@ namespace minsky
 
 struct VariableType
 {
-  enum Type {undefined, flow, stock, tempFlow, integral};
+  enum Type {undefined, flow, stock, tempFlow, integral, numVarTypes};
+  static string typeName(int t);
 };
 
 struct VariableBaseAttributes: public VariableType
@@ -53,7 +54,6 @@ struct VariableBaseAttributes: public VariableType
 
   float m_x, m_y; ///< position in canvas
   float zoomFactor;
-  string name; ///< variable name
   double rotation; /// rotation if icon, in degrees
   int group;
   
@@ -79,6 +79,7 @@ protected:
 private:
   int m_outPort, m_inPort; /// where wires connect to
   CLASSDESC_ACCESS(VariableBase);
+  string m_name; 
  
 public:
   /// variable is in a Godley table
@@ -95,6 +96,16 @@ public:
   float y() const;
   /// @}
 
+  /// variable name
+  std::string name(TCL_args args) {
+    if (args.count)
+      Name(args);
+    return m_name;
+  }
+
+  std::string Name() const {return m_name;}
+  std::string Name(const std::string& nm);
+
   /// zoom by \a factor, scaling all widget's coordinates, using (\a
   /// xOrigin, \a yOrigin) as the origin of the zoom transformation
   void zoom(float xOrigin, float yOrigin,float factor);
@@ -108,18 +119,16 @@ public:
     else return Init();
   }
 
+  double value() const; ///< current value associated with this variable
+
   /// variable is on left hand side of flow calculation
   bool lhs() const {return type()!=stock && type()!=integral;} 
   /// variable is temporary
   bool temp() const {return type()==tempFlow || type()==undefined;}
-  //TODO: remove leading m_
   virtual Type type() const=0;
   virtual VariableBase* clone() const=0;
   
-  VariableBase(const string& name=""): 
-    m_outPort(-1), m_inPort(-1), m_godley(false) {
-    this->name=name;
-  }
+  VariableBase(): m_outPort(-1), m_inPort(-1), m_godley(false) {}
   VariableBase(const VariableBase& x): 
     classdesc::PolyBase<VariableType::Type>(x),
     VariableBaseAttributes(x), m_outPort(-1), m_inPort(-1), m_godley(false) {}
@@ -144,11 +153,12 @@ namespace minsky
     Type type() const {return T;}
     int numPorts() const;
     Variable(const string& name="") 
-    {this->name=name;}
+    {this->Name(name);}
     ~Variable() {this->delPorts();}
     // clones the current object, allocating new ports
     Variable* clone() const {
       Variable* v=new Variable(*this);
+      v->Name(this->Name());
       v->addPorts();
       return v;
     }
@@ -161,7 +171,7 @@ namespace minsky
   public:
     VariablePtr(VariableBase::Type type=VariableBase::undefined, 
                 const std::string& name=""): 
-      PtrBase(VariableBase::create(type)) {get()->name=name; get()->addPorts();}
+      PtrBase(VariableBase::create(type)) {get()->Name(name); get()->addPorts();}
     template <class P>
     VariablePtr(P* var): PtrBase(dynamic_cast<VariableBase*>(var)) 
     {

@@ -310,7 +310,7 @@ namespace MathDAG
         VariablePtr v(vm.getVariableFromPort(w.from));
         if (v && v->type()!=VariableBase::undefined) 
           // see whether we're wired to a variable
-          return new VariableDAG(makeDAG(v->name));
+          return new VariableDAG(makeDAG(v->Name()));
         else if (portToOperation.count(w.from))
           // we're wired to an operation
           return new OperationDAG
