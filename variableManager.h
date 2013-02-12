@@ -85,6 +85,9 @@ namespace minsky
 
     bool InputWired(const string& name) const {return wiredVariables.count(name);}
     bool inputWired(TCL_args name) const {return InputWired(name);}
+    /// Invariant suitable for assertions: no variables have multiple
+    /// wires to their inputs
+    bool noMultipleWiredInputs() const;
     /// returns wire connecting to the variable
     int wireToVariable(const string& name) const;
     /// returns a list of wires emanating from the variable

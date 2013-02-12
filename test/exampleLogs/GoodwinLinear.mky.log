@@ -1,0 +1,11 @@
+nsteps 10
+0.003 Investment 0 K 300 L 100 N 110 Profit 0 Wage 0.96 Rate 0.001 WageBill 100 Y 100 emprate 0.909091 int 0 
+0.01 Investment 0.152727 K 300.003 L 100 N 110 Profit 0.152727 Wage 0.96 Rate 0.001 WageBill 99.8473 Y 100 emprate 0.909092 int 0 
+0.017 Investment 0.50907 K 300.007 L 100.001 N 110 Profit 0.50907 Wage 0.96 Rate 0.001 WageBill 99.4918 Y 100.001 emprate 0.909099 int 0 
+0.024 Investment 0.865349 K 300.015 L 100.002 N 110 Profit 0.865349 Wage 0.96 Rate 0.001 WageBill 99.1371 Y 100.002 emprate 0.909113 int 0 
+0.031 Investment 1.22152 K 300.024 L 100.005 N 110 Profit 1.22152 Wage 0.96 Rate 0.001 WageBill 98.7834 Y 100.005 emprate 0.909135 int 0 
+0.038 Investment 1.57754 K 300.037 L 100.008 N 110 Profit 1.57754 Wage 0.96 Rate 0.001 WageBill 98.4306 Y 100.008 emprate 0.909165 int 0 
+0.045 Investment 1.93337 K 300.052 L 100.012 N 110 Profit 1.93337 Wage 0.96 Rate 0.001 WageBill 98.0789 Y 100.012 emprate 0.909202 int 0 
+0.052 Investment 2.28896 K 300.069 L 100.017 N 110 Profit 2.28896 Wage 0.96 Rate 0.001 WageBill 97.7282 Y 100.017 emprate 0.909247 int 0 
+0.059 Investment 2.64426 K 300.089 L 100.023 N 110 Profit 2.64426 Wage 0.96 Rate 0.001 WageBill 97.3787 Y 100.023 emprate 0.909299 int 0 
+0.066 Investment 2.99924 K 300.111 L 100.03 N 110 Profit 2.99924 Wage 0.96 Rate 0.001 WageBill 97.0303 Y 100.03 emprate 0.909359 int 0 

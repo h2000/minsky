@@ -25,15 +25,21 @@ namespace minsky
   class Port
   {
     float m_x, m_y;
+    bool m_multiWireAllowed;
     CLASSDESC_ACCESS(Port);
     friend class PortManager;
     friend class SchemaHelper;
   public:
 
-    bool input; //true if input port
+    bool input; ///<true if input port
+    /// true if multiple wires are allowed to connect to an input
+    /// port, such as an input port of an add operation. Irrelevant,
+    /// otherwise
+    bool multiWireAllowed() const {return m_multiWireAllowed;}
     float x() const {return m_x;}
     float y() const {return m_y;}
-    Port(float x=0, float y=0, bool input=false): m_x(x), m_y(y), input(input) {}
+    Port(float x=0, float y=0, bool input=false, bool multiWireAllowed=false): 
+      m_x(x), m_y(y), input(input), m_multiWireAllowed(multiWireAllowed) {}
 
     /// move port by a relative distance
     void move(float dx, float dy) {m_x+=dx; m_y+=dy;}

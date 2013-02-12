@@ -22,6 +22,7 @@
 #include "portManager.h"
 #include "minsky.h"
 #include "cairoItems.h"
+#include "str.h"
 
 #include <ecolab_epilogue.h>
 
@@ -69,6 +70,17 @@ namespace minsky
   void EvalOpBase::eval(double fv[], const double sv[])
   {
     fv[out]=evaluate(flow1? fv[in1]: sv[in1], flow2? fv[in2]: sv[in2]);
+    if (!finite(fv[out]))
+      {
+        minsky().displayErrorItem(state->x(), state->y());
+        string args;
+        if (numArgs()>0) 
+          args=str(flow1? fv[in1]: sv[in1]);
+        if (numArgs()>1)
+          args+=","+str(flow2? fv[in2]: sv[in2]);
+        throw error("Invalid: %s(%s)",
+                    OperationBase::typeName(type()).c_str(), args.c_str());
+      }
   };
 
   void EvalOpBase::deriv(double df[], const double ds[], 
@@ -86,7 +98,7 @@ namespace minsky
           double x1=flow1? fv[in1]: sv[in1];
           double dx1=flow1? df[in1]: ds[in1];
           df[out] = dx1!=0? dx1 * d1(x1,0): 0;
-          return;
+          break;
         }
       case 2:
         {
@@ -98,9 +110,12 @@ namespace minsky
           double dx2=flow2? df[in2]: ds[in2];
           df[out] = (dx1!=0? dx1 * d1(x1,x2): 0) + 
             (dx2!=0? dx2 * d2(x1,x2): 0);
-          return;
+          break;
         }
       }
+    if (!finite(df[out]))
+      throw error("Invalid operation detected on a %s operation",
+                  OperationBase::typeName(type()).c_str());
   }
 
   template <> 

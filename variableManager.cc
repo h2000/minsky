@@ -101,6 +101,15 @@ void VariableManager::erase(int i)
   Variables::iterator it=find(i);
   if (it!=Variables::end()) 
     {
+      // see if this is an integral variable, attached to an integral,
+      // and do not remove variable if true
+      if (it->second->type()==VariableType::integral)
+        for (Operations::const_iterator o=minsky().operations.begin();
+             o!=minsky().operations.end(); ++o)
+          if (const IntOp* itg=dynamic_cast<IntOp*>(o->second.get()))
+            if (itg->intVarID()==i)
+              return; 
+
       // see if any other instance of this variable exists
       iterator j;
       for (j=begin(); j!=end(); ++j)
@@ -134,6 +143,17 @@ int VariableManager::wireToVariable(const string& name) const
       }
   return -1;
 }
+
+bool VariableManager::noMultipleWiredInputs() const
+{
+  set<string> alreadyWired;
+  for (const_iterator v=begin(); v!=end(); ++v)
+    if (portManager().WiresAttachedToPort(v->second->inPort()).size()>0 &&
+        !alreadyWired.insert(v->second->Name()).second)
+      return false;
+  return true;
+}
+
 
 array<int> VariableManager::wiresFromVariable(const string& name) const
 {

@@ -91,6 +91,7 @@ namespace schema1
   {
     vector<int> items;
     vector<int> ports;
+    vector<int> createdVars;
     string name;
     Group() {}
     Group(int id, const minsky::GroupIcon& g): 

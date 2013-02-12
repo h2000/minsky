@@ -645,18 +645,17 @@ TEST(checkDerivatives)
       cout << "checking "<<OperationType::typeName(op)<<endl;
       EvalOpPtr evalOp=EvalOpPtr(OperationType::Type(op));
       if (evalOp->numArgs()==1 && evalOp->type()!=OperationType::integrate)
-        testUnOp(evalOp, ws);
+        {
+          testUnOp(evalOp, ws);
+        }
+      else if (evalOp->numArgs()==2)
+        {
+          evalOp.reset(new FixedArg1(OperationType::Type(op), 2.0));
+          testUnOp(evalOp, ws);
+          evalOp.reset(new FixedArg2(OperationType::Type(op), 2.0));
+          testUnOp(evalOp, ws);
+        }
     }
-
-  EvalOpPtr evalOp;
-  evalOp.reset(new FixedArg1(OperationType::log, 2.0));
-  testUnOp(evalOp, ws);
-  evalOp.reset(new FixedArg2(OperationType::log, 2.0));
-  testUnOp(evalOp, ws);
-  evalOp.reset(new FixedArg1(OperationType::pow, 2.0));
-  testUnOp(evalOp, ws);
-  evalOp.reset(new FixedArg2(OperationType::pow, 2.0));
-  testUnOp(evalOp, ws);
 
   gsl_integration_workspace_free(ws);
 }

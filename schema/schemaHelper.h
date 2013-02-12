@@ -101,6 +101,9 @@ namespace minsky
     {
       g.m_parent=p;
     }
+
+    static void makePortMultiWired(minsky::Port& p)
+    {p.m_multiWireAllowed=true;}
   };
 
 }

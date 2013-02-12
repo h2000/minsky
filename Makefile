@@ -1,7 +1,8 @@
 # list of dlls required for win-dist build
 DLLS=freetype6.dll intl.dll libcairo-2.dll libexpat-1.dll libfontconfig-1.dll\
  libgcc_s_dw2-1.dll libglib-2.0-0.dll libgmodule-2.0-0.dll libgobject-2.0-0.dll\
-libgthread-2.0-0.dll libpango-1.0-0.dll libpangocairo-1.0-0.dll\
+libgslcblas-0.dll libgthread-2.0-0.dll libpango-1.0-0.dll \
+libpangocairo-1.0-0.dll\
  libpangoft2-1.0-0.dll libpangowin32-1.0-0.dll libpixman-1-0.dll \
 libpng14-14.dll libstdc++-6.dll tcl85.dll tk85.dll Tktable211.dll zlib1.dll
 

@@ -9,7 +9,7 @@ endif
 
 include $(ECOLAB_HOME)/include/Makefile
 
-UNITTESTOBJS=main.o testMinsky.o testGroup.o
+UNITTESTOBJS=main.o testMinsky.o testGroup.o testGeometry.o
 MINSKYOBJS=$(filter-out ../tclmain.o,$(wildcard ../*.o))
 FLAGS+=-I..
 LIBS+=-lUnitTest++ -lgsl -lgslcblas  -lxgl -lxlib

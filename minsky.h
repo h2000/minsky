@@ -54,8 +54,9 @@ namespace minsky
   {
     VariableValue stock;
     VariableValue input;
+    IntOp* operation; //< reference to the interal operation object
     Integral(VariableValue input=VariableValue()): 
-      stock(VariableBase::integral), input(input) {}
+      stock(VariableBase::integral), input(input), operation(NULL) {}
   };
 
   struct RKdata; // an internal structure for holding Runge-Kutta data
@@ -121,11 +122,13 @@ namespace minsky
   {
     std::map<K, T>& map;
     std::tr1::shared_ptr<V> val;
+    string cmdPrefix;
   public:
     // nb, in spite of appearances, this approach does not work well
     // with non-shared_pointer value types
     void get(TCL_args args) {
-      string cmdPrefix=args[-1];
+      cmdPrefix=(char*)args[-1];
+      cmdPrefix.erase(cmdPrefix.rfind(".get"));
       K key;
       TCL_args tmp(args);
       tmp>>key;
@@ -140,7 +143,6 @@ namespace minsky
                 {
                   // we keep another reference to value here so that we
                   // never dereference an invalid object
-                  cmdPrefix.erase(cmdPrefix.rfind(".get"));
                   TCL_obj(minskyTCL_obj(), cmdPrefix, *v);
                   val=v;
                 }
@@ -157,7 +159,16 @@ namespace minsky
     }
     // for backward compatibility
     void set(TCL_args args) {}
-    void clear() {val.reset();}
+    //  release object, and also delete all TCL command references to the object
+    void clear() {
+      val.reset();
+      if (!cmdPrefix.empty())
+        {
+          tclcmd() | "foreach cmd [info commands "|cmdPrefix|".*] {rename $cmd {}}\n";
+          // reestablish default get/set command
+          TCL_obj(minskyTCL_obj(), cmdPrefix, *this);
+        }
+    }
     GetterSetterPtr(std::map<K,T>& m): map(m) {}
     // asignment is do nothing, as reference member is created as part
     // of constructor
@@ -178,7 +189,11 @@ namespace minsky
     /// operators. Used in constructEquations
     void recordInputFrom
     (map<int,VariableValue>& inputFrom, int port, const VariableValue& v, 
-     const map<int,int>& operationIdFromInputsPort);
+     const map<int,int>& operationIdFromInputsPort, std::multimap<int, EvalOpPtr>&);
+
+    /// returns a diagnostic about an item that is infinite or
+    /// NaN. Either a variable name, or and operator type.
+    std::string diagnoseNonFinite() const;
 
     float m_zoomFactor;
     bool reset_needed; ///< if a new model, or loaded from disk
@@ -216,9 +231,14 @@ namespace minsky
 
 
     Minsky();
-    ~Minsky() {clearAll();} //improve shutdown times
+    ~Minsky() {clearAllMaps();} //improve shutdown times
 
-    void clearAll();
+    void clearAllMaps();
+    void clearAllGetterSetters();
+    void clearAll() {
+      clearAllMaps();
+      clearAllGetterSetters();
+    }
 
     using PortManager::closestPort;
     using PortManager::closestOutPort;
@@ -378,7 +398,8 @@ namespace minsky
     // runs over all ports and variables removing those not in use
     void garbageCollect();
 
-    /// checks for presence of illegal cycles in network
+    /// checks for presence of illegal cycles in network. Returns true
+    /// if there are some
     bool cycleCheck() const;
 
     /// construct the equations based on input data
@@ -389,6 +410,11 @@ namespace minsky
 
     /// returns number of equations
     size_t numEquations() const {return equations.size();}
+
+    /// consistency check of the equation order. Should return
+    /// true. Outputs the operation number of the invalidly ordered
+    /// operation.
+    bool checkEquationOrder() const;
 
     typedef MinskyMatrix Matrix; 
     void jacobian(Matrix& jac, const double vars[]);
@@ -427,8 +453,14 @@ namespace minsky
       f<<"\\end{document}\n";
     }
 
+    /// indicate position of error on canvas
+    static void displayErrorItem(float x, float y);
+
+    /// returns operation ID for a given EvalOp. -1 if a temporary
+    int opIdOfEvalOp(const EvalOpBase&) const;
+
     /// return the order in which operations are applied (for debugging purposes)
-    array<int> opOrder(); 
+    array<int> opOrder() const; 
 
     /// return the AEGIS assigned version number
     static const char* minskyVersion;
@@ -459,6 +491,9 @@ inline void xml_unpack(xml_unpack_t&, const string&,minsky::MinskyExclude&) {}
 #pragma omit xml_pack minsky::MinskyExclude
 #pragma omit xml_unpack minsky::MinskyExclude
 #pragma omit xsd_generate minsky::MinskyExclude
+
+#pragma omit xml_pack minsky::Integral
+#pragma omit xml_unpack minsky::Integral
 
   // we don't want to serialise this helper
 #pragma omit pack minsky::GetterSetter

@@ -27,6 +27,8 @@ using namespace std;
 
 namespace schema0
 {
+  using minsky::SchemaHelper;
+
   // like assignment between containers, but value_types needn't be identical
   template <class C1, class C2>
   void asg(C1& c1, const C2& c2)
@@ -58,20 +60,29 @@ namespace schema0
     op->m_y=y;
     // handle a previous schema change
     string desc=m_description.empty()? description: m_description;
-    if (minsky::Constant* c=dynamic_cast<minsky::Constant*>(op.get()))
+    switch (m_type)
       {
-        c->description=desc;
-        c->value=value;
-        c->sliderVisible=sliderVisible;
-        c->sliderBoundsSet=sliderBoundsSet;
-        c->sliderStepRel=sliderStepRel;
-        c->sliderMin=sliderMin;
-        c->sliderMax=sliderMax;
-        c->sliderStep=sliderStep;
-      }
-    else if (minsky::IntOp* i=dynamic_cast<minsky::IntOp*>(op.get()))
-      {
-        minsky::SchemaHelper::setPrivates(*i, desc, intVar);
+      case OperationType::constant:
+        if (minsky::Constant* c=dynamic_cast<minsky::Constant*>(op.get()))
+          {
+            c->description=desc;
+            c->value=value;
+            c->sliderVisible=sliderVisible;
+            c->sliderBoundsSet=sliderBoundsSet;
+            c->sliderStepRel=sliderStepRel;
+            c->sliderMin=sliderMin;
+            c->sliderMax=sliderMax;
+            c->sliderStep=sliderStep;
+          }
+        break;
+      case OperationType::integrate:
+        if (minsky::IntOp* i=dynamic_cast<minsky::IntOp*>(op.get()))
+          minsky::SchemaHelper::setPrivates(*i, desc, intVar);
+        break;
+      case OperationType::multiply: case OperationType::divide: 
+        SchemaHelper::makePortMultiWired(minsky::minsky().ports[m_ports[1]]);
+        SchemaHelper::makePortMultiWired(minsky::minsky().ports[m_ports[2]]);
+        break;
       }
 
     op->rotation=rotation;
@@ -211,6 +222,9 @@ namespace schema0
   Minsky::operator minsky::Minsky() const
   {
     minsky::Minsky m;
+    // override default minsky object for this method
+    minsky::LocalMinsky lm(m);
+    
     asg(m.ports, ports);
     asg(m.wires, wires);
     asg(m.godleyItems, godleyItems);

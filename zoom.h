@@ -25,6 +25,7 @@ namespace minsky
   /// base zooming transformation
   inline void zoom(float& val, float origin, float factor)
   {val = (val-origin)*factor + origin;}
+
 }
 
 #endif

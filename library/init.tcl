@@ -30,7 +30,7 @@ proc use_namespace {name} {
 }
 
 # if unknown procedure has () in it, attempt to call set/get methods
-rename unknown tclunknown
+catch {rename unknown tclunknown}
 proc unknown {procname args} {
     if [regexp "(.*)\\((.*)\\)\\..*" $procname wholestring cmd index] {
 # attempt to create an object using get, and recall original command

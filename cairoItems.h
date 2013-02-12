@@ -20,6 +20,7 @@
 #include "operation.h"
 #include <plot.h>
 #include <cairo/cairo.h>
+#include "geometry.h"
 
 namespace minsky
 {
@@ -33,12 +34,6 @@ namespace minsky
     float w, h;
     double xScale, yScale;
 
-//    void drawPlus() const;
-//    void drawMinus() const;
-//    void drawMultiply() const;
-//    void drawDivide() const;
-//    void drawPort(void (RenderOperation::*symbol)() const, float x, float y) const;
-
   public:
     // render a variable to a given cairo context
     RenderOperation(const OperationPtr& var, cairo_t* cairo=NULL, 
@@ -49,6 +44,10 @@ namespace minsky
     float width() const {return w;}
     /// half height of unrotated image
     float height() const {return h;}
+
+    /// return diagonally opposite points of rotated, scaled image
+    /// x0<=x1 && y0<=y1
+    Polygon geom() const;
     bool inImage(float x, float y); ///< true if (x,y) within rendered image
   };
 
@@ -74,6 +73,8 @@ namespace minsky
     float width() const {return w;}
     /// half height of unrotated image
     float height() const {return h;}
+    /// return the boost geometry corresponding to this variable's shape
+    Polygon geom() const;
     bool inImage(float x, float y); ///< true if (x,y) within rendered image
   };
 

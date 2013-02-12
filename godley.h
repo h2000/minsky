@@ -94,15 +94,28 @@ namespace minsky
     void Resize(unsigned rows, unsigned cols){_resize(rows,cols), markEdited();}
     void resize(TCL_args args) {Resize(args[0],args[1]);}
 
+    /** @{ In the following, C++ data structure is off by one with
+        respect to the TCL table, as the TCL table has an extra row
+        and column for the +/- buttons. So deleting the row/column
+        before the index has the effect of deleting the row/column at
+        the index in the TCL table, and inserting row/column at the
+        index in C++ has the effect of inserting before the index in
+        TCL
+    */
+    /// insert row at \a row
     void InsertRow(unsigned row);
     void insertRow(TCL_args args) {InsertRow(args);}
+    /// delete row before \a row
     void DeleteRow(unsigned row);
     void deleteRow(TCL_args args) {DeleteRow(args);}
+    /// insert col at \a col
     void InsertCol(unsigned col);
     void insertCol(TCL_args args) {InsertCol(args);}
+    /// delete col before \a col
     void DeleteCol(unsigned col);
     void deleteCol(TCL_args args) {DeleteCol(args);}
-  
+    /** @} */
+
     void Dimension(unsigned rows, unsigned cols) {clear(); Resize(rows,cols);}
     void dimension(TCL_args args) {Dimension(args[0], args[1]);}
 

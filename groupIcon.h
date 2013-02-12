@@ -25,6 +25,7 @@
 #include "wire.h"
 #include "variable.h"
 #include "operation.h"
+#include "geometry.h"
 
 #include "classdesc_access.h"
 #include <TCL_obj_base.h>
@@ -71,6 +72,10 @@ namespace minsky
     float width, height; // size of icon
     float rotation; // orientation of icon
     bool visible;
+    /// variables created during the grouping process - to be deleted
+    /// when ungrouped
+    std::vector<int> createdVars;
+
     std::vector<int> ports() const;
     int numPorts() const {return inVariables.size()+outVariables.size();}
 
@@ -219,12 +224,17 @@ namespace minsky
     int Select(float x, float y) const;
     int select(TCL_args args) const {return Select(args[0],args[1]);}
 
-
+    /// geometry of scaled, rotated icon
+    Polygon geom() const;
   };
 
   struct GroupIcons: public std::map<int, GroupIcon>
   {
     std::vector<int> visibleGroups() const;
+    // ensures that contained variables, operations, wires and groups
+    // only belong to a single group within this container. This is a
+    // useful invariant to test in asserts
+    bool uniqueGroupMembership() const;
   };
 
 }

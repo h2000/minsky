@@ -65,7 +65,7 @@ ecolab::array<float> Wire::Coords(const ecolab::array<float>& coords)
     {
       GroupIcon& g=minsky().groupItems[group];
       offs[pcoord(coords.size()/2)*2]=g.x();
-      offs[pcoord(coords.size()/2)*2+1]+=g.y();
+      offs[pcoord(coords.size()/2)*2+1]=g.y();
     }
   m_coords=coords-offs;
   return coords;

@@ -25,10 +25,13 @@
 #include <cairo_base.h>
 #include <arrays.h>
 #include <ecolab_epilogue.h>
+#include <boost/geometry/geometry.hpp>
+
 using namespace ecolab::cairo;
 using namespace ecolab;
 using namespace std;
 using namespace minsky;
+using namespace boost::geometry;
 
 namespace 
 {
@@ -270,6 +273,19 @@ RenderOperation::RenderOperation(const OperationPtr& op, cairo_t* cairo,
     }
 }
 
+Polygon RenderOperation::geom() const
+{
+  Rotate rotate(op->rotation, op->x(), op->y());
+  float zl=op->l*op->zoomFactor, zh=op->h*op->zoomFactor, 
+    zr=op->r*op->zoomFactor;
+  Polygon r;
+  // TODO: handle bound integration variables, and constants
+  r+= rotate(op->x()+zl, op->y()-zh), rotate(op->x()+zl, op->y()+zh), 
+    rotate(op->x()+zr, op->y());
+  correct(r);
+  return r;
+}
+
 namespace
 {
   struct DrawBinOp
@@ -369,13 +385,13 @@ namespace minsky
 
   template <> void Operation<OperationType::sqrt>::draw(cairo_t* cairo) const
   {
+    cairo_save(cairo);
     cairo_set_font_size(cairo,10);   
     cairo_move_to(cairo,-7,6);
     cairo_show_text(cairo,"\xE2\x88\x9a");
     cairo_set_line_width(cairo,0.5);
     cairo_rel_move_to(cairo,0,-9);
     cairo_rel_line_to(cairo,5,0);
-    cairo_save(cairo);
     cairo_set_source_rgb(cairo,0,0,0);
     cairo_stroke(cairo);
     cairo_restore(cairo);
@@ -715,6 +731,19 @@ RenderVariable::RenderVariable(const VariablePtr& var, cairo_t* cairo,
       cairo_destroy(lcairo);
       cairo_surface_destroy(surf);
     }
+}
+
+Polygon RenderVariable::geom() const
+{
+  float x=var->x(), y=var->y();
+  float wz=w*var->zoomFactor, hz=h*var->zoomFactor;
+  Rotate rotate(var->rotation, x, y);
+
+  Polygon r;
+  r+= rotate(x-wz, y-hz), rotate(x-wz, y+hz), 
+    rotate(x+wz, y+hz), rotate(x+wz, y-hz);
+  correct(r);
+  return r;
 }
 
 void RenderVariable::draw()

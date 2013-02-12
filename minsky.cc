@@ -50,9 +50,7 @@ namespace
   {
     if (params==NULL) return GSL_FAILURE;
     ((Minsky*)params)->evalEquations(f,y);
-    // check for overflow or invalid argument
-    size_t n=((Minsky*)params)->numEquations();
-    return isFinite(f,n)? GSL_SUCCESS: GSL_EBADFUNC;
+    return GSL_SUCCESS;
   }
 
   int jacobian(double t, const double y[], double * dfdy, double dfdt[], void * params)
@@ -60,9 +58,7 @@ namespace
     if (params==NULL) return GSL_FAILURE;
     Minsky::Matrix jac(ValueVector::stockVars.size(), dfdy);
     ((Minsky*)params)->jacobian(jac,y);
-    // check for overflow or invalid argument
-    size_t n=((Minsky*)params)->numEquations();
-    return isFinite(dfdy,n*n)? GSL_SUCCESS: GSL_EBADFUNC;
+    return GSL_SUCCESS;
   }
 }
 
@@ -81,6 +77,13 @@ namespace minsky
       driver = gsl_odeiv2_driver_alloc_y_new
         (&sys, gsl_odeiv2_step_rkf45, minsky->stepMax, minsky->epsAbs, 
          minsky->epsRel);
+      // TODO: implicit methods are better for stiffer systems, but
+      // require the jacobian (which I've taken special care to
+      // provide). Make as a user option to select solver order, and
+      // whether implicit or explicit methods are used.
+//      driver = gsl_odeiv2_driver_alloc_y_new
+//        (&sys, gsl_odeiv2_step_rk4imp, minsky->stepMax, minsky->epsAbs, 
+//         minsky->epsRel);
       gsl_odeiv2_driver_set_hmax(driver, minsky->stepMax);
       gsl_odeiv2_driver_set_hmin(driver, minsky->stepMin);
     }
@@ -149,25 +152,36 @@ namespace minsky
     m_edited=false; // needs to be here, because the GodleyIcon constructor calls markEdited
   }
 
-  void Minsky::clearAll()
+  void Minsky::clearAllMaps()
   {
     wires.clear(); 
     ports.clear();
     godleyItems.clear();
     operations.clear();
     variables.clear();
+    variables.values.clear();
     groupItems.clear();
     plots.clear();
     
+    flowVars.clear();
+    stockVars.clear();
+
+    reset_needed=true;
+  }
+
+  void Minsky::clearAllGetterSetters() 
+  {
     // need also to clear the GetterSetterPtr variables, as these
     // potentially hold onto objects
     op.clear();
     constant.clear();
     integral.clear();
     var.clear();
-    reset_needed=true;
+    // need to clear some variable referenced in the godleyItem getter/setter
+    // TODO: I'm not happy with this piece of merde.
+    godleyItem.flowVars.clear();
+    godleyItem.stockVars.clear();
   }
-
 
   const char* Minsky::minskyVersion=MINSKY_VERSION;
 
@@ -179,11 +193,14 @@ namespace minsky
 
     // check we're not wiring an operator to its input
     // TODO: move this into an operationManager class
-    // TODO: check that multiple input wires are only to binary ops.
     for (Operations::const_iterator o=operations.begin(); 
          o!=operations.end(); ++o)
       if (o->second->selfWire(from, to))
         return -1;
+
+    // check that multiple input wires are only to binary ops.
+    if (WiresAttachedToPort(to).size()>=1 && !ports[to].multiWireAllowed())
+      return -1;
 
     // check whether variable manager will allow the connection
     if (!variables.addWire(from, to))
@@ -255,6 +272,10 @@ namespace minsky
               }
           }
         operations.erase(op);
+        // ticket #199, remove references held by getter/setter
+        this->op.clear();
+        integral.clear();
+        constant.clear();
         markEdited();
       }
   }
@@ -468,7 +489,8 @@ namespace minsky
 
   // obtain a reference to the variable from which this port obtains its value
   const VariableValue& getInputFromVar
-  (const map<int,VariableValue>& inputFrom, int port, OperationType::Type op)
+  //  (const map<int,VariableValue>& inputFrom, int port, OperationType::Type op)
+  (const map<int,VariableValue>& inputFrom, int port, const OperationBase& op)
   {
     map<int,VariableValue>::const_iterator p=inputFrom.find(port);
     if (p!=inputFrom.end())
@@ -476,7 +498,7 @@ namespace minsky
     else
       // we need to allow for unary operators by creating a temporary
       // group identity variable
-      switch (op)
+      switch (op.type())
         {
         case OperationType::add: 
         case OperationType::subtract:
@@ -485,6 +507,7 @@ namespace minsky
         case OperationType::divide:
           return VariableValue(VariableBase::tempFlow, 1).allocValue();
         default:
+          Minsky::displayErrorItem(op.x(), op.y());
           throw error("No input for port %d",port);
         }
   }
@@ -492,7 +515,7 @@ namespace minsky
   // update the inputFrom map, allowing for multi-input binary operators
   void Minsky::recordInputFrom
   (map<int,VariableValue>& inputFrom, int port, const VariableValue& v, 
-   const map<int,int>& operationIdFromInputsPort)
+   const map<int,int>& operationIdFromInputsPort, multimap<int, EvalOpPtr>& extraOps)
   {
     // if there is already a wire going there, insert appropriate op
     if (inputFrom.count(port)) 
@@ -501,9 +524,17 @@ namespace minsky
         map<int,int>::const_iterator nextOpId = 
           operationIdFromInputsPort.find(port);
         if (nextOpId==operationIdFromInputsPort.end())
-          throw error("Too many inputs"); // to many inputs to a non-operator
+          {
+            // can only possibly be a variable - if any other, we're
+            // severely screwed, and this will just indicate the
+            // origin of the canvas.
+            const VariablePtr v=variables.getVariableFromPort(port);
+            displayErrorItem(v->x(), v->y());
+            throw error("Too many inputs"); // to many inputs to a non-operator
+          }
 
-        switch (operations[nextOpId->second]->type()) 
+        OperationBase& nextOp=*operations[nextOpId->second];
+        switch (nextOp.type()) 
           {
           case OperationType::add:
           case OperationType::subtract:
@@ -514,15 +545,21 @@ namespace minsky
             insert_type = OperationType::multiply;
             break;
           default: 
-            throw error("Too many inputs");
+            {
+              displayErrorItem(nextOp.x(), nextOp.y());
+              throw error("Too many inputs");
+            }
           }
 
         VariableValue& v1=inputFrom[port];
         // create new temp variable
         VariableValue new_v = VariableValue(VariableBase::tempFlow).allocValue();
 
-        equations.push_back
-          (EvalOpPtr(insert_type, new_v.idx(), v1.idx(), v.idx(), v1.lhs(), v.lhs()));
+        extraOps.insert
+          (make_pair
+           (nextOpId->second, 
+            EvalOpPtr
+            (insert_type, new_v.idx(), v1.idx(), v.idx(), v1.lhs(), v.lhs())));
         inputFrom[port]=new_v;
       } 
     else
@@ -636,13 +673,25 @@ namespace minsky
 
     assert(orderedOperations.size() <= operations.size());
     if (orderedOperations.size() < operations.size())
-      throw error("not all operations are wired");
+      {
+        // find offending operations
+        set<int> orderedOps;
+        for (size_t i=0; i<orderedOperations.size(); ++i)
+          orderedOps.insert(orderedOperations[i].first);
+        for (Operations::const_iterator op=operations.begin(); 
+             op!=operations.end(); ++op)
+          if (!orderedOps.count(op->first))
+            displayErrorItem(op->second->x(), op->second->y());
+        throw error("not all operations are wired");
+      }
 
     // A map that maps an input port to variable location that it receives data from
     map<int,VariableValue> inputFrom;
     // map of extra copy operations to be inserted into the operation
     // stream whenever variable given by the index is updated
     map<int, vector<EvalOpPtr> > extraCopies;
+    // extra binary ops for multi-input port support
+    multimap<int, EvalOpPtr> extraOps;
 
     // check whether any wires directly link a variable to another
     // variable, and add copy operations for them. If the variable is an
@@ -655,7 +704,7 @@ namespace minsky
         if (rhs.type()!=VariableBase::undefined)
           {
             recordInputFrom
-              (inputFrom, w->second.to, rhs, operationIdFromInputsPort);
+              (inputFrom, w->second.to, rhs, operationIdFromInputsPort, extraOps);
 
             const VariableValue& lhs=
               variables.getVariableValueFromPort(w->second.to);
@@ -683,6 +732,7 @@ namespace minsky
         {
           integrals.push_back(Integral());
           integrals.back().stock=variables.getVariableValue(integ->description());
+          integrals.back().operation=integ;
         }
 
     // now add the initial set of copy operations
@@ -693,6 +743,14 @@ namespace minsky
     // copy the operations, in order, to the equation vector
     for (int i=0; i<orderedOperations.size(); ++i)
       {
+        // insert any extra ops that need to be added before this one
+        pair<multimap<int, EvalOpPtr>::const_iterator, 
+          multimap<int, EvalOpPtr>::const_iterator> extraOpsToBeInserted=
+          extraOps.equal_range(orderedOperations[i].first);
+        for (multimap<int, EvalOpPtr>::const_iterator e=
+               extraOpsToBeInserted.first; e!=extraOpsToBeInserted.second; ++e)
+          equations.push_back(e->second);
+
         OperationPtr& op = operations[orderedOperations[i].first];
         assert(op->numPorts()>0);
 
@@ -736,14 +794,14 @@ namespace minsky
 
         if (op->numPorts()>1)
           {
-            const VariableValue& v=getInputFromVar(inputFrom, op->ports()[1], e->type());
+            const VariableValue& v=getInputFromVar(inputFrom, op->ports()[1], *op);
             e->in1 = v.idx();
             e->flow1 = v.lhs();
           }
 
         if (op->numPorts()>2)
           {
-            const VariableValue& v=getInputFromVar(inputFrom, op->ports()[2], e->type());
+            const VariableValue& v=getInputFromVar(inputFrom, op->ports()[2], *op);
             e->in2 = v.idx();
             e->flow2 = v.lhs();
           }
@@ -759,7 +817,7 @@ namespace minsky
             // record destination in inputFrom map (already done for integrals)
             for (int w=0; w<outgoingWires.size(); ++w) 
               recordInputFrom(inputFrom, wires[outgoingWires[w]].to, v, 
-                              operationIdFromInputsPort);
+                              operationIdFromInputsPort, extraOps);
           }
 
       }
@@ -775,7 +833,8 @@ namespace minsky
           if (inputFrom.count(p.ports[i]))
             p.connectVar(inputFrom[p.ports[i]], i);
       }
-
+    for (EvalOpVector::iterator e=equations.begin(); e!=equations.end(); ++e)
+      (*e)->reset();
   }
 
   void Minsky::reset()
@@ -803,8 +862,6 @@ namespace minsky
     // update flow variable
     for (size_t i=0; i<equations.size(); ++i)
       equations[i]->eval(&flowVars[0], &stockVars[0]);
-    if (!isFinite(&flowVars[0], flowVars.size()))
-        throw error("Invalid arithmetic operation detected");;
 
     if (ode)
       {
@@ -813,15 +870,37 @@ namespace minsky
                                 &stockVars[0]);
         switch (err)
           {
-          GSL_ENOPROG: throw error("Simulation failing to progress, try to reduce minimum step size");
-          GSL_EBADFUNC: 
+          case GSL_SUCCESS: case GSL_EMAXITER: break;
+//          case GSL_ENOPROG: 
+//            throw error("Simulation failing to progress, try to reduce minimum step size");
+          case GSL_FAILURE:
+            throw error("unspecified error GSL_FAILURE returned");
+          case GSL_EBADFUNC: 
             gsl_odeiv2_driver_reset(ode->driver);
-            throw error("Invalid arithmetic operation detected");
+            throw error("Invalid arithmetic operation detected, on %s",
+                        diagnoseNonFinite().c_str());
+          default:
+            throw error("gsl error: %s",gsl_strerror(err));
           }
       }
 
     for (Plots::Map::iterator i=plots.plots.begin(); i!=plots.plots.end(); ++i)
       i->second.addPlotPt(t);
+  }
+
+  string Minsky::diagnoseNonFinite() const
+  {
+    // firstly check if any variables are not finite
+    for (VariableManager::VariableValues::const_iterator v=variables.values.begin();
+         v!=variables.values.end(); ++v)
+      if (!finite(v->second.value()))
+        return v->first;
+
+    // now check operator equations
+    for (EvalOpVector::const_iterator e=equations.begin(); e!=equations.end(); ++e)
+      if (!finite(flowVars[(*e)->out]))
+        return OperationType::typeName((*e)->type());
+    return "";
   }
 
   void Minsky::evalEquations(double result[], const double vars[])
@@ -838,7 +917,12 @@ namespace minsky
     // integrations are kind of a copy
     for (vector<Integral>::iterator i=integrals.begin(); i<integrals.end(); ++i)
       {
-        assert(i->input.idx()>=0);
+        if (i->input.idx()<0)
+          {
+            if (i->operation)
+              displayErrorItem(i->operation->x(), i->operation->y());
+            throw error("integral not wired");
+          }
         result[i->stock.idx()] = i->input.lhs()? flow[i->input.idx()]:
           vars[i->input.idx()];
       }
@@ -846,8 +930,9 @@ namespace minsky
 
   void Minsky::jacobian(Matrix& jac, const double sv[])
   {
-    // firstly evaluate the flow variables
-    vector<double> flow(flowVars.size(), 0);
+    // firstly evaluate the flow variables. Initialise to flowVars so
+    // that no input vars are correctly initialised
+    vector<double> flow=flowVars;
     for (size_t i=0; i<equations.size(); ++i)
       equations[i]->eval(&flow[0], sv);
 
@@ -900,7 +985,8 @@ namespace
   void Minsky::Load(const char* filename) 
   {
   
-    clearAll();
+    clearAllMaps();
+    clearAllGetterSetters();
 
     // current schema
     schema1::Minsky currentSchema;
@@ -965,14 +1051,22 @@ namespace
     x.output(f,schemaURL);
   }
 
-  array<int> Minsky::opOrder()
+  int Minsky::opIdOfEvalOp(const EvalOpBase& e) const
+  {
+    if (e.state)
+      for (Operations::const_iterator j=operations.begin(); 
+           j!=operations.end(); ++j)
+        if (e.state==j->second)
+          return j->first;
+    return -1;
+  }
+
+
+  array<int> Minsky::opOrder() const
   {
     array<int> r;
     for (size_t i=0; i<equations.size(); ++i)
-      if (equations[i]->state)
-        for (Operations::iterator j=operations.begin(); j!=operations.end(); ++j)
-          if (equations[i]->state==j->second)
-            r<<=j->first;
+      r<<opIdOfEvalOp(*equations[i]);
     return r;
   }
 
@@ -1123,7 +1217,14 @@ namespace
       {
         if (!portsVisited.insert(p).second)
           { //traverse finished, check for cycle along branch
-            return ::find(stack.begin(), stack.end(), p) != stack.end();
+            if (::find(stack.begin(), stack.end(), p) != stack.end())
+              {
+                const Port& port=minsky().ports[p];
+                Minsky::displayErrorItem(port.x(), port.y());
+                return true;
+              }
+            else
+              return false;
           }
         stack.push_back(p);
         pair<iterator,iterator> range=equal_range(p);
@@ -1159,6 +1260,62 @@ namespace
     return false;
   }
 
+  bool Minsky::checkEquationOrder() const
+  {
+    array<bool> fvInit(flowVars.size(), false);
+    // firstly, find all flowVars that are constants
+    for (VariableManager::VariableValues::const_iterator v=
+           variables.values.begin(); v!=variables.values.end(); ++v)
+      if (!variables.InputWired(v->first) && v->second.idx()>=0)
+        fvInit[v->second.idx()]=true;
+
+    for (EvalOpVector::const_iterator e=equations.begin(); 
+         e!=equations.end(); ++e)
+      {
+        const EvalOpBase& eo=**e;
+        if (eo.out < 0|| eo.numArgs()>0 && eo.in1<0 ||
+            eo.numArgs() > 1 && eo.in2<0)
+          {
+            cerr << "Incorrectly wired operation "<<opIdOfEvalOp(eo)<<endl;
+            return false;
+          }
+        switch  (eo.numArgs())
+          {
+          case 0:
+            fvInit[eo.out]=true;
+            break;
+          case 1:
+            fvInit[eo.out]=!eo.flow1 || fvInit[eo.in1];
+            break;
+          case 2:
+            // we need to check if an associated binary operator has
+            // an unwired input, and if so, treat its input as
+            // initialised, since it has already been initialised in
+            // getInputFromVar()
+            Operations::const_iterator op=operations.find(opIdOfEvalOp(eo));
+            if (op!=operations.end())
+              switch (op->second->type())
+                {
+                case OperationType::add: case OperationType::subtract:
+                case OperationType::multiply: case OperationType::divide:
+                  fvInit[eo.in1] |= 
+                    WiresAttachedToPort(op->second->ports()[1]).size()==0;
+                  fvInit[eo.in2] |= 
+                    WiresAttachedToPort(op->second->ports()[3]).size()==0;
+                }
+            
+            fvInit[eo.out]=
+              (!eo.flow1 ||  fvInit[eo.in1]) && (!eo.flow2 ||  fvInit[eo.in2]);
+            break;
+          }
+        if (!fvInit[eo.out])
+          cerr << "Operation "<<opIdOfEvalOp(eo)<<" out of order"<<endl;
+      }
+    
+    return all(fvInit);
+  }
+
+
   namespace
   {
     struct OperationIcon: public ecolab::cairo::CairoImage
@@ -1169,11 +1326,12 @@ namespace
         op(OperationType::Type(enumKey<OperationType::Type>(opName))) {}
       void draw()
       {
+        //xScale=yScale=2;
         initMatrix();
         cairo_select_font_face(cairoSurface->cairo(), "sans-serif", 
                   CAIRO_FONT_SLANT_ITALIC,CAIRO_FONT_WEIGHT_NORMAL);
         cairo_set_font_size(cairoSurface->cairo(),12);
-        cairo_set_line_width(cairoSurface->cairo(),1);
+        cairo_set_line_width(cairoSurface->cairo(),1.5);
         RenderOperation(op, cairoSurface->cairo()).draw();
         cairoSurface->blit();
       }
@@ -1185,5 +1343,10 @@ namespace
     OperationIcon(args[0], args[1]).draw();
   }
 
+  void Minsky::displayErrorItem(float x, float y)
+  {
+    tclcmd() << "catch {indicateCanvasItemInError"<<x<<y<<"}\n";
+    Tcl_ResetResult(interp());
+  }
 }
 

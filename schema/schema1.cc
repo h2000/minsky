@@ -117,14 +117,26 @@ namespace schema1
     {
       Layouts::const_iterator li=layout.find(o1.id);
       o=minsky::OperationPtr(o1.type, o1.ports);
-      if (o1.type==OperationType::integrate)
-        SchemaHelper::setPrivates
-          (dynamic_cast<minsky::IntOp&>(*o), o1.name, o1.intVar);
-      if (minsky::Constant* c=dynamic_cast<minsky::Constant*>(o.get()))
+      switch (o1.type)
         {
-          c->value=o1.value;
-          c->description=o1.name;
+        case OperationType::integrate:
+          SchemaHelper::setPrivates
+            (dynamic_cast<minsky::IntOp&>(*o), o1.name, o1.intVar);
+          break;
+        case OperationType::add: case OperationType::subtract: 
+        case OperationType::multiply: case OperationType::divide: 
+          SchemaHelper::makePortMultiWired(minsky::minsky().ports[o1.ports[1]]);
+          SchemaHelper::makePortMultiWired(minsky::minsky().ports[o1.ports[2]]);
+          break;
+        case OperationType::constant:
+          if (minsky::Constant* c=dynamic_cast<minsky::Constant*>(o.get()))
+            {
+              c->value=o1.value;
+              c->description=o1.name;
+            }
+          break;
         }
+
       if (li!=layout.end())
         {
           const UnionLayout& l=li->second;
@@ -200,6 +212,7 @@ namespace schema1
           g.displayZoom=l.displayZoom;
           g.rotation=l.rotation;
           g.visible=l.visible;
+          g.createdVars=g1.createdVars;
         }
       return g;
     }
@@ -487,6 +500,8 @@ namespace schema1
           group.items.push_back(opMap[g1.operations()[i]]);
         for (size_t i=0; i<g1.variables().size(); ++i)
           group.items.push_back(varMap[g1.variables()[i]]);
+        for (size_t i=0; i<g1.createdVars.size(); ++i)
+          group.createdVars.push_back(varMap[g1.createdVars[i]]);
 
         groupMap[g->first]=id;
         layout.push_back(layoutFactory(id, g->second));

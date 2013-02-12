@@ -44,7 +44,10 @@ if [file exists $rcfile] {
   source $rcfile
 }
 
-if {![file exists [file join $tcl_library init.tcl]]} {
+# for some reason (MingW I'm looking at you), tcl_library sometimes
+# points to Minsky's library directory
+if {![file exists [file join $tcl_library init.tcl]] || 
+    [file normalize $tcl_library]==[file normalize $minskyHome/library]} {
     set tcl_library $minskyHome/library/tcl8.5
 }
 
@@ -202,8 +205,11 @@ menu .menubar.options.menu
 }
 
 .menubar.options.menu add command -label "Background Colour" -command {
-    set backgroundColour [tk_chooseColor -initialcolor $backgroundColour]
-    tk_setPalette $backgroundColour
+    set bgc [tk_chooseColor -initialcolor $backgroundColour]
+    if {$bgc!=""} {
+        set backgroundColour $bgc
+        tk_setPalette $backgroundColour
+    }
 }
 
 button .menubar.help -text Help -relief flat -command {help Introduction}
@@ -279,9 +285,11 @@ proc runstop {} {
 
 proc step {} {
     set lastt [t]
-    minsky.step
+    global running
+    if [catch minsky.step errMsg options] {runstop}
     .menubar.statusbar configure -text "t: [t] dt: [expr [t]-$lastt]"
     updateGodleysDisplay
+    return -options $options $errMsg
 }
 
 

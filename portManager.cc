@@ -43,6 +43,7 @@ int PortManager::addWire(Wire w)
   int nextId=wires.empty()? 0: wires.rbegin()->first+1;
   wires.insert(Wires::value_type(nextId, w));
   
+  assert(minsky().variables.noMultipleWiredInputs());
   return nextId;
 }
 

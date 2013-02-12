@@ -59,7 +59,7 @@ tooltip .wiring.menubar.line0.zoomIn "Zoom In"
 
 image create photo zoomOrigImg -file $minskyHome/icons/zoomOrig.gif
 button .wiring.menubar.line0.zoomOrig -image zoomOrigImg -height 24 -width 37 \
-    -command {zoom [expr 1/[zoomFactor]]}
+    -command {zoom [expr 1/[zoomFactor]]; recentreCanvas}
 tooltip .wiring.menubar.line0.zoomOrig "Reset Zoom"
 
 image create photo godleyImg -file $minskyHome/icons/bank.gif
@@ -101,9 +101,14 @@ foreach op [availableOperations] {
         incr menubarLine
         frame .wiring.menubar.line$menubarLine
     }
-    image create photo [set op]Img -width 24 -height 24
-    operationIcon [set op]Img $op
-    button .wiring.menubar.line$menubarLine.$op -height 24 -image [set op]Img -command "addOperation $op"
+    if {[tk windowingsystem]=="aqua"} {
+        # ticket #187
+        image create photo [set op]Img -file icons/$op.gif
+    } else {
+        image create photo [set op]Img -width 24 -height 24
+        operationIcon [set op]Img $op
+    }
+    button .wiring.menubar.line$menubarLine.$op -image [set op]Img -command "addOperation $op" -height 24 -width 24
     tooltip .wiring.menubar.line$menubarLine.$op $op
 
     pack .wiring.menubar.line$menubarLine.$op -side left 
@@ -703,13 +708,14 @@ proc setInteractionMode {args} {
     foreach id [plots.plots.#keys] {setM1Binding plot $id plot#$id}
 }
 
+proc recentreCanvas {} {
+    .wiring.canvas xview moveto 0.5
+    .wiring.canvas yview moveto 0.5
+}
 proc updateCanvas {} {
     disableEventProcessing
     global fname showPorts
     .wiring.canvas delete all
-# centre canvas
-    .wiring.canvas xview moveto 0.5
-    .wiring.canvas yview moveto 0.5
     setInteractionMode
 
     # groups need to be done first, as they adjust port positions (hence wires)
@@ -767,6 +773,11 @@ proc updateCanvas {} {
     enableEventProcessing
 }
 
+# mark a canvas item as in error
+proc indicateCanvasItemInError {x y} {
+    .wiring.canvas create oval [expr $x-15] [expr $y-15] [expr $x+15] [expr $y+15] -outline red -width 2
+}
+
 menu .wiring.context -tearoff 0
 
 proc doubleClick {item x y} {
@@ -801,8 +812,10 @@ proc contextMenu {item x y} {
         "variables" {
             set tag [lindex $tags [lsearch -regexp $tags {var[0-9]+}]]
             set id [string range $tag 3 end]
+            var.get $id
 	    .wiring.context delete 0 end
             .wiring.context add command -label Help -command {help Variable}
+            .wiring.context add command -label "Value [var.value]" 
             .wiring.context add command -label "Edit" -command "editItem $id $tag"
             .wiring.context add command -label "Copy" -command "copyVar $id"
             .wiring.context add command -label "Flip" -command "rotateVar $id 180; flip_default"
@@ -815,6 +828,7 @@ proc contextMenu {item x y} {
             op.get $id
             .wiring.context delete 0 end
             .wiring.context add command -label Help -command "help [string totitle [op.name]]"
+            .wiring.context add command -label "Port values [op.portValues]" 
             .wiring.context add command -label "Edit" -command "editItem $id $tag"             
             if {[op.name]=="integrate"} {
                 integral.get $id

@@ -22,6 +22,7 @@
 #include "portManager.h"
 #include "minsky.h"
 #include "cairoItems.h"
+#include "str.h"
 
 #include <ecolab_epilogue.h>
 
@@ -91,9 +92,17 @@ namespace minsky
         m_ports.push_back(portManager().addPort(Port()));
         m_ports.push_back(portManager().addPort(Port(0,0,true)));
         break;
-        // dual input port case
+        // dual input port case, multiwire inputs allowed
       case add: case subtract: 
       case multiply: case divide:
+        m_ports.push_back(portManager().addPort(Port()));
+        m_ports.push_back(portManager().addPort(Port(0,0,true, true)));
+        assert(portManager().ports[m_ports.back()].input);
+        m_ports.push_back(portManager().addPort(Port(0,0,true, true)));
+        assert(portManager().ports[m_ports.back()].input);
+        assert(portManager().ports.size()>2);
+        break;
+        // dual input port case, multiwire inputs not allowed
       case pow: case log:
         m_ports.push_back(portManager().addPort(Port()));
         m_ports.push_back(portManager().addPort(Port(0,0,true)));
@@ -323,6 +332,27 @@ namespace minsky
         zoomFactor*=factor;
       }
   }
+
+  string OperationBase::portValues() const
+  {
+    string r="equations not yet constructed, please reset";
+    // search the equation list for this operation
+    for (Minsky::EvalOpVector::const_iterator ei=minsky().equations.begin();
+         ei!=minsky().equations.end(); ++ei)
+      if (this==(*ei)->state.get())
+        {
+          const EvalOpBase& e=**ei;
+          r="[out]="+str(ValueVector::flowVars[e.out]);
+          if (e.numArgs()>0)
+            r+=" [in1]="+ str(e.flow1? ValueVector::flowVars[e.in1]: 
+                               ValueVector::stockVars[e.in1]);
+          if (e.numArgs()>1)
+            r+=" [in2]="+ str(e.flow2? ValueVector::flowVars[e.in2]: 
+                               ValueVector::stockVars[e.in2]);
+        }
+    return r;
+  }
+
 
   void Constant::adjustSliderBounds()
   {

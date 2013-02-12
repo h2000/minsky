@@ -124,6 +124,9 @@ namespace minsky
     /// the in ports
     bool selfWire(int from, int to) const;
 
+    /// returns a list of values the ports currently have
+    string portValues() const;
+
   protected:
     // manage the port structures associated with this operation
     virtual void addPorts();
