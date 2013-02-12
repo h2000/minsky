@@ -103,7 +103,7 @@ foreach op [availableOperations] {
     }
     if {[tk windowingsystem]=="aqua"} {
         # ticket #187
-        image create photo [set op]Img -file icons/$op.gif
+        image create photo [set op]Img -file $minskyHome/icons/$op.gif
     } else {
         image create photo [set op]Img -width 24 -height 24
         operationIcon [set op]Img $op

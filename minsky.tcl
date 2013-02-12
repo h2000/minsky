@@ -66,6 +66,7 @@ proc setFname {name} {
     global fname workDir
     if [string length $name] {
         set fname $name
+        puts $name
         set workDir [file dirname $name]
         catch {wm title . "Minsky (prototype): $fname"}
     }
@@ -691,7 +692,7 @@ proc finishUp {} {
     global rcfile workDir backgroundColour
     if {$rcfile!=""} {
         set rc [open $rcfile w]
-        puts $rc "set workDir \"$workDir\""
+        puts $rc "set workDir $workDir"
         puts $rc "set canvasWidth [winfo width .wiring.canvas]"
         puts $rc "set canvasHeight [winfo height .wiring.canvas]"
         puts $rc "set backgroundColour $backgroundColour"
@@ -707,6 +708,11 @@ proc setFname {name} {
     if [string length $name] {
         set fname $name
         set workDir [file dirname $name]
+        # this strange piece of merde proved the only way I could test
+        # for the presence of a close brace
+        if {[regexp "\}$" $fname] && ![regexp "\}$" $workDir]} {
+            set workDir "$workDir\}"
+        }
         catch {wm title . "Minsky (prototype): $fname"}
     }
 }

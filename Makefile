@@ -158,3 +158,11 @@ upload-schema: minsky.xsd
 # runs the regression tests
 sure: all tests
 	bash test/runtests.sh
+
+# produce doxygen annotated web pages
+doxydoc: $(wildcard *.h) $(wildcard *.cc) $(wildcard schema/*.h) $(wildcard schema/*.cc) Doxyfile
+	 doxygen 
+
+# upload doxygen webpages to SF
+install-doxydoc: doxydoc
+	rsync -r -z --progress --delete doxydoc hpcoder@web.sourceforge.net:/home/project-web/minsky/htdocs
