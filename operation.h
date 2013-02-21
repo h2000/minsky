@@ -211,7 +211,7 @@ namespace minsky
       Super(x), intVar(-1), m_description(x.m_description)  {addPorts();}
     const IntOp& operator=(const IntOp& x); 
 
-    ~IntOp() {variableManager().erase(intVarID());}
+    //~IntOp() {/*variableManager().erase(intVarID());*/}
 
     // clone has to be overridden, as default impl return object of
     // type Operation<T>

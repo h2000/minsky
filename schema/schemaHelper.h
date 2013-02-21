@@ -54,6 +54,7 @@ namespace minsky
     // sets and gets the actual base stored values of coordinates
     template <class T> static float x(const T& o) {return o.m_x;}
     template <class T> static float y(const T& o) {return o.m_y;}
+    template <class T> static array<float> coords(const T& o) {return o.m_coords;}
     template <class T> static void setXY(T& o, float x, float y)
     {o.m_x=x; o.m_y=y;}
 

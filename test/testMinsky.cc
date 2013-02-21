@@ -323,9 +323,7 @@ TEST_FIXTURE(TestFixture,integrals)
   nSteps=1;
   step();
   CHECK_CLOSE(value*t, integrals[0].stock.value(), 1e-5);
-  double prevInt=integrals[0].stock.value();
-  step();
-  CHECK_CLOSE(prevInt, variables.values["output"].value(), 1e-5);
+  CHECK_CLOSE(integrals[0].stock.value(), variables.values["output"].value(), 1e-5);
 
   // now integrate the linear function
   operations[3]=OperationPtr(OperationType::integrate);
@@ -547,6 +545,7 @@ TEST_FIXTURE(TestFixture,multiVariableInputsDivide)
 // have been provided for all virtual methods
 TEST(checkAllOpsDefined)
 {
+  using namespace MathDAG;
   for (int o=0; o<OperationType::numOps; ++o)
     {
       OperationType::Type op=OperationType::Type(o);
@@ -554,6 +553,10 @@ TEST(checkAllOpsDefined)
       CHECK_EQUAL(OperationType::typeName(op), OperationType::typeName(o->type()));
       EvalOpPtr ev(op);
       CHECK_EQUAL(OperationType::typeName(op), OperationType::typeName(ev->type()));
+
+      shared_ptr<OperationDAGBase> opDAG
+        (OperationDAGBase::create(OperationType::Type(op), ""));
+      CHECK_EQUAL(OperationType::typeName(op), OperationType::typeName(opDAG->type()));
     }
 
   for (int v=0; v<VariableType::numVarTypes; ++v)

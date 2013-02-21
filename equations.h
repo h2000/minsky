@@ -53,6 +53,15 @@ namespace MathDAG
     LaTeXManip(const Node& node): node(node) {}
   };
 
+  struct MatlabManip
+  {
+    const Node& node;
+    MatlabManip(const Node& node): node(node) {}
+  };
+
+  /// convert double to a LaTeX string representing that value
+  string latex(double);
+
   struct Node
   {
     /// algebraic heirarchy level, used for working out whether
@@ -60,34 +69,84 @@ namespace MathDAG
     virtual int BODMASlevel() const=0; 
     /// writes LaTeX representation of this DAG to the stream
     virtual ostream& latex(ostream&) const=0; 
+    /// writes a matlab representation of this DAG to the stream
+    virtual ostream& matlab(ostream&) const=0; 
+    /// returns evaluation order in sequence of variable defintions
+    virtual int order() const=0;
     /// used within io streaming
     LaTeXManip latex() const {return LaTeXManip(*this);}
+    MatlabManip matlab() const {return MatlabManip(*this);}
   };
 
   inline ostream& operator<<(ostream& o, LaTeXManip m)
   {return m.node.latex(o);}
+  inline ostream& operator<<(ostream& o, MatlabManip m)
+  {return m.node.matlab(o);}
 
-  struct VariableDAG: public Node
+  struct ConstantDAG: public Node
   {
+    double value;
+    ConstantDAG(double value=0): value(value) {}
+    int BODMASlevel() const {return 0;}
+    int order() const {return 0;}
+    ostream& latex(ostream& o) const {return o<<MathDAG::latex(value);}
+    ostream& matlab(ostream& o) const {return o<<value;}
+  };
+
+  class VariableDAG: public Node
+  {
+  public:
     string name;
+    double init;
     shared_ptr<Node> rhs;
     VariableDAG(const string& name=""): name(name) {}
     int BODMASlevel() const {return 0;}
+    int order() const {return rhs? rhs->order()+1: 0;}
     ostream& latex(ostream&) const;
+    ostream& matlab(ostream&) const;
     using Node::latex;
+    using Node::matlab;
   };
 
-  struct OperationDAG: public Node
+  struct OperationDAGBase: public Node, public OperationType  
   {
-    OperationType::Type type;
-    string name;
     vector<vector<shared_ptr<Node> > > arguments;
-    OperationDAG(OperationType::Type type=OperationType::numOps, 
-                 const string& name=""): 
-      type(type), name(name) {}
-    int BODMASlevel() const;
+    string name;
+    double init;
+    OperationDAGBase(const string& name=""): name(name) {}
+    virtual Type type() const=0;
+    /// factory method 
+    static OperationDAGBase* create(Type type, const string& name="");
+    int order() const;
+  };
+
+  template <OperationType::Type T>
+  struct OperationDAG: public OperationDAGBase
+  {
+    Type type() const {return T;}
+    OperationDAG(const string& name=""): OperationDAGBase(name) {}
+    int BODMASlevel() const {
+      switch (type())
+        {
+        case OperationType::multiply:
+        case OperationType::divide:
+          return 1;
+        case OperationType::subtract:
+        case OperationType::add:
+          return 2;
+        case OperationType::constant: // varies, depending on what's in it
+          if (name.find_first_of("+-")!=string::npos)
+            return 2;
+          else
+            return 1;
+        default:
+          return 0;
+        }
+    }
     ostream& latex(ostream&) const; 
+    ostream& matlab(ostream& o) const;
     using Node::latex;
+    using Node::matlab;
   };
 
   /// represents a Godley column
@@ -95,6 +154,8 @@ namespace MathDAG
   {
     int BODMASlevel() const {return 2;}
     ostream& latex(ostream&) const; 
+    ostream& matlab(ostream&) const;
+    int order() const {return 0;} // Godley columns define integration vars
   };
 
   class SystemOfEquations
@@ -108,7 +169,7 @@ namespace MathDAG
     map<int, int> portToOperation;
 
     VariableDAG makeDAG(const string& name);
-    OperationDAG makeDAG(const OperationBase& op);
+    OperationDAGBase* makeDAG(const OperationBase& op);
 
     // creates a node object representing what feeds the wire
     Node* createNodeFromWire(int wire);
@@ -120,6 +181,7 @@ namespace MathDAG
     /// construct the system of equations 
     SystemOfEquations(const Minsky&);
     ostream& latex(ostream&) const; ///< render as a LaTeX eqnarray
+    ostream& matlab(ostream&) const; ///< render as MatLab code
   };
 
 }

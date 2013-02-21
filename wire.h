@@ -29,6 +29,7 @@ namespace minsky
   {
     ecolab::array<float> m_coords;
     CLASSDESC_ACCESS(Wire);
+    friend struct SchemaHelper;
   public:
     /// ports this wire connects
     int from, to;

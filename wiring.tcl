@@ -338,7 +338,7 @@ proc submitUpdateItemPos {tag item id} {
 }
 
 
-proc moveSet {item id tag x y} {
+proc moveSet {item id x y} {
     $item.get $id
     set x [.wiring.canvas canvasx $x]
     set y [.wiring.canvas canvasy $y]
@@ -516,7 +516,6 @@ proc deleteHandle {wire handle pos} {
     .wiring.canvas delete $handle
     set coords [lreplace [.wiring.canvas coords wire$wire] $pos [expr $pos+1]]
     .wiring.canvas coords wire$wire $coords        
-    puts "deleteHandle: $coords"
     wire.get $wire
     wire.coords $coords
     wire.set
@@ -668,7 +667,7 @@ proc setM1Binding {item id tag} {
         }
         2 { 
             # move mode
-            .wiring.canvas bind $tag <Button-1> "moveSet $item $id $tag %x %y"
+            .wiring.canvas bind $tag <Button-1> "moveSet $item $id %x %y"
             .wiring.canvas bind $tag <B1-Motion> "move $item $id $tag %x %y"
             .wiring.canvas bind $tag <B1-ButtonRelease> "move $item $id $tag %x %y; checkAddGroup $item $id %x %y"
         }

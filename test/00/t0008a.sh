@@ -33,7 +33,11 @@ for i in *.mky; do
     if test $? -ne 0; then fail; fi
     $here/minsky $here/test/rewriteMky.tcl $tmp/tmp.mky $tmp/tmp1.mky
     if test $? -ne 0; then fail; fi
-    diff -q -w  $here/examples/$i $tmp/tmp1.mky
+# need to do it again, as Minsky will usually readjust the position of
+# the canvas items
+    $here/minsky $here/test/rewriteMky.tcl $tmp/tmp1.mky $tmp/tmp2.mky
+    if test $? -ne 0; then fail; fi
+    $here/test/cmpFp  $tmp/tmp1.mky $tmp/tmp2.mky
     if test $? -ne 0; then 
         echo "old schema file $i failed to convert"
         fail

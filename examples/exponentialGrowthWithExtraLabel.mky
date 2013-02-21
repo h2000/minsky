@@ -200,194 +200,194 @@
   <layout>
    <Layout>
     <id>0</id>
-    <x>66</x>
-    <y>105</y>
+    <x>29</x>
+    <y>78</y>
    </Layout>
    <Layout>
     <id>1</id>
-    <x>106</x>
-    <y>105</y>
+    <x>69</x>
+    <y>78</y>
    </Layout>
    <Layout>
     <id>2</id>
-    <x>103</x>
-    <y>57</y>
+    <x>66</x>
+    <y>30</y>
    </Layout>
    <Layout>
     <id>3</id>
-    <x>123</x>
-    <y>48</y>
+    <x>86</x>
+    <y>21</y>
    </Layout>
    <Layout>
     <id>4</id>
-    <x>123</x>
-    <y>66</y>
+    <x>86</x>
+    <y>39</y>
    </Layout>
    <Layout>
     <id>5</id>
-    <x>173</x>
-    <y>44</y>
+    <x>136</x>
+    <y>17</y>
    </Layout>
    <Layout>
     <id>6</id>
-    <x>245</x>
-    <y>192.5</y>
+    <x>208</x>
+    <y>165.5</y>
    </Layout>
    <Layout>
     <id>7</id>
-    <x>387.5</x>
-    <y>192.5</y>
+    <x>350.5</x>
+    <y>165.5</y>
    </Layout>
    <Layout>
     <id>8</id>
-    <x>240.5</x>
-    <y>189.5</y>
+    <x>203.5</x>
+    <y>162.5</y>
    </Layout>
    <Layout>
     <id>9</id>
-    <x>240.5</x>
-    <y>45.5</y>
+    <x>203.5</x>
+    <y>18.5</y>
    </Layout>
    <Layout>
     <id>10</id>
-    <x>239</x>
-    <y>62.75</y>
+    <x>202</x>
+    <y>35.75</y>
    </Layout>
    <Layout>
     <id>11</id>
-    <x>239</x>
-    <y>100.25</y>
+    <x>202</x>
+    <y>73.25</y>
    </Layout>
    <Layout>
     <id>12</id>
-    <x>239</x>
-    <y>137.75</y>
+    <x>202</x>
+    <y>110.75</y>
    </Layout>
    <Layout>
     <id>13</id>
-    <x>239</x>
-    <y>175.25</y>
+    <x>202</x>
+    <y>148.25</y>
    </Layout>
    <Layout>
     <id>14</id>
-    <x>257.75</x>
-    <y>194</y>
+    <x>220.75</x>
+    <y>167</y>
    </Layout>
    <Layout>
     <id>15</id>
-    <x>295.25</x>
-    <y>194</y>
+    <x>258.25</x>
+    <y>167</y>
    </Layout>
    <Layout>
     <id>16</id>
-    <x>332.75</x>
-    <y>194</y>
+    <x>295.75</x>
+    <y>167</y>
    </Layout>
    <Layout>
     <id>17</id>
-    <x>370.25</x>
-    <y>194</y>
+    <x>333.25</x>
+    <y>167</y>
    </Layout>
    <Layout>
     <id>18</id>
-    <x>168.5</x>
-    <y>69</y>
+    <x>131.5</x>
+    <y>42</y>
    </Layout>
    <Layout>
     <id>19</id>
-    <x>151.5</x>
-    <y>69</y>
+    <x>114.5</x>
+    <y>42</y>
    </Layout>
    <Layout>
     <id>20</id>
     <visible>true</visible>
     <coords>
-     <float>103</float>
-     <float>57</float>
-     <float>37</float>
-     <float>79</float>
      <float>66</float>
-     <float>105</float>
+     <float>30</float>
+     <float>0</float>
+     <float>52</float>
+     <float>29</float>
+     <float>78</float>
     </coords>
    </Layout>
    <Layout>
     <id>21</id>
     <visible>true</visible>
     <coords>
-     <float>173</float>
-     <float>44</float>
-     <float>123</float>
-     <float>48</float>
+     <float>136</float>
+     <float>17</float>
+     <float>86</float>
+     <float>21</float>
     </coords>
    </Layout>
    <Layout>
     <id>22</id>
     <visible>true</visible>
     <coords>
-     <float>106</float>
-     <float>105</float>
-     <float>239</float>
-     <float>62.75</float>
+     <float>69</float>
+     <float>78</float>
+     <float>202</float>
+     <float>35.75</float>
     </coords>
    </Layout>
    <Layout>
     <id>23</id>
     <visible>true</visible>
     <coords>
-     <float>106</float>
-     <float>105</float>
-     <float>151.5</float>
      <float>69</float>
+     <float>78</float>
+     <float>114.5</float>
+     <float>42</float>
     </coords>
    </Layout>
    <Layout>
     <id>24</id>
     <visible>true</visible>
     <coords>
-     <float>168.5</float>
-     <float>69</float>
-     <float>178</float>
+     <float>131.5</float>
      <float>42</float>
-     <float>123</float>
-     <float>66</float>
+     <float>141</float>
+     <float>15</float>
+     <float>86</float>
+     <float>39</float>
     </coords>
    </Layout>
    <Layout>
     <id>25</id>
-    <x>96</x>
-    <y>105</y>
+    <x>59</x>
+    <y>78</y>
     <id>25</id>
     <visible>false</visible>
     <rotation>0</rotation>
    </Layout>
    <Layout>
     <id>26</id>
-    <x>158</x>
-    <y>69</y>
+    <x>121</x>
+    <y>42</y>
     <id>26</id>
     <visible>true</visible>
     <rotation>0</rotation>
    </Layout>
    <Layout>
     <id>27</id>
-    <x>86</x>
-    <y>105</y>
+    <x>49</x>
+    <y>78</y>
     <id>27</id>
     <visible>true</visible>
     <rotation>0</rotation>
    </Layout>
    <Layout>
     <id>28</id>
-    <x>113</x>
-    <y>57</y>
+    <x>76</x>
+    <y>30</y>
     <id>28</id>
     <visible>true</visible>
     <rotation>180</rotation>
    </Layout>
    <Layout>
     <id>29</id>
-    <x>180</x>
-    <y>44</y>
+    <x>143</x>
+    <y>17</y>
     <id>29</id>
     <visible>true</visible>
     <rotation>180</rotation>
@@ -400,8 +400,9 @@
    </Layout>
    <Layout>
     <id>30</id>
-    <x>314</x>
-    <y>119</y>
+    <x>277</x>
+    <y>92</y>
    </Layout>
   </layout>
+  <zoomFactor>1</zoomFactor>
  </Minsky>

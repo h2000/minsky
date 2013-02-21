@@ -418,7 +418,7 @@
       <int>40</int>
       <int>23</int>
      </ports>
-     <name>Wage&#32;Rate</name>
+     <name>WageRate</name>
      <intVar>85</intVar>
     </Operation>
     <Operation>
@@ -554,7 +554,7 @@
      <ports>
       <int>40</int>
      </ports>
-     <name>Wage&#32;Rate</name>
+     <name>WageRate</name>
     </Variable>
     <Variable>
      <id>86</id>

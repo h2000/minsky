@@ -261,7 +261,7 @@ namespace eval group {
         set interactionMode 2
         setInteractionMode
         groupItem.get $newId
-        moveSet groupItem $newId groupItem$newId [groupItem.x] [groupItem.y]
+        moveSet groupItem $newId [groupItem.x] [groupItem.y]
         bind .wiring.canvas <Motion> "move groupItem $newId groupItem$newId %x %y"
         bind .wiring.canvas <ButtonRelease> {
             bind .wiring.canvas <Motion> {}

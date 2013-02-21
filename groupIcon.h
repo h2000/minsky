@@ -103,6 +103,8 @@ namespace minsky
     int parent() const {return m_parent;}
     /// synonym for parent(), for TCL scripting purposes
     int group() const {return parent();}
+    /// id of this group
+    int groupId() const {return id;}
 
     /// @return true if gid is a parent, or parent of a parent, etc
     bool isAncestor(int gid) const;
@@ -151,6 +153,9 @@ namespace minsky
     /// return bounding box coordinates for all variables, operators
     /// etc in this group
     void contentBounds(float& x0, float& y0, float& x1, float& y1) const;
+
+    /// move contents by dx, dy
+    void moveContents(float dx, float dy);
 
     /// for TCL debugging
     array<float> cBounds() const {

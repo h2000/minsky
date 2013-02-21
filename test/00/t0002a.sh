@@ -7,7 +7,7 @@ cd /tmp/$$
 
 for i in $here/examples/*.mky; do
   "$here/minsky" "$here/test/rewriteMky.tcl" "$i"  tmp;
-  diff -q -w "$i" tmp
+  $here/test/cmpFp "$i" tmp
   if [ $? -ne 0 ]; then
       echo "$i mutates"
       EXIT=1

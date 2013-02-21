@@ -155,7 +155,8 @@ namespace schema1
 
     WireLayout() {}
     WireLayout(int id, const minsky::Wire& wire): 
-      Layout(id), VisibilityLayout(id, wire), coords(toVector(wire.Coords())) {}
+      Layout(id), VisibilityLayout(id, wire), 
+      coords(toVector(SchemaHelper::coords(wire))) {}
     void xml_pack(xml_pack_t& x, const string& d) const
     {xml_pack_layout(x,d,*this);}
   };
@@ -259,7 +260,12 @@ namespace schema1
     Minsky(): schemaVersion(-1), zoomFactor(1) {} // schemaVersion defined on read in
     Minsky(const minsky::Minsky& m);
 
+    /// create a Minsky model from this
     operator minsky::Minsky() const;
+    /// populate a group object from this. This mutates the ids in a
+    /// consistent way into the free id space of the global minsky
+    /// object
+    void populateGroup(minsky::GroupIcon& g);
     /// move locations such that minx, miny lies at (0,0) on canvas
     void relocateCanvas();
   };
@@ -271,16 +277,6 @@ namespace classdesc
   // is as a "vector of Layouts"
   template <> inline std::string typeName<shared_ptr<schema1::Layout> >() 
   {return "schema1::Layout";}
-
-  // decalare the polymorphic base classes
-//  template <> struct IsPoly<schema1::UnionLayout>: 
-//    public PolyBaseIs<schema1::Layout> {};
-
-//  template <> inline
-//  void xsd_generate(xsd_generate_t& x, const string& d, 
-//                    const shared_ptr<schema1::Layout>& a)
-//  {xsd_generate(x,d,schema1::UnionLayout());}
-
 
   // we're not using pack/unpack, so disable unpack because the
   // abstract base class causes problems

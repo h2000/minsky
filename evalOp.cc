@@ -73,13 +73,13 @@ namespace minsky
     if (!finite(fv[out]))
       {
         minsky().displayErrorItem(state->x(), state->y());
-        string args;
+        string msg="Invalid: "+OperationBase::typeName(type())+"(";
         if (numArgs()>0) 
-          args=str(flow1? fv[in1]: sv[in1]);
+          msg+=str(flow1? fv[in1]: sv[in1]);
         if (numArgs()>1)
-          args+=","+str(flow2? fv[in2]: sv[in2]);
-        throw error("Invalid: %s(%s)",
-                    OperationBase::typeName(type()).c_str(), args.c_str());
+          msg+=","+str(flow2? fv[in2]: sv[in2]);
+        msg+=")";
+        throw error(msg.c_str());
       }
   };
 

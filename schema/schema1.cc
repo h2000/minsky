@@ -424,6 +424,196 @@ namespace schema1
     return m;
   }
 
+  namespace
+  {
+    template <class C>
+    int minRange(int minId, const C& v) {
+        for (typename C::const_iterator i=v.begin(); i!=v.end(); ++i) 
+          if (minId>i->id) minId=i->id;
+        return minId;
+    }
+
+    void addOffset(vector<Port>& v, int offs)
+    {
+      for (vector<Port>::iterator i=v.begin(); i!=v.end(); ++i)
+        i->id+=offs;
+    }
+
+    void addOffset(vector<Wire>& v, int offs)
+    {
+      for (vector<Wire>::iterator i=v.begin(); i!=v.end(); ++i)
+        {
+          i->id+=offs;
+          i->from+=offs;
+          i->to+=offs;
+        }
+    }
+    void addOffset(vector<Variable>& v, int offs)
+    {
+      for (vector<Variable>::iterator i=v.begin(); i!=v.end(); ++i)
+        {
+          i->id+=offs;
+          for (size_t j=0; j<i->ports.size(); ++j)
+            i->ports[j]+=offs;
+        }
+    }
+
+    void addOffset(vector<Operation>& v, int offs)
+    {
+      for (vector<Operation>::iterator i=v.begin(); i!=v.end(); ++i)
+        {
+          i->id+=offs;
+          for (size_t j=0; j<i->ports.size(); ++j)
+            i->ports[j]+=offs;
+          if (i->intVar>=0) i->intVar+=offs;
+        }
+    }
+
+    void addOffset(vector<Group>& v, int offs)
+    {
+      for (vector<Group>::iterator i=v.begin(); i!=v.end(); ++i)
+        {
+          i->id+=offs;
+          for (size_t j=0; j<i->items.size(); ++j)
+            i->items[j]+=offs;
+          for (size_t j=0; j<i->ports.size(); ++j)
+            i->ports[j]+=offs;
+          for (size_t j=0; j<i->createdVars.size(); ++j)
+            i->createdVars[j]+=offs;
+        }
+    }
+
+   // return a vector ids from an item vector
+    template <class Item>
+    vector<int> ids(const vector<Item>& v)
+    {
+      vector<int> r;
+      for (typename vector<Item>::const_iterator i=v.begin(); i!=v.end(); ++i)
+        r.push_back(i->id);
+      return r;
+    }
+
+    template <class M, class Item>
+    bool exists(const M& m, const Item& i)
+    {return m.find(i.id)!=m.end();}
+
+  }
+
+  using minsky::minsky;
+
+  void Minsky::populateGroup(minsky::GroupIcon& g)
+  {
+    // We must renumber objects into free space, before inserting into the group
+    // first, compute the maximum item id within Minsky
+    int maxExistingId=minsky().ports.rbegin()->first;
+    maxExistingId=max(maxExistingId, minsky().wires.rbegin()->first);
+    maxExistingId=max(maxExistingId, minsky().variables.rbegin()->first);
+    maxExistingId=max(maxExistingId, minsky().operations.rbegin()->first);
+    maxExistingId=max(maxExistingId, minsky().groupItems.rbegin()->first);
+
+    // now compute min and max item ID within this import fragment
+    int minId;
+    minId=minRange(minId, model.ports);
+    minId=minRange(minId, model.wires);
+    minId=minRange(minId, model.operations);
+    minId=minRange(minId, model.variables);
+    minId=minRange(minId, model.groups);
+
+    // by adding offset, all item ids in this are in the free range
+    int offset=maxExistingId-minId+1;
+
+    if (offset>0)
+      {
+        addOffset(model.ports, offset);
+        addOffset(model.wires, offset);
+        addOffset(model.operations, offset);
+        addOffset(model.variables, offset);
+        addOffset(model.groups, offset);
+        for (size_t i=0; i<layout.size(); ++i)
+          layout[i]->id+=offset;
+      }
+    
+    // winnow ports and wires to just the relevant ones
+    set<int> pset;
+    for (vector<Operation>::const_iterator o=model.operations.begin(); 
+         o!=model.operations.end(); ++o)
+      for (size_t j=0; j<o->ports.size(); ++j)
+        pset.insert(o->ports[j]);
+    for (vector<Variable>::const_iterator v=model.variables.begin(); 
+         v!=model.variables.end(); ++v)
+      for (size_t j=0; j<v->ports.size(); ++j)
+        pset.insert(v->ports[j]);
+    for (vector<Group>::const_iterator gi=model.groups.begin(); 
+         gi!=model.groups.end(); ++gi)
+      for (size_t j=0; j<gi->ports.size(); ++j)
+        pset.insert(gi->ports[j]);
+    vector<Port> ports;
+    for (vector<Port>::const_iterator p=model.ports.begin(); 
+         p!=model.ports.end(); ++p)
+      if (pset.count(p->id))
+        ports.push_back(*p);
+
+    vector<Wire> wires;
+    for (vector<Wire>::const_iterator w=model.wires.begin();
+         w!=model.wires.end(); ++w)
+      if (pset.count(w->from) && pset.count(w->to))
+        wires.push_back(*w);
+
+    // now add the items to the global Minsky object, and build the group object
+    Combine c(layout, minsky().variables);
+    c.populate(minsky().ports, ports);
+    c.populate(minsky().wires, wires);
+    c.populate(minsky().operations, model.operations);
+    c.populate(minsky().variables, model.variables);
+    minsky().variables.makeConsistent();
+    c.populate(minsky().groupItems, model.groups);
+
+    // dummy a very large group size to prevent added variables being
+    // placed on the interface
+    g.width=1000000;
+    g.MoveTo(0,0);
+
+    for (size_t i=0; i<model.operations.size(); ++i)
+      {
+        minsky::Operations::iterator op=
+          minsky().operations.find(model.operations[i].id);
+        if (op!=minsky().operations.end())
+          {
+            g.addOperation(*op);
+            g.addAnyWires(op->second->ports());
+          }
+       }
+
+    for (size_t i=0; i<model.variables.size(); ++i)
+      {
+        minsky::VariableManager::iterator v=
+          minsky().variables.find(model.variables[i].id);
+        if (v!=minsky().variables.end())
+          {
+            g.addVariable(*v);
+            g.addAnyWires(v->second->ports());
+          }
+      }
+
+    for (size_t i=0; i<model.groups.size(); ++i)
+      {
+        minsky::GroupIcons::iterator gi=
+          minsky().groupItems.find(model.groups[i].id);
+        if (gi!=minsky().groupItems.end())
+          {
+            g.addGroup(*gi);
+            g.addAnyWires(gi->second.ports());
+          }
+      }
+
+    float x0, x1, y0, y1;
+    g.contentBounds(x0,y0,x1,y1);
+    // centre group on centroid of contents
+    g.moveContents(g.x()-0.5f*(x0+x1), g.y()-0.5f*(y0+y1));
+    g.height=100, g.width=100;
+  }
+
+
   Minsky::Minsky(const minsky::Minsky& m)
   {
     schemaVersion = version;

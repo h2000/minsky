@@ -66,7 +66,6 @@ proc setFname {name} {
     global fname workDir
     if [string length $name] {
         set fname $name
-        puts $name
         set workDir [file dirname $name]
         catch {wm title . "Minsky (prototype): $fname"}
     }
@@ -236,8 +235,13 @@ grid .menubar -row 0 -column 0 -columnspan 1000 -sticky ew
 .menubar.file.menu add command -label "Open" -command openFile -underline 0 -accelerator ^O
 .menubar.file.menu add command -label "Save" -command save -underline 0 -accelerator ^S
 .menubar.file.menu add command -label "SaveAs" -command saveAs 
+.menubar.file.menu add command -label "Insert File as Group" -command insertFile
+
 .menubar.file.menu add command -label "Output LaTeX" -command {
     latex [tk_getSaveFile -defaultextension .tex -initialdir $workDir]
+}
+.menubar.file.menu add command -label "Output MatLab" -command {
+    matlab [tk_getSaveFile -defaultextension .m -initialdir $workDir]
 }
     
 .menubar.file.menu add command -label "Quit" -command finishUp -underline 0 -accelerator ^Q
@@ -341,6 +345,24 @@ proc openFile {} {
         # setting preferences(godleyDE) causes the edited (dirty) flag to be set
         resetEdited
     }
+}
+
+proc insertFile {} {
+    global workDir
+    set fname [tk_getOpenFile -multiple 1 -filetypes {
+	    {Minsky {.mky}} {XML {.xml}} {All {.*}}} -initialdir $workDir]
+    set gid [insertGroupFromFile $fname]
+    newGroupItem $gid
+
+    moveSet groupItem $gid 0 0
+
+    bind .wiring.canvas <Enter> "move groupItem $gid groupItem$gid %x %y"
+    bind .wiring.canvas <Motion> "move groupItem $gid groupItem$gid %x %y"
+    bind .wiring.canvas <Button> \
+        "bind .wiring.canvas <Motion> {}
+         bind .wiring.canvas <Enter> {}
+         checkAddGroup groupItem $gid %x %y
+         bind .wiring.canvas <Button> {}"
 }
 
 # adjust canvas so that -ve coordinates appear on canvas

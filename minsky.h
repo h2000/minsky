@@ -336,6 +336,9 @@ namespace minsky
       groupItems.erase(id);
     }
 
+    int InsertGroupFromFile(const char* file);
+    int insertGroupFromFile(TCL_args args) {return InsertGroupFromFile(args);}
+
     /// add variable \a varid to group \a gid
     void AddVariableToGroup(int gid, int varid);
     void addVariableToGroup(TCL_args args)
@@ -451,6 +454,12 @@ namespace minsky
       f<<"\\documentclass{article}\n\\begin{document}\n";
       MathDAG::SystemOfEquations(*this).latex(f);
       f<<"\\end{document}\n";
+    }
+
+    void matlab(TCL_args args) {
+      if (cycleCheck()) throw error("cyclic network detected");
+      ofstream f(args);
+      MathDAG::SystemOfEquations(*this).matlab(f);
     }
 
     /// indicate position of error on canvas

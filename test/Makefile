@@ -14,9 +14,12 @@ MINSKYOBJS=$(filter-out ../tclmain.o,$(wildcard ../*.o))
 FLAGS+=-I..
 LIBS+=-lUnitTest++ -lgsl -lgslcblas  -lxgl -lxlib
 
-all: unittests
+all: unittests cmpFp
 
 unittests: $(UNITTESTOBJS) $(MINSKYOBJS)
 	$(CPLUSPLUS) $(FLAGS)  -o $@ $(UNITTESTOBJS) $(MINSKYOBJS) $(LIBS)
+
+cmpFp: cmpFp.o
+	$(CPLUSPLUS) -o $@ $<
 
 include $(UNITTESTOBJS:.o=.d)

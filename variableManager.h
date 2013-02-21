@@ -130,7 +130,15 @@ namespace minsky
       if (i==portToVariable.end()) return -1;
       else return i->second;
     }
-      
+
+    // return list of stock (or integration) variables
+    std::vector<string> stockVars() const {
+      std::vector<string> r;
+      for (VariableValues::const_iterator v=values.begin(); 
+           v!=values.end(); ++v)
+        if (!v->second.lhs()) r.push_back(v->first);
+      return r;
+    }
 
     /// reallocates variables in ValueVector, and set value back to init
     void reset();

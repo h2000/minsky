@@ -48,16 +48,34 @@ namespace
 
   int function(double t, const double y[], double f[], void *params)
   {
-    if (params==NULL) return GSL_FAILURE;
-    ((Minsky*)params)->evalEquations(f,y);
+    if (params==NULL) return GSL_EBADFUNC;
+    try
+      {
+        ((Minsky*)params)->evalEquations(f,y);
+      }
+    catch (std::exception& e)
+      {
+        Tcl_AppendResult(interp(),e.what(),NULL);
+        Tcl_AppendResult(interp(),"\n",NULL);
+        return GSL_EBADFUNC;
+      }
     return GSL_SUCCESS;
   }
 
   int jacobian(double t, const double y[], double * dfdy, double dfdt[], void * params)
   {
-    if (params==NULL) return GSL_FAILURE;
-    Minsky::Matrix jac(ValueVector::stockVars.size(), dfdy);
-    ((Minsky*)params)->jacobian(jac,y);
+    if (params==NULL) return GSL_EBADFUNC;
+        Minsky::Matrix jac(ValueVector::stockVars.size(), dfdy);
+    try
+      {
+        ((Minsky*)params)->jacobian(jac,y);
+      }
+     catch (std::exception& e)
+      {
+        Tcl_AppendResult(interp(),e.what(),NULL);
+        Tcl_AppendResult(interp(),"\n",NULL);
+        return GSL_EBADFUNC;
+      }   
     return GSL_SUCCESS;
   }
 }
@@ -310,6 +328,23 @@ namespace minsky
       groupItems.insert(make_pair(newId, GroupIcon(newId))).first->second;
     g.copy(srcIt->second);
     markEdited();
+    return newId;
+  }
+
+  int Minsky::InsertGroupFromFile(const char* file)
+  {
+    schema1::Minsky currentSchema;
+    ifstream inf(file);
+    xml_unpack_t saveFile(inf);
+    xml_unpack(saveFile, "Minsky", currentSchema);
+
+    if (currentSchema.version != currentSchema.schemaVersion)
+      throw error("Invalid Minsky schema file");
+
+    int newId=groupItems.rbegin()->first+1;
+    GroupIcon& g=
+      groupItems.insert(make_pair(newId, GroupIcon(newId))).first->second;
+    currentSchema.populateGroup(g);
     return newId;
   }
 
@@ -857,11 +892,11 @@ namespace minsky
       {
         reset();
         reset_needed=false;
+        // update flow variable
+        for (size_t i=0; i<equations.size(); ++i)
+          equations[i]->eval(&flowVars[0], &stockVars[0]);
       }
 
-    // update flow variable
-    for (size_t i=0; i<equations.size(); ++i)
-      equations[i]->eval(&flowVars[0], &stockVars[0]);
 
     if (ode)
       {
@@ -877,12 +912,15 @@ namespace minsky
             throw error("unspecified error GSL_FAILURE returned");
           case GSL_EBADFUNC: 
             gsl_odeiv2_driver_reset(ode->driver);
-            throw error("Invalid arithmetic operation detected, on %s",
-                        diagnoseNonFinite().c_str());
+            throw error("Invalid arithmetic operation detected");
           default:
             throw error("gsl error: %s",gsl_strerror(err));
           }
       }
+
+    // update flow variables
+    for (size_t i=0; i<equations.size(); ++i)
+      equations[i]->eval(&flowVars[0], &stockVars[0]);
 
     for (Plots::Map::iterator i=plots.plots.begin(); i!=plots.plots.end(); ++i)
       i->second.addPlotPt(t);

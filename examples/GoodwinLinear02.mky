@@ -709,6 +709,8 @@
       <int>60</int>
       <int>45</int>
      </ports>
+     <createdVars>
+     </createdVars>
      <name>Phillips&#32;curve</name>
     </Group>
    </groups>
@@ -940,22 +942,22 @@
    </Layout>
    <Layout>
     <id>43</id>
-    <x>86.5001</x>
+    <x>86.5</x>
     <y>33.0002</y>
    </Layout>
    <Layout>
     <id>44</id>
-    <x>177</x>
+    <x>176</x>
     <y>15</y>
    </Layout>
    <Layout>
     <id>45</id>
-    <x>233.071</x>
-    <y>131.713</y>
+    <x>174.117</x>
+    <y>306.335</y>
    </Layout>
    <Layout>
     <id>46</id>
-    <x>217</x>
+    <x>218</x>
     <y>15</y>
    </Layout>
    <Layout>
@@ -976,7 +978,7 @@
    <Layout>
     <id>50</id>
     <x>175.5</x>
-    <y>95.5001</y>
+    <y>95.5</y>
    </Layout>
    <Layout>
     <id>51</id>
@@ -1025,8 +1027,8 @@
    </Layout>
    <Layout>
     <id>60</id>
-    <x>382.071</x>
-    <y>131.713</y>
+    <x>323.117</x>
+    <y>306.335</y>
    </Layout>
    <Layout>
     <id>61</id>
@@ -1140,20 +1142,20 @@
     <id>72</id>
     <visible>false</visible>
     <coords>
-     <float>375.782</float>
-     <float>106.099</float>
-     <float>369.876</float>
-     <float>120.972</float>
+     <float>624.399</float>
+     <float>412.434</float>
+     <float>618.493</float>
+     <float>427.307</float>
     </coords>
    </Layout>
    <Layout>
     <id>73</id>
     <visible>false</visible>
     <coords>
-     <float>254.093</float>
-     <float>132.135</float>
-     <float>216.355</float>
-     <float>122.318</float>
+     <float>502.71</float>
+     <float>438.47</float>
+     <float>464.972</float>
+     <float>428.653</float>
     </coords>
    </Layout>
    <Layout>
@@ -1194,7 +1196,7 @@
     <coords>
      <float>49</float>
      <float>82.0003</float>
-     <float>86.5001</float>
+     <float>86.5</float>
      <float>33.0002</float>
     </coords>
    </Layout>
@@ -1204,7 +1206,7 @@
     <coords>
      <float>149.5</float>
      <float>33.0002</float>
-     <float>177</float>
+     <float>176</float>
      <float>15</float>
     </coords>
    </Layout>
@@ -1224,7 +1226,7 @@
     <id>80</id>
     <visible>true</visible>
     <coords>
-     <float>217</float>
+     <float>218</float>
      <float>15</float>
      <float>258</float>
      <float>20</float>
@@ -1270,64 +1272,64 @@
     <id>84</id>
     <visible>false</visible>
     <coords>
-     <float>233.071</float>
-     <float>131.713</float>
-     <float>229.892</float>
-     <float>190.067</float>
-     <float>305.775</float>
-     <float>150.998</float>
-     <float>272.915</float>
-     <float>140.605</float>
+     <float>174.117</float>
+     <float>306.335</float>
+     <float>478.509</float>
+     <float>496.402</float>
+     <float>554.392</float>
+     <float>457.333</float>
+     <float>521.532</float>
+     <float>446.94</float>
     </coords>
    </Layout>
    <Layout>
     <id>85</id>
     <visible>false</visible>
     <coords>
-     <float>302.573</float>
-     <float>128.544</float>
-     <float>272.915</float>
-     <float>123.665</float>
+     <float>551.19</float>
+     <float>434.879</float>
+     <float>521.532</float>
+     <float>430</float>
     </coords>
    </Layout>
    <Layout>
     <id>86</id>
     <visible>false</visible>
     <coords>
-     <float>351.054</float>
-     <float>129.442</float>
-     <float>321.396</float>
-     <float>120.074</float>
+     <float>599.671</float>
+     <float>435.777</float>
+     <float>570.013</float>
+     <float>426.409</float>
     </coords>
    </Layout>
    <Layout>
     <id>87</id>
     <visible>false</visible>
     <coords>
-     <float>347.462</float>
-     <float>159.966</float>
-     <float>321.396</float>
-     <float>137.014</float>
+     <float>596.079</float>
+     <float>466.301</float>
+     <float>570.013</float>
+     <float>443.349</float>
     </coords>
    </Layout>
    <Layout>
     <id>88</id>
     <visible>false</visible>
     <coords>
-     <float>197.533</float>
-     <float>130.788</float>
-     <float>244.071</float>
-     <float>131.713</float>
+     <float>446.15</float>
+     <float>437.123</float>
+     <float>185.117</float>
+     <float>306.335</float>
     </coords>
    </Layout>
    <Layout>
     <id>89</id>
     <visible>false</visible>
     <coords>
-     <float>374.071</float>
-     <float>131.713</float>
-     <float>369.876</float>
-     <float>137.912</float>
+     <float>315.117</float>
+     <float>306.335</float>
+     <float>618.493</float>
+     <float>444.247</float>
     </coords>
    </Layout>
    <Layout>

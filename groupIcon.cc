@@ -1027,6 +1027,19 @@ void GroupIcon::contentBounds(float& x0, float& y0, float& x1, float& y1) const
   
 }
 
+void GroupIcon::moveContents(float dx, float dy)
+{
+  vector<int>::const_iterator i;
+  for (i=m_wires.begin(); i!=m_wires.end(); ++i)
+    minsky().wires[*i].move(dx,dy);
+  for (i=m_operations.begin(); i!=m_operations.end(); ++i)
+    minsky().operations[*i]->move(dx,dy);
+  for (i=m_variables.begin(); i!=m_variables.end(); ++i)
+    minsky().variables[*i]->move(dx,dy);
+  for (i=m_groups.begin(); i!=m_groups.end(); ++i)
+    minsky().groupItems[*i].move(dx,dy);
+}
+
 void GroupIcon::drawVar
 (cairo_t* cairo, const VariablePtr& v, float xScale, float yScale) const
 {
@@ -1136,12 +1149,14 @@ void GroupIcon::addAnyWires(const S& ports)
         {
           if (containedWires.count(*w)) continue; // already there, no
                                                   // need to add
-          Wire& wire=portManager().wires[*w];
+          Wire& wire=minsky().wires[*w];
           if (containedPorts.count(wire.from) && 
               containedPorts.count(wire.to))
             {
               m_wires.push_back(*w);
+              array<float> coords=wire.Coords();
               wire.group=id;
+              wire.Coords(coords);
               wire.visible=displayContents();
             }
         }
@@ -1450,7 +1465,6 @@ bool GroupIcons::uniqueGroupMembership() const
       return false;
   return true;
 }
-
 
 
 }
